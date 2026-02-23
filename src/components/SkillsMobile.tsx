@@ -52,12 +52,23 @@ export default function SkillsMobile() {
                 className="overflow-hidden"
               >
                 <div className="px-5 pb-5 flex flex-wrap gap-2">
-                  {cat.skills.map((skill) => (
+                  {cat.items.map((item) => (
                     <span
-                      key={skill}
-                      className="px-3 py-1.5 text-sm rounded-full bg-primary/10 text-primary border border-primary/20"
+                      key={item.name}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full bg-primary/10 text-primary border border-primary/20"
                     >
-                      {skill}
+                      {item.icon && (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                          src={item.icon}
+                          alt=""
+                          width={16}
+                          height={16}
+                          className="inline-block"
+                          loading="lazy"
+                        />
+                      )}
+                      {item.name}
                     </span>
                   ))}
                 </div>
