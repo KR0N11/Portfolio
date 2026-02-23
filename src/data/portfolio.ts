@@ -115,7 +115,7 @@ export const projects = [
     tech: ["Firebase", "Xcode", "SwiftUI"],
     highlight:
       "Real-time state updates and end-to-end event management logic",
-    image: "/images/relay.png",
+    image: "/image/relay.png",
   },
   {
     title: "MOODIFY",
@@ -125,7 +125,7 @@ export const projects = [
     tech: ["Agora", "AWS", "GPT-4", "React.js"],
     highlight:
       "Real-time analysis pipeline for sentiment and emotion insights using AWS Rekognition",
-    image: "/images/moodify.png",
+    image: "/image/modifiy.png",
   },
   {
     title: "Blitz",
@@ -135,7 +135,7 @@ export const projects = [
     tech: ["React", "Google Vision API"],
     highlight:
       "Secure biometric authentication and streamlined file management",
-    image: "/images/blitz.png",
+    image: "/image/Blitz.png",
   },
   {
     title: "TutorVerse",

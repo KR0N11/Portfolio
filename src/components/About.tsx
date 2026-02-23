@@ -101,7 +101,7 @@ export default function About() {
         <div className="md:col-span-2 flex flex-col gap-4">
           <div className="glass-card overflow-hidden rounded-2xl aspect-[3/4] relative group">
             <Image
-              src="/images/profile.jpg"
+              src="/image/Profile_picture.jpg"
               alt="Ping Chun Lui"
               fill
               className="object-cover object-top scale-110 group-hover:scale-115 transition-transform duration-700"
@@ -133,7 +133,7 @@ export default function About() {
           {/* Bouldering photo */}
           <div className="glass-card overflow-hidden rounded-2xl flex-1 min-h-[200px] relative group">
             <Image
-              src="/images/bouldering.jpg"
+              src="/image/bouldering.jpg"
               alt="Bouldering with friends"
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-700"
