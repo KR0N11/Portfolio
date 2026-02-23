@@ -40,8 +40,8 @@ export default function CursorGlow() {
     };
     window.addEventListener("mousemove", onMove);
 
-    const maxTrailLength = 50;
-    const maxAge = 1.2; // seconds before a point fully fades
+    const maxTrailLength = 80;
+    const maxAge = 1.6;
     let lastTime = performance.now();
     let raf = 0;
 
@@ -59,8 +59,7 @@ export default function CursorGlow() {
       // Add new point to the trail
       if (mx > -9000 && my > -9000) {
         const last = trail.current[trail.current.length - 1];
-        // Only add point if cursor moved enough
-        if (!last || Math.hypot(mx - last.x, my - last.y) > 3) {
+        if (!last || Math.hypot(mx - last.x, my - last.y) > 2) {
           trail.current.push({ x: mx, y: my, age: 0 });
         }
       }
@@ -80,59 +79,98 @@ export default function CursorGlow() {
 
       const pts = trail.current;
 
-      // Draw the trail as connected circles with fading opacity
-      if (pts.length > 1) {
-        // Draw trail line
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-
+      if (pts.length > 2) {
+        // Draw the main glowing ribbon trail
         for (let i = 1; i < pts.length; i++) {
           const p = pts[i];
           const prev = pts[i - 1];
-          const progress = 1 - p.age / maxAge; // 1 = newest, 0 = about to fade
-          const alpha = progress * 0.5;
-          const size = progress * 4 + 1;
+          const progress = 1 - p.age / maxAge;
+          const alpha = progress * 0.7;
+          const width = progress * 12 + 1;
 
           if (alpha < 0.01) continue;
 
-          // Gradient from cyan to blue along the trail
-          const hue = 190 + (1 - progress) * 30;
-          const lightness = 60 + progress * 10;
+          // Gradient from cyan to blue-violet along the trail
+          const hue = 190 + (1 - progress) * 40;
+          const lightness = 55 + progress * 15;
+          const saturation = 80 + progress * 15;
 
-          ctx.strokeStyle = `hsla(${hue}, 85%, ${lightness}%, ${alpha})`;
-          ctx.lineWidth = size;
+          // Outer glow layer
+          ctx.strokeStyle = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha * 0.3})`;
+          ctx.lineWidth = width + 8;
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y);
+          ctx.lineTo(p.x, p.y);
+          ctx.stroke();
+
+          // Mid glow layer
+          ctx.strokeStyle = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha * 0.5})`;
+          ctx.lineWidth = width + 3;
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y);
+          ctx.lineTo(p.x, p.y);
+          ctx.stroke();
+
+          // Core bright line
+          ctx.strokeStyle = `hsla(${hue}, ${saturation}%, ${lightness + 15}%, ${alpha})`;
+          ctx.lineWidth = width;
           ctx.beginPath();
           ctx.moveTo(prev.x, prev.y);
           ctx.lineTo(p.x, p.y);
           ctx.stroke();
         }
 
-        // Draw glowing dots along the trail
-        for (let i = 0; i < pts.length; i++) {
+        // Floating particles along the trail
+        for (let i = 0; i < pts.length; i += 2) {
           const p = pts[i];
           const progress = 1 - p.age / maxAge;
-          const alpha = progress * 0.6;
-          const radius = progress * 3 + 0.5;
+          const alpha = progress * 0.8;
+          const radius = progress * 4 + 1;
 
           if (alpha < 0.01) continue;
 
-          const hue = 190 + (1 - progress) * 30;
+          const hue = 190 + (1 - progress) * 40;
 
+          // Particle glow
+          const pGrd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 3);
+          pGrd.addColorStop(0, `hsla(${hue}, 90%, 75%, ${alpha * 0.6})`);
+          pGrd.addColorStop(0.5, `hsla(${hue}, 90%, 65%, ${alpha * 0.2})`);
+          pGrd.addColorStop(1, `hsla(${hue}, 90%, 60%, 0)`);
           ctx.beginPath();
-          ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
-          ctx.fillStyle = `hsla(${hue}, 90%, 70%, ${alpha})`;
+          ctx.arc(p.x, p.y, radius * 3, 0, Math.PI * 2);
+          ctx.fillStyle = pGrd;
+          ctx.fill();
+
+          // Bright core dot
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, radius * 0.6, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${hue}, 95%, 85%, ${alpha})`;
           ctx.fill();
         }
       }
 
-      // Glow around current cursor position
+      // Bright glow halo around current cursor
       if (mx > -9000 && my > -9000) {
-        const grd = ctx.createRadialGradient(mx, my, 0, mx, my, 120);
-        grd.addColorStop(0, "rgba(56,189,248,0.08)");
-        grd.addColorStop(0.4, "rgba(56,189,248,0.03)");
+        const grd = ctx.createRadialGradient(mx, my, 0, mx, my, 80);
+        grd.addColorStop(0, "rgba(56,189,248,0.15)");
+        grd.addColorStop(0.3, "rgba(56,189,248,0.06)");
+        grd.addColorStop(0.6, "rgba(56,189,248,0.02)");
         grd.addColorStop(1, "transparent");
         ctx.fillStyle = grd;
-        ctx.fillRect(mx - 120, my - 120, 240, 240);
+        ctx.fillRect(mx - 80, my - 80, 160, 160);
+
+        // Small bright cursor dot
+        ctx.beginPath();
+        ctx.arc(mx, my, 4, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(56,189,248,0.6)";
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(mx, my, 2, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,255,255,0.9)";
+        ctx.fill();
       }
 
       raf = requestAnimationFrame(loop);

@@ -12,6 +12,9 @@ import {
   MapPin,
   Dumbbell,
   Mountain,
+  TreePine,
+  Building2,
+  Music,
 } from "lucide-react";
 
 const fadeInUp = {
@@ -48,12 +51,12 @@ function BentoCard({
   );
 }
 
-/* ── Montreal Map Widget ── */
+/* ── Montreal Map Widget (Enhanced) ── */
 function MapWidget() {
   return (
     <div className="h-full flex flex-col">
       {/* Map header */}
-      <div className="p-4 pb-3">
+      <div className="p-4 pb-2">
         <div className="flex items-center gap-2 mb-1">
           <div className="relative">
             <MapPin className="text-primary" size={18} />
@@ -67,29 +70,54 @@ function MapWidget() {
             Montréal, QC
           </span>
         </div>
-        <p className="text-text-secondary text-xs leading-relaxed">
-          A city that runs on creativity, culture, and cold winters that build resilience.
-        </p>
       </div>
 
       {/* Embedded map */}
-      <div className="flex-1 min-h-[180px] relative">
+      <div className="flex-1 min-h-[200px] relative">
         <iframe
           title="Montreal location map"
           src="https://www.openstreetmap.org/export/embed.html?bbox=-73.6517%2C45.4617%2C-73.4817%2C45.5417&layer=mapnik&marker=45.5017%2C-73.5673"
-          className="w-full h-full border-0 rounded-b-2xl"
-          style={{ minHeight: "180px", filter: "saturate(0.8) contrast(1.1)" }}
+          className="w-full h-full border-0"
+          style={{ minHeight: "200px", filter: "saturate(0.8) contrast(1.1)" }}
           loading="lazy"
         />
         {/* Dark mode overlay for map */}
-        <div className="absolute inset-0 bg-bg/10 pointer-events-none rounded-b-2xl dark:mix-blend-multiply" />
+        <div className="absolute inset-0 bg-bg/10 pointer-events-none dark:mix-blend-multiply" />
+
+        {/* Floating landmark badges */}
+        <motion.div
+          className="absolute top-3 right-3 flex flex-col gap-1.5"
+          initial={{ opacity: 0, x: 10 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+        >
+          <div className="flex items-center gap-1.5 bg-bg-card/90 backdrop-blur-md px-2 py-1 rounded-md border border-border/50 shadow-sm">
+            <Building2 size={11} className="text-primary shrink-0" />
+            <span className="text-[9px] font-medium text-text-secondary whitespace-nowrap">Downtown</span>
+          </div>
+          <div className="flex items-center gap-1.5 bg-bg-card/90 backdrop-blur-md px-2 py-1 rounded-md border border-border/50 shadow-sm">
+            <TreePine size={11} className="text-green-500 shrink-0" />
+            <span className="text-[9px] font-medium text-text-secondary whitespace-nowrap">Mont Royal</span>
+          </div>
+          <div className="flex items-center gap-1.5 bg-bg-card/90 backdrop-blur-md px-2 py-1 rounded-md border border-border/50 shadow-sm">
+            <Music size={11} className="text-purple-400 shrink-0" />
+            <span className="text-[9px] font-medium text-text-secondary whitespace-nowrap">Old Port</span>
+          </div>
+        </motion.div>
       </div>
 
-      {/* Coordinates footer */}
-      <div className="absolute bottom-2 left-4 right-4 flex items-center gap-4 text-text-muted text-[10px] font-mono bg-bg-card/80 backdrop-blur-sm px-2 py-1 rounded-md w-fit">
-        <span>45.5017° N</span>
-        <span className="text-primary">•</span>
-        <span>73.5673° W</span>
+      {/* Coordinates & info footer */}
+      <div className="px-4 py-2 flex items-center justify-between border-t border-border/30 bg-bg-card/60 backdrop-blur-sm">
+        <div className="flex items-center gap-3 text-[10px] font-mono text-text-muted">
+          <span>45.5017° N</span>
+          <span className="text-primary">•</span>
+          <span>73.5673° W</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
+          <span className="text-[9px] text-text-muted font-medium">Local time: EST</span>
+        </div>
       </div>
     </div>
   );
@@ -106,7 +134,7 @@ function InfoCard({
   description: string;
 }) {
   return (
-    <div className="p-5 h-full flex items-start gap-3">
+    <div className="p-4 h-full flex items-start gap-3">
       <div className="p-2 rounded-xl bg-primary/10 shrink-0 group-hover:bg-primary/20 transition-colors">
         {icon}
       </div>
@@ -133,7 +161,7 @@ function HobbyCard({
   imageAlt: string;
 }) {
   return (
-    <div className="relative h-full min-h-[160px]">
+    <div className="relative h-full min-h-[140px]">
       {imageSrc && (
         <Image
           src={imageSrc}
@@ -144,8 +172,8 @@ function HobbyCard({
         />
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 p-4 flex items-center gap-2">
-        <div className="p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+      <div className="absolute bottom-0 left-0 right-0 p-3 flex items-center gap-2">
+        <div className="p-1.5 rounded-lg bg-white/10 backdrop-blur-sm">
           {icon}
         </div>
         <span className="text-white font-medium text-sm">{label}</span>
@@ -165,7 +193,7 @@ function CompactCard({
   description: string;
 }) {
   return (
-    <div className="p-5 h-full flex items-start gap-3">
+    <div className="p-4 h-full flex items-start gap-3">
       <div className="p-2 rounded-xl bg-primary/10 shrink-0 group-hover:bg-primary/20 transition-colors">
         {icon}
       </div>
@@ -192,9 +220,9 @@ export default function About() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.6 }}
-        className="mb-12"
+        className="mb-8"
       >
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2">
           About <span className="text-gradient">Me</span>
         </h2>
         <p className="text-text-secondary text-lg max-w-2xl">
@@ -204,30 +232,30 @@ export default function About() {
       </motion.div>
 
       {/* ── Row 1: Profile Photo | Map + Info ── */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4">
-        {/* Profile photo — 4 cols */}
-        <BentoCard className="md:col-span-4 rounded-2xl" index={0}>
-          <div className="aspect-[3/4] relative">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
+        {/* Profile photo — 3 cols (smaller) */}
+        <BentoCard className="md:col-span-3 rounded-2xl" index={0}>
+          <div className="aspect-[3/4] relative max-h-[320px]">
             <Image
               src="/image/me.jpg"
               alt="Ping Chun Lui"
               fill
               className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
-              sizes="(max-width: 768px) 100vw, 33vw"
+              sizes="(max-width: 768px) 100vw, 25vw"
               priority
             />
           </div>
         </BentoCard>
 
-        {/* Right side — 8 cols */}
-        <div className="md:col-span-8 grid grid-rows-[1fr_auto] gap-4">
+        {/* Right side — 9 cols */}
+        <div className="md:col-span-9 grid grid-rows-[1fr_auto] gap-3">
           {/* Montreal map widget */}
           <BentoCard className="rounded-2xl relative" index={1}>
             <MapWidget />
           </BentoCard>
 
           {/* Education + Language row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <BentoCard className="rounded-2xl" index={2}>
               <InfoCard
                 icon={<GraduationCap className="text-primary" size={20} />}
@@ -247,9 +275,9 @@ export default function About() {
       </div>
 
       {/* ── Row 2: Mindset | Hobbies | Craft — 3 even columns ── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* Mindset */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           <h3 className="text-xs font-semibold tracking-widest uppercase text-text-muted px-1">
             Mindset
           </h3>
@@ -270,7 +298,7 @@ export default function About() {
         </div>
 
         {/* Hobbies */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           <h3 className="text-xs font-semibold tracking-widest uppercase text-text-muted px-1">
             Hobbies
           </h3>
@@ -292,7 +320,7 @@ export default function About() {
         </div>
 
         {/* Craft */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           <h3 className="text-xs font-semibold tracking-widest uppercase text-text-muted px-1">
             Craft
           </h3>
