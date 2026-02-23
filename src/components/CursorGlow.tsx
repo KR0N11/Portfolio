@@ -2,35 +2,22 @@
 
 import { useEffect, useRef } from "react";
 
-interface Particle {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  life: number;
-  maxLife: number;
-  size: number;
-  hue: number;
-}
-
 export default function CursorGlow() {
-  const glowRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouse = useRef({ x: -200, y: -200 });
-  const smooth = useRef({ x: -200, y: -200 });
-  const particles = useRef<Particle[]>([]);
-  const frameCount = useRef(0);
+  const mouse = useRef({ x: -9999, y: -9999 });
+  const smooth = useRef({ x: -9999, y: -9999 });
 
   useEffect(() => {
-    /* skip on touch-only devices */
-    if (typeof window !== "undefined" && "ontouchstart" in window && !window.matchMedia("(pointer: fine)").matches) {
+    if (
+      typeof window !== "undefined" &&
+      "ontouchstart" in window &&
+      !window.matchMedia("(pointer: fine)").matches
+    ) {
       return;
     }
 
     const canvas = canvasRef.current;
-    const glow = glowRef.current;
-    if (!canvas || !glow) return;
-
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -47,52 +34,118 @@ export default function CursorGlow() {
     };
     window.addEventListener("mousemove", onMove);
 
+    /* ── wave grid settings ── */
+    const cols = 70;
+    const rows = 40;
+    const spacing = 22;
+    let time = 0;
     let raf = 0;
 
     const loop = () => {
-      frameCount.current++;
+      time += 0.012;
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
 
-      /* smooth follow */
-      smooth.current.x += (mouse.current.x - smooth.current.x) * 0.12;
-      smooth.current.y += (mouse.current.y - smooth.current.y) * 0.12;
+      /* smooth cursor follow */
+      smooth.current.x += (mouse.current.x - smooth.current.x) * 0.08;
+      smooth.current.y += (mouse.current.y - smooth.current.y) * 0.08;
 
-      /* move glow div */
-      glow.style.transform = `translate(${smooth.current.x - 200}px, ${smooth.current.y - 200}px)`;
+      const mx = smooth.current.x;
+      const my = smooth.current.y;
 
-      /* spawn particles every few frames */
-      if (frameCount.current % 3 === 0 && mouse.current.x > 0) {
-        const hue = 195 + Math.random() * 30; /* blue range */
-        particles.current.push({
-          x: mouse.current.x + (Math.random() - 0.5) * 30,
-          y: mouse.current.y + (Math.random() - 0.5) * 30,
-          vx: (Math.random() - 0.5) * 0.8,
-          vy: (Math.random() - 0.5) * 0.8 - 0.3,
-          life: 0,
-          maxLife: 40 + Math.random() * 30,
-          size: 1.5 + Math.random() * 2,
-          hue,
-        });
+      /* center the grid on cursor */
+      const gridW = cols * spacing;
+      const gridH = rows * spacing;
+      const offsetX = mx - gridW / 2;
+      const offsetY = my - gridH / 2;
+
+      /* compute 3D points projected to 2D */
+      const points: { sx: number; sy: number; z: number }[][] = [];
+
+      for (let r = 0; r < rows; r++) {
+        points[r] = [];
+        for (let c = 0; c < cols; c++) {
+          const wx = offsetX + c * spacing;
+          const wy = offsetY + r * spacing;
+
+          /* distance from cursor */
+          const dx = wx - mx;
+          const dy = wy - my;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          /* wave height: ripples emanating from cursor */
+          const wave1 = Math.sin(dist * 0.025 - time * 3) * 35;
+          const wave2 = Math.sin(dist * 0.04 + time * 2) * 15;
+          const falloff = Math.max(0, 1 - dist / 350);
+          const z = (wave1 + wave2) * falloff * falloff;
+
+          /* isometric-ish 3D projection */
+          const tiltX = 0.65;
+          const tiltScale = 0.5;
+          const sx = wx;
+          const sy = wy - z * tiltScale + (r - rows / 2) * spacing * (tiltX - 1) * 0.3;
+
+          points[r][c] = { sx, sy, z };
+        }
       }
 
-      /* draw particles */
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.current = particles.current.filter((p) => {
-        p.life++;
-        if (p.life > p.maxLife) return false;
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy -= 0.005;
+      /* draw wireframe lines */
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const p = points[r][c];
 
-        const progress = p.life / p.maxLife;
-        const alpha = progress < 0.3 ? progress / 0.3 : 1 - (progress - 0.3) / 0.7;
-        const size = p.size * (1 - progress * 0.5);
+          /* fade by distance from cursor */
+          const dx = p.sx - mx;
+          const dy = p.sy - my;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const alpha = Math.max(0, 1 - dist / 320) * 0.35;
 
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${p.hue}, 80%, 70%, ${alpha * 0.6})`;
-        ctx.fill();
-        return true;
-      });
+          if (alpha < 0.01) continue;
+
+          /* color based on height */
+          const hue = 200 + p.z * 0.5;
+          const lightness = 55 + p.z * 0.3;
+          const color = `hsla(${hue}, 80%, ${lightness}%, ${alpha})`;
+
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 0.6;
+
+          /* horizontal line to right neighbor */
+          if (c < cols - 1) {
+            const pn = points[r][c + 1];
+            const dn = Math.sqrt((pn.sx - mx) ** 2 + (pn.sy - my) ** 2);
+            const an = Math.max(0, 1 - dn / 320) * 0.35;
+            if (an > 0.01) {
+              ctx.beginPath();
+              ctx.moveTo(p.sx, p.sy);
+              ctx.lineTo(pn.sx, pn.sy);
+              ctx.stroke();
+            }
+          }
+
+          /* vertical line to bottom neighbor */
+          if (r < rows - 1) {
+            const pn = points[r + 1][c];
+            const dn = Math.sqrt((pn.sx - mx) ** 2 + (pn.sy - my) ** 2);
+            const an = Math.max(0, 1 - dn / 320) * 0.35;
+            if (an > 0.01) {
+              ctx.beginPath();
+              ctx.moveTo(p.sx, p.sy);
+              ctx.lineTo(pn.sx, pn.sy);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      /* subtle glow under cursor */
+      const grd = ctx.createRadialGradient(mx, my, 0, mx, my, 200);
+      grd.addColorStop(0, "rgba(56,189,248,0.06)");
+      grd.addColorStop(0.5, "rgba(56,189,248,0.02)");
+      grd.addColorStop(1, "transparent");
+      ctx.fillStyle = grd;
+      ctx.fillRect(mx - 200, my - 200, 400, 400);
 
       raf = requestAnimationFrame(loop);
     };
@@ -106,29 +159,11 @@ export default function CursorGlow() {
   }, []);
 
   return (
-    <>
-      {/* soft radial glow */}
-      <div
-        ref={glowRef}
-        className="fixed top-0 left-0 pointer-events-none"
-        style={{
-          width: 400,
-          height: 400,
-          borderRadius: "50%",
-          background:
-            "radial-gradient(circle, rgba(56,189,248,0.08) 0%, rgba(56,189,248,0.03) 40%, transparent 70%)",
-          zIndex: 9998,
-          willChange: "transform",
-        }}
-        aria-hidden="true"
-      />
-      {/* particle canvas */}
-      <canvas
-        ref={canvasRef}
-        className="fixed inset-0 pointer-events-none"
-        style={{ zIndex: 9999 }}
-        aria-hidden="true"
-      />
-    </>
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none"
+      style={{ zIndex: 9998 }}
+      aria-hidden="true"
+    />
   );
 }

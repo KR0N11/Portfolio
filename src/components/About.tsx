@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   GraduationCap,
@@ -8,6 +9,7 @@ import {
   Code2,
   Zap,
   Target,
+  MapPin,
 } from "lucide-react";
 
 const fadeInUp = {
@@ -85,6 +87,64 @@ export default function About() {
           A software developer who ships products, solves hard problems, and
           moves fast with purpose.
         </p>
+      </motion.div>
+
+      {/* Profile + Montreal intro */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.7 }}
+        className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-12"
+      >
+        {/* Profile photo */}
+        <div className="md:col-span-2 flex flex-col gap-4">
+          <div className="glass-card overflow-hidden rounded-2xl aspect-[3/4] relative group">
+            <Image
+              src="/images/profile.jpg"
+              alt="Ping Chun Lui"
+              fill
+              className="object-cover object-top scale-110 group-hover:scale-115 transition-transform duration-700"
+              sizes="(max-width: 768px) 100vw, 40vw"
+              priority
+            />
+          </div>
+        </div>
+
+        {/* Montreal intro + bouldering */}
+        <div className="md:col-span-3 flex flex-col gap-4">
+          <div className="glass-card p-6 md:p-8 hover:border-primary/50 transition-all duration-300">
+            <div className="flex items-center gap-2 mb-3">
+              <MapPin className="text-primary" size={20} />
+              <span className="text-primary text-sm font-semibold tracking-wide uppercase">
+                Montr\u00e9al, QC
+              </span>
+            </div>
+            <p className="text-text-secondary leading-relaxed">
+              Based in Montr\u00e9al — a city that runs on creativity, culture, and
+              cold winters that build resilience. The energy here fuels how I
+              work: fast-paced, multicultural, and always building something
+              new. When I&apos;m not shipping code, you&apos;ll find me
+              bouldering with friends, exploring the city, or automating
+              something that probably didn&apos;t need automating.
+            </p>
+          </div>
+
+          {/* Bouldering photo */}
+          <div className="glass-card overflow-hidden rounded-2xl flex-1 min-h-[200px] relative group">
+            <Image
+              src="/images/bouldering.jpg"
+              alt="Bouldering with friends"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-700"
+              sizes="(max-width: 768px) 100vw, 60vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+            <span className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">
+              Bouldering crew
+            </span>
+          </div>
+        </div>
       </motion.div>
 
       {/* Bento grid */}

@@ -45,11 +45,11 @@ export const skillCategories: SkillCategory[] = [
     name: "CRM & ERP",
     color: "#f59e0b",
     items: [
-      { name: "Dynamics 365", icon: `${SI}/dynamics365/002050`, abbr: "D365" },
-      { name: "Business Central", icon: `${SI}/dynamics365/002050`, abbr: "BC" },
-      { name: "Dataverse", icon: `${SI}/dataverse/002050`, abbr: "DV" },
-      { name: "Power Apps", icon: `${SI}/powerapps/742774`, abbr: "PA" },
-      { name: "SharePoint", icon: `${SI}/microsoftsharepoint/0078D4`, abbr: "SP" },
+      { name: "Dynamics 365", icon: "https://img.icons8.com/color/48/dynamics-365.png", abbr: "D365" },
+      { name: "Business Central", icon: "https://img.icons8.com/color/48/microsoft-dynamics-365.png", abbr: "BC" },
+      { name: "Dataverse", icon: "https://img.icons8.com/color/48/microsoft.png", abbr: "DV" },
+      { name: "Power Apps", icon: "https://img.icons8.com/color/48/power-apps.png", abbr: "PA" },
+      { name: "SharePoint", icon: "https://img.icons8.com/color/48/sharepoint.png", abbr: "SP" },
       { name: "ZOHO CRM", icon: `${SI}/zoho/C8202B`, abbr: "ZO" },
     ],
   },
@@ -115,6 +115,7 @@ export const projects = [
     tech: ["Firebase", "Xcode", "SwiftUI"],
     highlight:
       "Real-time state updates and end-to-end event management logic",
+    image: "/images/relay.png",
   },
   {
     title: "MOODIFY",
@@ -124,6 +125,7 @@ export const projects = [
     tech: ["Agora", "AWS", "GPT-4", "React.js"],
     highlight:
       "Real-time analysis pipeline for sentiment and emotion insights using AWS Rekognition",
+    image: "/images/moodify.png",
   },
   {
     title: "Blitz",
@@ -133,6 +135,7 @@ export const projects = [
     tech: ["React", "Google Vision API"],
     highlight:
       "Secure biometric authentication and streamlined file management",
+    image: "/images/blitz.png",
   },
   {
     title: "TutorVerse",
@@ -142,6 +145,7 @@ export const projects = [
     tech: ["Java", "Firebase"],
     highlight:
       "Integrated scheduling, booking, real-time messaging, and rating system",
+    image: null,
   },
 ];
 

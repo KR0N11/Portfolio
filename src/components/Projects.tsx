@@ -1,7 +1,13 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import Image from "next/image";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { ExternalLink } from "lucide-react";
 import { projects } from "@/data/portfolio";
 
@@ -55,47 +61,63 @@ function ProjectCard({
           rotateY,
           transformPerspective: 800,
         }}
-        className="glass-card p-6 md:p-8 h-full hover:border-primary/50 transition-all duration-300 group cursor-default"
+        className="glass-card overflow-hidden h-full hover:border-primary/50 transition-all duration-300 group cursor-default"
       >
-        {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
-              {project.title}
-            </h3>
-            <p className="text-sm text-text-muted font-mono mt-1">
-              {project.period}
+        {/* Project screenshot */}
+        {project.image && (
+          <div className="relative w-full h-44 overflow-hidden">
+            <Image
+              src={project.image}
+              alt={`${project.title} screenshot`}
+              fill
+              className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-bg-card via-transparent to-transparent" />
+          </div>
+        )}
+
+        <div className="p-6 md:p-8">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
+                {project.title}
+              </h3>
+              <p className="text-sm text-text-muted font-mono mt-1">
+                {project.period}
+              </p>
+            </div>
+            <ExternalLink
+              size={18}
+              className="text-text-muted group-hover:text-primary transition-colors shrink-0 mt-1"
+              aria-hidden="true"
+            />
+          </div>
+
+          {/* Description */}
+          <p className="text-text-secondary text-sm leading-relaxed mb-4">
+            {project.description}
+          </p>
+
+          {/* Highlight */}
+          <div className="mb-5 p-3 rounded-lg bg-primary/5 border border-primary/10">
+            <p className="text-xs text-primary font-medium">
+              {project.highlight}
             </p>
           </div>
-          <ExternalLink
-            size={18}
-            className="text-text-muted group-hover:text-primary transition-colors shrink-0 mt-1"
-            aria-hidden="true"
-          />
-        </div>
 
-        {/* Description */}
-        <p className="text-text-secondary text-sm leading-relaxed mb-4">
-          {project.description}
-        </p>
-
-        {/* Highlight */}
-        <div className="mb-5 p-3 rounded-lg bg-primary/5 border border-primary/10">
-          <p className="text-xs text-primary font-medium">
-            {project.highlight}
-          </p>
-        </div>
-
-        {/* Tech stack */}
-        <div className="flex flex-wrap gap-2">
-          {project.tech.map((t) => (
-            <span
-              key={t}
-              className="px-2.5 py-1 text-xs rounded-full bg-bg-secondary border border-border text-text-secondary font-mono"
-            >
-              {t}
-            </span>
-          ))}
+          {/* Tech stack */}
+          <div className="flex flex-wrap gap-2">
+            {project.tech.map((t) => (
+              <span
+                key={t}
+                className="px-2.5 py-1 text-xs rounded-full bg-bg-secondary border border-border text-text-secondary font-mono"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
         </div>
       </motion.div>
     </motion.div>
