@@ -2,28 +2,28 @@
 
 import { useEffect, useRef } from "react";
 
-interface Particle {
+interface TrailPoint {
   x: number;
   y: number;
-  vx: number;
-  vy: number;
-  life: number;
-  maxLife: number;
-  size: number;
-  hue: number;
 }
+
+const TRAIL_LENGTH = 28;
+const EASE = 0.18;
 
 export default function CursorGlow() {
   const glowRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouse = useRef({ x: -200, y: -200 });
   const smooth = useRef({ x: -200, y: -200 });
-  const particles = useRef<Particle[]>([]);
-  const frameCount = useRef(0);
+  const trail = useRef<TrailPoint[]>([]);
+  const hasMoved = useRef(false);
 
   useEffect(() => {
-    /* skip on touch-only devices */
-    if (typeof window !== "undefined" && "ontouchstart" in window && !window.matchMedia("(pointer: fine)").matches) {
+    if (
+      typeof window !== "undefined" &&
+      "ontouchstart" in window &&
+      !window.matchMedia("(pointer: fine)").matches
+    ) {
       return;
     }
 
@@ -44,55 +44,93 @@ export default function CursorGlow() {
     const onMove = (e: MouseEvent) => {
       mouse.current.x = e.clientX;
       mouse.current.y = e.clientY;
+      if (!hasMoved.current) hasMoved.current = true;
     };
     window.addEventListener("mousemove", onMove);
 
     let raf = 0;
 
     const loop = () => {
-      frameCount.current++;
+      /* smooth follow for glow */
+      smooth.current.x += (mouse.current.x - smooth.current.x) * EASE;
+      smooth.current.y += (mouse.current.y - smooth.current.y) * EASE;
 
-      /* smooth follow */
-      smooth.current.x += (mouse.current.x - smooth.current.x) * 0.12;
-      smooth.current.y += (mouse.current.y - smooth.current.y) * 0.12;
-
-      /* move glow div */
       glow.style.transform = `translate(${smooth.current.x - 200}px, ${smooth.current.y - 200}px)`;
 
-      /* spawn particles every few frames */
-      if (frameCount.current % 3 === 0 && mouse.current.x > 0) {
-        const hue = 195 + Math.random() * 30; /* blue range */
-        particles.current.push({
-          x: mouse.current.x + (Math.random() - 0.5) * 30,
-          y: mouse.current.y + (Math.random() - 0.5) * 30,
-          vx: (Math.random() - 0.5) * 0.8,
-          vy: (Math.random() - 0.5) * 0.8 - 0.3,
-          life: 0,
-          maxLife: 40 + Math.random() * 30,
-          size: 1.5 + Math.random() * 2,
-          hue,
-        });
+      if (!hasMoved.current) {
+        raf = requestAnimationFrame(loop);
+        return;
       }
 
-      /* draw particles */
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.current = particles.current.filter((p) => {
-        p.life++;
-        if (p.life > p.maxLife) return false;
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy -= 0.005;
+      /* build trail — each point eases toward the one ahead of it */
+      if (trail.current.length === 0) {
+        for (let i = 0; i < TRAIL_LENGTH; i++) {
+          trail.current.push({ x: mouse.current.x, y: mouse.current.y });
+        }
+      }
 
-        const progress = p.life / p.maxLife;
-        const alpha = progress < 0.3 ? progress / 0.3 : 1 - (progress - 0.3) / 0.7;
-        const size = p.size * (1 - progress * 0.5);
+      /* head follows mouse directly */
+      trail.current[0].x = mouse.current.x;
+      trail.current[0].y = mouse.current.y;
+
+      /* each subsequent point eases toward the previous one */
+      for (let i = 1; i < trail.current.length; i++) {
+        const prev = trail.current[i - 1];
+        const cur = trail.current[i];
+        const ease = 0.35 - i * 0.008; /* slower ease toward tail */
+        cur.x += (prev.x - cur.x) * Math.max(ease, 0.06);
+        cur.y += (prev.y - cur.y) * Math.max(ease, 0.06);
+      }
+
+      /* draw smooth trail */
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const len = trail.current.length;
+      if (len < 2) {
+        raf = requestAnimationFrame(loop);
+        return;
+      }
+
+      /* draw a tapered, fading ribbon using line segments */
+      for (let i = 0; i < len - 1; i++) {
+        const t = i / (len - 1); /* 0 = head, 1 = tail */
+        const a = trail.current[i];
+        const b = trail.current[i + 1];
+
+        /* opacity: strong at head, fading toward tail */
+        const alpha = (1 - t) * 0.45;
+
+        /* width: thick at head, thin at tail */
+        const width = (1 - t) * 18 + 1;
 
         ctx.beginPath();
-        ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${p.hue}, 80%, 70%, ${alpha * 0.6})`;
-        ctx.fill();
-        return true;
-      });
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+
+        ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
+        ctx.lineWidth = width;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.stroke();
+      }
+
+      /* soft glow circle at the cursor tip */
+      const head = trail.current[0];
+      const gradient = ctx.createRadialGradient(
+        head.x,
+        head.y,
+        0,
+        head.x,
+        head.y,
+        22
+      );
+      gradient.addColorStop(0, "rgba(56, 189, 248, 0.25)");
+      gradient.addColorStop(0.5, "rgba(56, 189, 248, 0.08)");
+      gradient.addColorStop(1, "rgba(56, 189, 248, 0)");
+      ctx.beginPath();
+      ctx.arc(head.x, head.y, 22, 0, Math.PI * 2);
+      ctx.fillStyle = gradient;
+      ctx.fill();
 
       raf = requestAnimationFrame(loop);
     };
@@ -122,7 +160,7 @@ export default function CursorGlow() {
         }}
         aria-hidden="true"
       />
-      {/* particle canvas */}
+      {/* trail canvas */}
       <canvas
         ref={canvasRef}
         className="fixed inset-0 pointer-events-none"
