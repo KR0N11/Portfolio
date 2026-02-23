@@ -15,12 +15,11 @@ function AnimatedBackground() {
       ctx.clearRect(0, 0, w, h);
 
       if (theme === "dark") {
-        // Starry deep-space with gentle glowing particles
         const starCount = 120;
         for (let i = 0; i < starCount; i++) {
           const seed = i * 7919;
-          const x = ((seed * 13) % w);
-          const y = ((seed * 17) % h);
+          const x = (seed * 13) % w;
+          const y = (seed * 17) % h;
           const twinkle =
             0.3 + 0.7 * Math.abs(Math.sin(time * 0.001 + i * 0.5));
           const size = ((seed % 3) + 1) * twinkle;
@@ -31,12 +30,9 @@ function AnimatedBackground() {
           ctx.fill();
         }
 
-        // Floating glow orbs
         for (let i = 0; i < 5; i++) {
-          const cx = w * (0.15 + (i * 0.18));
-          const cy =
-            h * 0.5 +
-            Math.sin(time * 0.0005 + i * 1.5) * h * 0.15;
+          const cx = w * (0.15 + i * 0.18);
+          const cy = h * 0.5 + Math.sin(time * 0.0005 + i * 1.5) * h * 0.15;
           const radius = 80 + Math.sin(time * 0.0008 + i) * 30;
           const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
           gradient.addColorStop(0, "rgba(56, 189, 248, 0.08)");
@@ -48,7 +44,6 @@ function AnimatedBackground() {
           ctx.fill();
         }
       } else {
-        // Soft, slow-moving gradient orbs for light mode
         const orbs = [
           { x: 0.2, y: 0.3, r: 200, color: "rgba(14, 165, 233, 0.08)" },
           { x: 0.7, y: 0.2, r: 250, color: "rgba(56, 189, 248, 0.06)" },
@@ -58,10 +53,8 @@ function AnimatedBackground() {
         ];
 
         orbs.forEach((orb, i) => {
-          const cx =
-            w * orb.x + Math.sin(time * 0.0003 + i * 2) * 60;
-          const cy =
-            h * orb.y + Math.cos(time * 0.0004 + i * 1.5) * 50;
+          const cx = w * orb.x + Math.sin(time * 0.0003 + i * 2) * 60;
+          const cy = h * orb.y + Math.cos(time * 0.0004 + i * 1.5) * 50;
           const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, orb.r);
           gradient.addColorStop(0, orb.color);
           gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
@@ -72,7 +65,7 @@ function AnimatedBackground() {
         });
       }
     },
-    [theme]
+    [theme],
   );
 
   useEffect(() => {
@@ -109,6 +102,98 @@ function AnimatedBackground() {
   );
 }
 
+/* ── Pendulum animation ── */
+const SWING = 35; /* degrees */
+const LENGTH = 80; /* px */
+const BOB_R = 8;
+
+function Pendulum() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 1.8, duration: 1 }}
+      className="flex justify-center my-6"
+      aria-hidden="true"
+    >
+      <svg
+        width="200"
+        height={LENGTH + BOB_R * 2 + 16}
+        viewBox={`0 0 200 ${LENGTH + BOB_R * 2 + 16}`}
+        className="overflow-visible"
+      >
+        <defs>
+          {/* glow filter for the bob */}
+          <filter id="pendulum-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          {/* trail arc gradient */}
+          <linearGradient id="trail-grad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0" />
+            <stop offset="50%" stopColor="var(--color-primary)" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+
+        {/* pivot dot */}
+        <circle cx="100" cy="4" r="3" fill="var(--color-text-muted)" opacity="0.4" />
+
+        {/* faint arc trail showing the swing path */}
+        <path
+          d={`M ${100 - LENGTH * Math.sin((SWING * Math.PI) / 180)} ${4 + LENGTH * Math.cos((SWING * Math.PI) / 180)}
+              A ${LENGTH} ${LENGTH} 0 0 1 ${100 + LENGTH * Math.sin((SWING * Math.PI) / 180)} ${4 + LENGTH * Math.cos((SWING * Math.PI) / 180)}`}
+          fill="none"
+          stroke="url(#trail-grad)"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+
+        {/* swinging arm + bob */}
+        <motion.g
+          style={{ originX: "100px", originY: "4px" }}
+          animate={{ rotate: [-SWING, SWING, -SWING] }}
+          transition={{
+            duration: 2.4,
+            repeat: Infinity,
+            ease: [0.42, 0, 0.58, 1], /* sine-like ease */
+          }}
+        >
+          {/* string */}
+          <line
+            x1="100"
+            y1="4"
+            x2="100"
+            y2={4 + LENGTH}
+            stroke="var(--color-text-muted)"
+            strokeWidth="1"
+            opacity="0.5"
+          />
+          {/* bob */}
+          <circle
+            cx="100"
+            cy={4 + LENGTH + BOB_R}
+            r={BOB_R}
+            fill="var(--color-primary)"
+            filter="url(#pendulum-glow)"
+          />
+          {/* inner bright spot */}
+          <circle
+            cx="100"
+            cy={4 + LENGTH + BOB_R}
+            r={BOB_R * 0.4}
+            fill="white"
+            opacity="0.6"
+          />
+        </motion.g>
+      </svg>
+    </motion.div>
+  );
+}
+
 const letterVariants = {
   hidden: { opacity: 0, y: 40 },
   visible: (i: number) => ({
@@ -139,7 +224,7 @@ export default function Hero() {
 
       <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
         {/* Main headline with staggered letter reveal */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-6">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-2">
           {headline.split("").map((char, i) => (
             <motion.span
               key={i}
@@ -147,12 +232,17 @@ export default function Hero() {
               variants={letterVariants}
               initial="hidden"
               animate="visible"
-              className={char === " " ? "inline" : "inline-block text-gradient"}
+              className={
+                char === " " ? "inline" : "inline-block text-gradient"
+              }
             >
               {char === " " ? "\u00A0" : char}
             </motion.span>
           ))}
         </h1>
+
+        {/* Pendulum */}
+        <Pendulum />
 
         {/* Sub-headline */}
         <motion.p
