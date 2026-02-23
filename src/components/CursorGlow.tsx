@@ -40,8 +40,8 @@ export default function CursorGlow() {
     };
     window.addEventListener("mousemove", onMove);
 
-    const maxTrailLength = 80;
-    const maxAge = 1.6;
+    const maxTrailLength = 70;
+    const maxAge = 1.4;
     let lastTime = performance.now();
     let raf = 0;
 
@@ -56,7 +56,7 @@ export default function CursorGlow() {
       const mx = mouse.current.x;
       const my = mouse.current.y;
 
-      // Add new point to the trail
+      // Add new point
       if (mx > -9000 && my > -9000) {
         const last = trail.current[trail.current.length - 1];
         if (!last || Math.hypot(mx - last.x, my - last.y) > 2) {
@@ -64,15 +64,13 @@ export default function CursorGlow() {
         }
       }
 
-      // Age and prune trail points
+      // Age and prune
       for (let i = trail.current.length - 1; i >= 0; i--) {
         trail.current[i].age += dt;
         if (trail.current[i].age > maxAge) {
           trail.current.splice(i, 1);
         }
       }
-
-      // Keep trail length manageable
       while (trail.current.length > maxTrailLength) {
         trail.current.shift();
       }
@@ -80,41 +78,63 @@ export default function CursorGlow() {
       const pts = trail.current;
 
       if (pts.length > 2) {
-        // Draw the main glowing ribbon trail
+        // --- Soft wide underglow (single smooth path) ---
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        // Build smooth Bézier path through midpoints
+        const drawSmoothPath = () => {
+          ctx.beginPath();
+          ctx.moveTo(pts[0].x, pts[0].y);
+          for (let i = 0; i < pts.length - 1; i++) {
+            const curr = pts[i];
+            const next = pts[i + 1];
+            const midX = (curr.x + next.x) / 2;
+            const midY = (curr.y + next.y) / 2;
+            ctx.quadraticCurveTo(curr.x, curr.y, midX, midY);
+          }
+          const last = pts[pts.length - 1];
+          ctx.lineTo(last.x, last.y);
+        };
+
+        // Layer 1: Wide soft ambient glow
+        drawSmoothPath();
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.04)";
+        ctx.lineWidth = 28;
+        ctx.stroke();
+
+        // Layer 2: Medium glow for depth
+        drawSmoothPath();
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.06)";
+        ctx.lineWidth = 14;
+        ctx.stroke();
+
+        // --- Per-segment trail with fading width & opacity ---
         for (let i = 1; i < pts.length; i++) {
           const p = pts[i];
           const prev = pts[i - 1];
           const progress = 1 - p.age / maxAge;
-          const alpha = progress * 0.7;
-          const width = progress * 12 + 1;
+          // Cubic ease-out for smoother fade
+          const eased = progress * progress * (3 - 2 * progress);
+          const alpha = eased * 0.3;
+          const width = eased * 4 + 0.5;
 
-          if (alpha < 0.01) continue;
+          if (alpha < 0.005) continue;
 
-          // Gradient from cyan to blue-violet along the trail
-          const hue = 190 + (1 - progress) * 40;
-          const lightness = 55 + progress * 15;
-          const saturation = 80 + progress * 15;
+          const hue = 195 + (1 - progress) * 25;
+          const lightness = 62 + progress * 10;
 
-          // Outer glow layer
-          ctx.strokeStyle = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha * 0.3})`;
-          ctx.lineWidth = width + 8;
+          // Soft glow behind the line
+          ctx.strokeStyle = `hsla(${hue}, 80%, ${lightness}%, ${alpha * 0.4})`;
+          ctx.lineWidth = width + 6;
           ctx.lineCap = "round";
-          ctx.lineJoin = "round";
           ctx.beginPath();
           ctx.moveTo(prev.x, prev.y);
           ctx.lineTo(p.x, p.y);
           ctx.stroke();
 
-          // Mid glow layer
-          ctx.strokeStyle = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha * 0.5})`;
-          ctx.lineWidth = width + 3;
-          ctx.beginPath();
-          ctx.moveTo(prev.x, prev.y);
-          ctx.lineTo(p.x, p.y);
-          ctx.stroke();
-
-          // Core bright line
-          ctx.strokeStyle = `hsla(${hue}, ${saturation}%, ${lightness + 15}%, ${alpha})`;
+          // Core line
+          ctx.strokeStyle = `hsla(${hue}, 85%, ${lightness + 8}%, ${alpha})`;
           ctx.lineWidth = width;
           ctx.beginPath();
           ctx.moveTo(prev.x, prev.y);
@@ -122,55 +142,34 @@ export default function CursorGlow() {
           ctx.stroke();
         }
 
-        // Floating particles along the trail
-        for (let i = 0; i < pts.length; i += 2) {
+        // --- Subtle shimmer dots (sparse, soft) ---
+        for (let i = 0; i < pts.length; i += 4) {
           const p = pts[i];
           const progress = 1 - p.age / maxAge;
-          const alpha = progress * 0.8;
-          const radius = progress * 4 + 1;
+          const eased = progress * progress;
+          const alpha = eased * 0.25;
+          const radius = eased * 1.5 + 0.5;
 
           if (alpha < 0.01) continue;
 
-          const hue = 190 + (1 - progress) * 40;
+          const hue = 195 + (1 - progress) * 25;
 
-          // Particle glow
-          const pGrd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 3);
-          pGrd.addColorStop(0, `hsla(${hue}, 90%, 75%, ${alpha * 0.6})`);
-          pGrd.addColorStop(0.5, `hsla(${hue}, 90%, 65%, ${alpha * 0.2})`);
-          pGrd.addColorStop(1, `hsla(${hue}, 90%, 60%, 0)`);
           ctx.beginPath();
-          ctx.arc(p.x, p.y, radius * 3, 0, Math.PI * 2);
-          ctx.fillStyle = pGrd;
-          ctx.fill();
-
-          // Bright core dot
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, radius * 0.6, 0, Math.PI * 2);
-          ctx.fillStyle = `hsla(${hue}, 95%, 85%, ${alpha})`;
+          ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${hue}, 90%, 80%, ${alpha})`;
           ctx.fill();
         }
       }
 
-      // Bright glow halo around current cursor
+      // Soft ambient glow around cursor
       if (mx > -9000 && my > -9000) {
-        const grd = ctx.createRadialGradient(mx, my, 0, mx, my, 80);
-        grd.addColorStop(0, "rgba(56,189,248,0.15)");
-        grd.addColorStop(0.3, "rgba(56,189,248,0.06)");
-        grd.addColorStop(0.6, "rgba(56,189,248,0.02)");
+        const grd = ctx.createRadialGradient(mx, my, 0, mx, my, 100);
+        grd.addColorStop(0, "rgba(56,189,248,0.07)");
+        grd.addColorStop(0.3, "rgba(56,189,248,0.03)");
+        grd.addColorStop(0.7, "rgba(56,189,248,0.01)");
         grd.addColorStop(1, "transparent");
         ctx.fillStyle = grd;
-        ctx.fillRect(mx - 80, my - 80, 160, 160);
-
-        // Small bright cursor dot
-        ctx.beginPath();
-        ctx.arc(mx, my, 4, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(56,189,248,0.6)";
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(mx, my, 2, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255,255,255,0.9)";
-        ctx.fill();
+        ctx.fillRect(mx - 100, my - 100, 200, 200);
       }
 
       raf = requestAnimationFrame(loop);
