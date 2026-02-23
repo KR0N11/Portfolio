@@ -102,94 +102,156 @@ function AnimatedBackground() {
   );
 }
 
-/* ── Pendulum animation ── */
-const SWING = 35; /* degrees */
-const LENGTH = 80; /* px */
-const BOB_R = 8;
+/* ── Kinetic Orbit ── Canvas-based infinity loop with trailing particles ── */
+function KineticOrbit() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { theme } = useTheme();
+  const animRef = useRef<number>(0);
 
-function Pendulum() {
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const W = 280;
+    const H = 100;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = `${W}px`;
+    canvas.style.height = `${H}px`;
+    ctx.scale(dpr, dpr);
+
+    const cx = W / 2;
+    const cy = H / 2;
+    const a = 100; // horizontal radius
+    const b = 28; // vertical radius
+
+    // Lemniscate of Bernoulli parametric
+    const lemnX = (t: number) => {
+      const s = Math.sin(t);
+      const c = Math.cos(t);
+      return cx + (a * c) / (1 + s * s);
+    };
+    const lemnY = (t: number) => {
+      const s = Math.sin(t);
+      const c = Math.cos(t);
+      return cy + (b * s * c) / (1 + s * s);
+    };
+
+    const isDark = theme === "dark";
+    const primaryR = isDark ? 56 : 14;
+    const primaryG = isDark ? 189 : 165;
+    const primaryB = 248;
+
+    const TRAIL_LEN = 60;
+    const trail: { x: number; y: number }[] = [];
+
+    let startTime: number | null = null;
+
+    const animate = (time: number) => {
+      if (startTime === null) startTime = time;
+      const elapsed = time - startTime;
+      ctx.clearRect(0, 0, W, H);
+
+      const speed = 0.0012;
+      const t = elapsed * speed;
+
+      // Current position on lemniscate
+      const px = lemnX(t);
+      const py = lemnY(t);
+
+      trail.push({ x: px, y: py });
+      if (trail.length > TRAIL_LEN) trail.shift();
+
+      // Draw the faint lemniscate path
+      ctx.beginPath();
+      for (let i = 0; i <= 200; i++) {
+        const angle = (i / 200) * Math.PI * 2;
+        const x = lemnX(angle);
+        const y = lemnY(angle);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.08)`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Draw trailing particles
+      for (let i = 0; i < trail.length; i++) {
+        const progress = i / trail.length;
+        const alpha = progress * 0.6;
+        const r = 1.5 + progress * 2;
+
+        ctx.beginPath();
+        ctx.arc(trail[i].x, trail[i].y, r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${primaryR}, ${primaryG}, ${primaryB}, ${alpha})`;
+        ctx.fill();
+      }
+
+      // Draw main orb with glow
+      const glowRadius = 20;
+      const glow = ctx.createRadialGradient(px, py, 0, px, py, glowRadius);
+      glow.addColorStop(0, `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.4)`);
+      glow.addColorStop(0.5, `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.1)`);
+      glow.addColorStop(1, `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0)`);
+      ctx.beginPath();
+      ctx.arc(px, py, glowRadius, 0, Math.PI * 2);
+      ctx.fillStyle = glow;
+      ctx.fill();
+
+      // Main orb
+      ctx.beginPath();
+      ctx.arc(px, py, 5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgb(${primaryR}, ${primaryG}, ${primaryB})`;
+      ctx.fill();
+
+      // Bright center
+      ctx.beginPath();
+      ctx.arc(px, py, 2, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+      ctx.fill();
+
+      // Secondary orb (opposite phase)
+      const t2 = t + Math.PI;
+      const px2 = lemnX(t2);
+      const py2 = lemnY(t2);
+
+      const glow2 = ctx.createRadialGradient(px2, py2, 0, px2, py2, 14);
+      glow2.addColorStop(0, `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.25)`);
+      glow2.addColorStop(1, `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0)`);
+      ctx.beginPath();
+      ctx.arc(px2, py2, 14, 0, Math.PI * 2);
+      ctx.fillStyle = glow2;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(px2, py2, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${primaryR}, ${primaryG}, ${primaryB}, 0.7)`;
+      ctx.fill();
+
+      animRef.current = requestAnimationFrame(animate);
+    };
+
+    animRef.current = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(animRef.current);
+  }, [theme]);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ delay: 1.8, duration: 1 }}
-      className="flex justify-center my-6"
+      transition={{ delay: 1.8, duration: 1.2 }}
+      className="flex justify-center my-6 sm:my-8"
       aria-hidden="true"
     >
-      <svg
-        width="200"
-        height={LENGTH + BOB_R * 2 + 16}
-        viewBox={`0 0 200 ${LENGTH + BOB_R * 2 + 16}`}
-        className="overflow-visible"
-      >
-        <defs>
-          {/* glow filter for the bob */}
-          <filter id="pendulum-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="4" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-          {/* trail arc gradient */}
-          <linearGradient id="trail-grad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0" />
-            <stop offset="50%" stopColor="var(--color-primary)" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-
-        {/* pivot dot */}
-        <circle cx="100" cy="4" r="3" fill="var(--color-text-muted)" opacity="0.4" />
-
-        {/* faint arc trail showing the swing path */}
-        <path
-          d={`M ${100 - LENGTH * Math.sin((SWING * Math.PI) / 180)} ${4 + LENGTH * Math.cos((SWING * Math.PI) / 180)}
-              A ${LENGTH} ${LENGTH} 0 0 1 ${100 + LENGTH * Math.sin((SWING * Math.PI) / 180)} ${4 + LENGTH * Math.cos((SWING * Math.PI) / 180)}`}
-          fill="none"
-          stroke="url(#trail-grad)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-
-        {/* swinging arm + bob */}
-        <motion.g
-          style={{ originX: "100px", originY: "4px" }}
-          animate={{ rotate: [-SWING, SWING, -SWING] }}
-          transition={{
-            duration: 2.4,
-            repeat: Infinity,
-            ease: [0.42, 0, 0.58, 1], /* sine-like ease */
-          }}
-        >
-          {/* string */}
-          <line
-            x1="100"
-            y1="4"
-            x2="100"
-            y2={4 + LENGTH}
-            stroke="var(--color-text-muted)"
-            strokeWidth="1"
-            opacity="0.5"
-          />
-          {/* bob */}
-          <circle
-            cx="100"
-            cy={4 + LENGTH + BOB_R}
-            r={BOB_R}
-            fill="var(--color-primary)"
-            filter="url(#pendulum-glow)"
-          />
-          {/* inner bright spot */}
-          <circle
-            cx="100"
-            cy={4 + LENGTH + BOB_R}
-            r={BOB_R * 0.4}
-            fill="white"
-            opacity="0.6"
-          />
-        </motion.g>
-      </svg>
+      <canvas
+        ref={canvasRef}
+        className="max-w-full"
+      />
     </motion.div>
   );
 }
@@ -241,8 +303,8 @@ export default function Hero() {
           ))}
         </h1>
 
-        {/* Pendulum */}
-        <Pendulum />
+        {/* Kinetic infinity orbit */}
+        <KineticOrbit />
 
         {/* Sub-headline */}
         <motion.p
