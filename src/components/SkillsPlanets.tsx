@@ -88,7 +88,6 @@ function Planet({
           color="white"
           anchorX="center"
           anchorY="bottom"
-          font="/fonts/inter.woff"
           outlineWidth={0.02}
           outlineColor="black"
         >
