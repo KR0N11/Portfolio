@@ -20,18 +20,18 @@
 }
 
 .dark {
-  --color-primary: #38bdf8;
-  --color-primary-hover: #7dd3fc;
-  --color-accent: #0ea5e9;
-  --color-bg: #060c1a;
-  --color-bg-secondary: #0a1228;
-  --color-bg-card: rgba(15, 25, 50, 0.6);
-  --color-bg-card-hover: rgba(25, 40, 70, 0.7);
-  --color-text: #e8edf5;
-  --color-text-secondary: #8b9dc3;
-  --color-text-muted: #4a5f85;
-  --color-border: rgba(56, 189, 248, 0.08);
-  --color-glow: rgba(56, 189, 248, 0.15);
+  --color-primary: #ffffff;
+  --color-primary-hover: #d4d4d4;
+  --color-accent: #a3a3a3;
+  --color-bg: #000000;
+  --color-bg-secondary: #0a0a0a;
+  --color-bg-card: rgba(20, 20, 20, 0.6);
+  --color-bg-card-hover: rgba(38, 38, 38, 0.7);
+  --color-text: #f5f5f5;
+  --color-text-secondary: #a3a3a3;
+  --color-text-muted: #525252;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-glow: rgba(255, 255, 255, 0.08);
 }
 
 /* Smooth global transitions for theme switching */
@@ -57,16 +57,11 @@ body {
   overflow-x: hidden;
 }
 
-/* Atmospheric gradient backdrop for dark mode */
+/* Subtle vignette for dark mode */
 .dark body {
   background: radial-gradient(
-      ellipse 80% 60% at 50% 0%,
-      rgba(10, 30, 70, 0.5) 0%,
-      transparent 70%
-    ),
-    radial-gradient(
-      ellipse 60% 50% at 80% 100%,
-      rgba(6, 20, 55, 0.4) 0%,
+      ellipse 80% 60% at 50% 50%,
+      rgba(25, 25, 25, 0.4) 0%,
       transparent 70%
     ),
     var(--color-bg);
@@ -101,6 +96,13 @@ body {
 /* Text gradient */
 .text-gradient {
   background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark .text-gradient {
+  background: linear-gradient(135deg, #ffffff, #737373);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

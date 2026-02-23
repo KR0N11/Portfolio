@@ -4,13 +4,12 @@ import { useEffect, useRef } from "react";
 
 /**
  * Full-screen water-ripple effect driven by cursor movement.
- *
- * Uses a 2-D wave-equation simulation at reduced resolution,
- * rendered as a translucent overlay so page content shows through.
+ * Renders white/gray ripples with mix-blend-mode so they
+ * visually interact with (distort) page content underneath.
  */
 
-const SCALE = 5; // pixels per simulation cell (lower = sharper, heavier)
-const DAMPING = 0.965;
+const SCALE = 5;
+const DAMPING = 0.96;
 
 export default function CursorGlow() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -18,7 +17,6 @@ export default function CursorGlow() {
   const prev = useRef({ x: -1, y: -1 });
 
   useEffect(() => {
-    /* skip on touch-only devices */
     if (
       typeof window !== "undefined" &&
       "ontouchstart" in window &&
@@ -32,12 +30,11 @@ export default function CursorGlow() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    /* ---- state ---- */
     let cols = 0,
       rows = 0;
     let cur: Float32Array = new Float32Array(0);
     let prv: Float32Array = new Float32Array(0);
-    let buf: HTMLCanvasElement; // off-screen buffer at sim resolution
+    let buf: HTMLCanvasElement;
     let bCtx: CanvasRenderingContext2D | null = null;
     let img: ImageData;
 
@@ -65,7 +62,6 @@ export default function CursorGlow() {
     };
     window.addEventListener("mousemove", onMove);
 
-    /* add a circular disturbance into the current buffer */
     const disturb = (
       cx: number,
       cy: number,
@@ -89,11 +85,9 @@ export default function CursorGlow() {
       }
     };
 
-    /* ---- loop ---- */
     let raf = 0;
 
     const loop = () => {
-      /* mouse disturbance — proportional to movement speed */
       if (mouse.current.x > 0 && prev.current.x > 0) {
         const dx = mouse.current.x - prev.current.x;
         const dy = mouse.current.y - prev.current.y;
@@ -102,13 +96,12 @@ export default function CursorGlow() {
           disturb(
             mouse.current.x,
             mouse.current.y,
-            16 + Math.min(speed * 0.5, 22),
-            Math.min(speed * 5, 500)
+            12 + Math.min(speed * 0.3, 16),
+            Math.min(speed * 2.5, 250)
           );
         }
       }
 
-      /* wave equation step: swap buffers, then propagate */
       const tmp = prv;
       prv = cur;
       cur = tmp;
@@ -123,29 +116,30 @@ export default function CursorGlow() {
         }
       }
 
-      /* render heightmap to RGBA pixels */
+      /* render heightmap — white crests, dark gray troughs */
       const d = img.data;
       for (let i = 0; i < cols * rows; i++) {
         const v = cur[i];
-        const a = Math.min(Math.abs(v) / 35, 1);
+        const a = Math.min(Math.abs(v) / 50, 1);
         const p = i * 4;
 
         if (v > 0) {
-          /* crest — bright sky-blue highlight */
-          d[p] = 80 + Math.floor(a * 120); // R
-          d[p + 1] = 200 + Math.floor(a * 55); // G
-          d[p + 2] = 255; // B
-          d[p + 3] = Math.floor(a * 150); // A
+          /* crest — white highlight */
+          const brightness = 180 + Math.floor(a * 75);
+          d[p] = brightness;
+          d[p + 1] = brightness;
+          d[p + 2] = brightness;
+          d[p + 3] = Math.floor(a * 100);
         } else {
-          /* trough — deep blue shadow */
-          d[p] = 10 + Math.floor(a * 30); // R
-          d[p + 1] = 60 + Math.floor(a * 100); // G
-          d[p + 2] = 180 + Math.floor(a * 75); // B
-          d[p + 3] = Math.floor(a * 120); // A
+          /* trough — dark gray */
+          const darkness = 40 + Math.floor(a * 30);
+          d[p] = darkness;
+          d[p + 1] = darkness;
+          d[p + 2] = darkness;
+          d[p + 3] = Math.floor(a * 80);
         }
       }
 
-      /* draw at sim resolution, then scale up with smoothing */
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       if (bCtx) {
         bCtx.putImageData(img, 0, 0);
@@ -169,7 +163,7 @@ export default function CursorGlow() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none"
-      style={{ zIndex: 9999 }}
+      style={{ zIndex: 50, mixBlendMode: "soft-light" }}
       aria-hidden="true"
     />
   );
