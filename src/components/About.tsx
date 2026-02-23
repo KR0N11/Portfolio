@@ -209,7 +209,7 @@ export default function About() {
         <BentoCard className="md:col-span-4 rounded-2xl" index={0}>
           <div className="aspect-[3/4] relative">
             <Image
-              src="/image/Profile_picture.jpg"
+              src="/image/me.jpg"
               alt="Ping Chun Lui"
               fill
               className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
@@ -278,7 +278,7 @@ export default function About() {
             <HobbyCard
               icon={<Mountain className="text-white" size={18} />}
               label="Bouldering"
-              imageSrc="/image/bouldering.jpg"
+              imageSrc="/image/Bouldering.png"
               imageAlt="Bouldering with friends"
             />
           </BentoCard>
