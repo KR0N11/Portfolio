@@ -115,7 +115,7 @@ export const projects = [
     tech: ["Firebase", "Xcode", "SwiftUI"],
     highlight:
       "Real-time state updates and end-to-end event management logic",
-    image: "/image/relay.png",
+    image: "/image/relay_1.png",
   },
   {
     title: "MOODIFY",
@@ -145,7 +145,7 @@ export const projects = [
     tech: ["Java", "Firebase"],
     highlight:
       "Integrated scheduling, booking, real-time messaging, and rating system",
-    image: null,
+    image: "/image/Tutorverse_1.png",
   },
 ];
 
