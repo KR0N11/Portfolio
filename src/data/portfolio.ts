@@ -116,6 +116,7 @@ export const projects = [
     highlight:
       "Real-time state updates and end-to-end event management logic",
     image: "/image/relay_1.png",
+    device: "phone" as const,
   },
   {
     title: "MOODIFY",
@@ -126,6 +127,7 @@ export const projects = [
     highlight:
       "Real-time analysis pipeline for sentiment and emotion insights using AWS Rekognition",
     image: "/image/modifiy.png",
+    device: "browser" as const,
   },
   {
     title: "Blitz",
@@ -136,6 +138,7 @@ export const projects = [
     highlight:
       "Secure biometric authentication and streamlined file management",
     image: "/image/Blitz.png",
+    device: "browser" as const,
   },
   {
     title: "TutorVerse",
@@ -146,6 +149,7 @@ export const projects = [
     highlight:
       "Integrated scheduling, booking, real-time messaging, and rating system",
     image: "/image/Tutorverse_1.png",
+    device: "phone" as const,
   },
 ];
 
