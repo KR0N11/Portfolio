@@ -115,7 +115,7 @@ export const projects = [
     tech: ["Firebase", "Xcode", "SwiftUI"],
     highlight:
       "Real-time state updates and end-to-end event management logic",
-    image: "/image/relay_1.png",
+    image: "/image/relay_2.png",
     device: "phone" as const,
   },
   {
@@ -126,7 +126,7 @@ export const projects = [
     tech: ["Agora", "AWS", "GPT-4", "React.js"],
     highlight:
       "Real-time analysis pipeline for sentiment and emotion insights using AWS Rekognition",
-    image: "/image/modifiy.png",
+    image: "/image/moodify_pic.jpg",
     device: "browser" as const,
   },
   {
@@ -137,7 +137,7 @@ export const projects = [
     tech: ["React", "Google Vision API"],
     highlight:
       "Secure biometric authentication and streamlined file management",
-    image: "/image/Blitz.png",
+    image: "/image/blitz_pic.png",
     device: "browser" as const,
   },
   {
