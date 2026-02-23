@@ -5,11 +5,11 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import SkillsMobile from "./SkillsMobile";
 
-const SkillsPlanets = dynamic(() => import("./SkillsPlanets"), {
+const SkillsGlobe = dynamic(() => import("./SkillsGlobe"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[500px] md:h-[600px] flex items-center justify-center text-text-muted">
-      Loading 3D scene...
+    <div className="w-full h-[480px] flex items-center justify-center text-text-muted">
+      Loading skills...
     </div>
   ),
 });
@@ -37,17 +37,20 @@ export default function Skills() {
         transition={{ duration: 0.6 }}
         className="mb-8 md:mb-12"
       >
+        <p className="text-primary text-sm font-semibold tracking-widest uppercase mb-2">
+          Tech Stack
+        </p>
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
           My <span className="text-gradient">Skills</span>
         </h2>
         <p className="text-text-secondary text-lg max-w-2xl">
           {isMobile
             ? "Tap a category to explore the skills within."
-            : "Click on a planet to explore the skills within each orbit. Drag to rotate the view."}
+            : "Drag the globe to explore. Filter by category."}
         </p>
       </motion.div>
 
-      {isMobile ? <SkillsMobile /> : <SkillsPlanets />}
+      {isMobile ? <SkillsMobile /> : <SkillsGlobe />}
     </section>
   );
 }
