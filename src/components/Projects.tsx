@@ -23,7 +23,11 @@ function PhoneFrame({
     <div className="flex justify-center py-6 px-4">
       <div className="relative w-[160px] sm:w-[180px] mx-auto">
         {/* Phone shell */}
-        <div className="relative rounded-[28px] border-[3px] border-[#2a2a2e] dark:border-[#3a3a3e] bg-black shadow-2xl overflow-hidden">
+        <motion.div
+          className="relative rounded-[28px] border-[3px] border-[#2a2a2e] dark:border-[#3a3a3e] bg-black shadow-2xl overflow-hidden"
+          whileHover={{ scale: 1.04, y: -6 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
           {/* Notch / Dynamic Island */}
           <div className="relative z-20 flex justify-center pt-2 pb-1 bg-black">
             <div className="w-20 h-[22px] bg-black rounded-full" />
@@ -34,17 +38,18 @@ function PhoneFrame({
               src={src}
               alt={alt}
               fill
-              className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
-              sizes="180px"
+              className="object-cover object-top transition-transform duration-700 group-hover:scale-110"
+              sizes="(max-width: 640px) 160px, 180px"
+              priority
             />
           </div>
           {/* Home indicator */}
           <div className="flex justify-center py-2 bg-black">
             <div className="w-24 h-1 bg-white/20 rounded-full" />
           </div>
-        </div>
+        </motion.div>
         {/* Reflection/glow effect */}
-        <div className="absolute -inset-3 bg-primary/5 rounded-[36px] blur-xl -z-10 group-hover:bg-primary/10 transition-colors duration-500" />
+        <div className="absolute -inset-4 bg-primary/10 rounded-[40px] blur-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </div>
     </div>
   );
@@ -59,8 +64,12 @@ function BrowserFrame({
   alt: string;
 }) {
   return (
-    <div className="px-4 pt-4 pb-2">
-      <div className="relative rounded-lg border border-border/50 overflow-hidden bg-[#1a1a1e] shadow-lg">
+    <div className="px-4 pt-4 pb-2 relative">
+      <motion.div
+        className="relative rounded-lg border border-border/50 overflow-hidden bg-[#1a1a1e] shadow-lg"
+        whileHover={{ scale: 1.02, y: -4 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      >
         {/* Browser toolbar */}
         <div className="flex items-center gap-2 px-3 py-2 bg-[#2a2a2e] dark:bg-[#1e1e22] border-b border-border/30">
           {/* Traffic lights */}
@@ -82,13 +91,14 @@ function BrowserFrame({
             src={src}
             alt={alt}
             fill
-            className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
+            className="object-cover object-top transition-transform duration-700 group-hover:scale-110"
             sizes="(max-width: 768px) 100vw, 50vw"
+            priority
           />
         </div>
-      </div>
+      </motion.div>
       {/* Glow */}
-      <div className="absolute -inset-2 bg-primary/5 rounded-2xl blur-xl -z-10 group-hover:bg-primary/10 transition-colors duration-500" />
+      <div className="absolute -inset-3 bg-primary/10 rounded-2xl blur-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
     </div>
   );
 }
@@ -149,7 +159,7 @@ function ProjectCard({
       >
         {/* Device mockup */}
         {project.image && (
-          <div className="relative overflow-hidden">
+          <div className="relative overflow-hidden bg-bg-secondary/30">
             {isPhone ? (
               <PhoneFrame src={project.image} alt={`${project.title} screenshot`} />
             ) : (
