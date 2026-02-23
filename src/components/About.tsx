@@ -23,7 +23,7 @@ const fadeInUp = {
   }),
 };
 
-/* ── Bento Card wrapper with tilt-on-hover ── */
+/* ── Bento Card wrapper ── */
 function BentoCard({
   children,
   className = "",
@@ -48,46 +48,73 @@ function BentoCard({
   );
 }
 
-/* ── Montreal Location Widget ── */
-function LocationWidget() {
+/* ── Montreal Map Widget ── */
+function MapWidget() {
   return (
-    <div className="p-6 h-full flex flex-col justify-between relative overflow-hidden">
-      {/* Animated dot grid background */}
-      <div className="absolute inset-0 opacity-[0.04]" aria-hidden="true">
-        <svg width="100%" height="100%">
-          <defs>
-            <pattern id="dot-grid" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-              <circle cx="2" cy="2" r="1" fill="currentColor" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#dot-grid)" />
-        </svg>
-      </div>
-
-      <div className="relative z-10">
-        <div className="flex items-center gap-2 mb-3">
+    <div className="h-full flex flex-col">
+      {/* Map header */}
+      <div className="p-4 pb-3">
+        <div className="flex items-center gap-2 mb-1">
           <div className="relative">
-            <MapPin className="text-primary" size={20} />
+            <MapPin className="text-primary" size={18} />
             <motion.div
-              className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 rounded-full"
+              className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-400 rounded-full"
               animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
           </div>
           <span className="text-primary text-sm font-semibold tracking-wide uppercase">
-            {"Montréal, QC"}
+            Montréal, QC
           </span>
         </div>
-        <p className="text-text-secondary text-sm leading-relaxed">
-          Based in Montréal — a city that runs on creativity, culture, and
-          cold winters that build resilience.
+        <p className="text-text-secondary text-xs leading-relaxed">
+          A city that runs on creativity, culture, and cold winters that build resilience.
         </p>
       </div>
 
-      <div className="relative z-10 mt-4 flex items-center gap-4 text-text-muted text-xs font-mono">
+      {/* Embedded map */}
+      <div className="flex-1 min-h-[180px] relative">
+        <iframe
+          title="Montreal location map"
+          src="https://www.openstreetmap.org/export/embed.html?bbox=-73.6517%2C45.4617%2C-73.4817%2C45.5417&layer=mapnik&marker=45.5017%2C-73.5673"
+          className="w-full h-full border-0 rounded-b-2xl"
+          style={{ minHeight: "180px", filter: "saturate(0.8) contrast(1.1)" }}
+          loading="lazy"
+        />
+        {/* Dark mode overlay for map */}
+        <div className="absolute inset-0 bg-bg/10 pointer-events-none rounded-b-2xl dark:mix-blend-multiply" />
+      </div>
+
+      {/* Coordinates footer */}
+      <div className="absolute bottom-2 left-4 right-4 flex items-center gap-4 text-text-muted text-[10px] font-mono bg-bg-card/80 backdrop-blur-sm px-2 py-1 rounded-md w-fit">
         <span>45.5017° N</span>
         <span className="text-primary">•</span>
         <span>73.5673° W</span>
+      </div>
+    </div>
+  );
+}
+
+/* ── Info Card (Education, Language) ── */
+function InfoCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="p-5 h-full flex items-start gap-3">
+      <div className="p-2 rounded-xl bg-primary/10 shrink-0 group-hover:bg-primary/20 transition-colors">
+        {icon}
+      </div>
+      <div>
+        <h3 className="font-semibold text-sm mb-1">{title}</h3>
+        <p className="text-text-secondary text-xs leading-relaxed">
+          {description}
+        </p>
       </div>
     </div>
   );
@@ -106,7 +133,7 @@ function HobbyCard({
   imageAlt: string;
 }) {
   return (
-    <div className="relative h-full min-h-[180px]">
+    <div className="relative h-full min-h-[160px]">
       {imageSrc && (
         <Image
           src={imageSrc}
@@ -116,9 +143,7 @@ function HobbyCard({
           sizes="(max-width: 768px) 100vw, 33vw"
         />
       )}
-      {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-      {/* Content */}
       <div className="absolute bottom-0 left-0 right-0 p-4 flex items-center gap-2">
         <div className="p-2 rounded-lg bg-white/10 backdrop-blur-sm">
           {icon}
@@ -129,35 +154,30 @@ function HobbyCard({
   );
 }
 
-const mindsetCards = [
-  {
-    icon: <Rocket className="text-primary" size={24} />,
-    title: "Bias Toward Action",
-    description:
-      "I believe in execution over deliberation. Products ship and problems get solved through decisive action and rapid iteration.",
-  },
-  {
-    icon: <Target className="text-primary" size={24} />,
-    title: "Ship & Iterate",
-    description:
-      "Complex problems don\u2019t need perfect plans \u2014 they need motion, feedback loops, and relentless improvement.",
-  },
-];
-
-const craftCards = [
-  {
-    icon: <Code2 className="text-primary" size={24} />,
-    title: "Full-Stack Builder",
-    description:
-      "From Java-based LLMs and cloud architectures to Swift mobile apps and React frontends.",
-  },
-  {
-    icon: <Zap className="text-primary" size={24} />,
-    title: "AI & Automation",
-    description:
-      "Leveraging AI to automate workflows, build intelligent agents, and unlock productivity at scale.",
-  },
-];
+/* ── Compact Mindset/Craft Card ── */
+function CompactCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="p-5 h-full flex items-start gap-3">
+      <div className="p-2 rounded-xl bg-primary/10 shrink-0 group-hover:bg-primary/20 transition-colors">
+        {icon}
+      </div>
+      <div>
+        <h4 className="font-semibold text-sm mb-1">{title}</h4>
+        <p className="text-text-secondary text-xs leading-relaxed">
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default function About() {
   return (
@@ -166,14 +186,15 @@ export default function About() {
       className="section-padding max-w-7xl mx-auto"
       aria-label="About me"
     >
+      {/* Section heading */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.6 }}
-        className="mb-16"
+        className="mb-12"
       >
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3">
           About <span className="text-gradient">Me</span>
         </h2>
         <p className="text-text-secondary text-lg max-w-2xl">
@@ -182,87 +203,73 @@ export default function About() {
         </p>
       </motion.div>
 
-      {/* ── Row 1: Profile photo | Location + About text ── */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
-        {/* Profile photo */}
-        <BentoCard className="md:col-span-2 rounded-2xl" index={0}>
+      {/* ── Row 1: Profile Photo | Map + Info ── */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4">
+        {/* Profile photo — 4 cols */}
+        <BentoCard className="md:col-span-4 rounded-2xl" index={0}>
           <div className="aspect-[3/4] relative">
             <Image
               src="/image/Profile_picture.jpg"
               alt="Ping Chun Lui"
               fill
               className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
-              sizes="(max-width: 768px) 100vw, 40vw"
+              sizes="(max-width: 768px) 100vw, 33vw"
               priority
             />
           </div>
         </BentoCard>
 
-        {/* Right column: Location + Info cards */}
-        <div className="md:col-span-3 flex flex-col gap-4">
-          {/* Location widget */}
-          <BentoCard className="rounded-2xl" index={1}>
-            <LocationWidget />
+        {/* Right side — 8 cols */}
+        <div className="md:col-span-8 grid grid-rows-[1fr_auto] gap-4">
+          {/* Montreal map widget */}
+          <BentoCard className="rounded-2xl relative" index={1}>
+            <MapWidget />
           </BentoCard>
 
-          {/* Education + Trilingual row */}
+          {/* Education + Language row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <BentoCard className="rounded-2xl p-6" index={2}>
-              <div className="flex items-start gap-3">
-                <div className="p-2.5 rounded-xl bg-primary/10 shrink-0 group-hover:bg-primary/20 transition-colors">
-                  <GraduationCap className="text-primary" size={22} />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Education</h3>
-                  <p className="text-text-secondary text-sm leading-relaxed">
-                    DEC in Computer Science (Co-op) at Coll&egrave;ge LaSalle, Montr&eacute;al. Expected graduation 2026.
-                  </p>
-                </div>
-              </div>
+            <BentoCard className="rounded-2xl" index={2}>
+              <InfoCard
+                icon={<GraduationCap className="text-primary" size={20} />}
+                title="Education"
+                description="DEC in Computer Science (Co-op) at Collège LaSalle, Montréal. Expected graduation 2026."
+              />
             </BentoCard>
-
-            <BentoCard className="rounded-2xl p-6" index={3}>
-              <div className="flex items-start gap-3">
-                <div className="p-2.5 rounded-xl bg-primary/10 shrink-0 group-hover:bg-primary/20 transition-colors">
-                  <Languages className="text-primary" size={22} />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Trilingual</h3>
-                  <p className="text-text-secondary text-sm leading-relaxed">
-                    Fluent in English, French, and Chinese — seamless collaboration across international teams.
-                  </p>
-                </div>
-              </div>
+            <BentoCard className="rounded-2xl" index={3}>
+              <InfoCard
+                icon={<Languages className="text-primary" size={20} />}
+                title="Trilingual"
+                description="Fluent in English, French, and Chinese — seamless collaboration across international teams."
+              />
             </BentoCard>
           </div>
         </div>
       </div>
 
-      {/* ── Row 2: Mindset | Hobbies | Craft ── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        {/* Mindset column */}
+      {/* ── Row 2: Mindset | Hobbies | Craft — 3 even columns ── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Mindset */}
         <div className="flex flex-col gap-4">
           <h3 className="text-xs font-semibold tracking-widest uppercase text-text-muted px-1">
             Mindset
           </h3>
-          {mindsetCards.map((card, i) => (
-            <BentoCard key={card.title} className="rounded-2xl p-6" index={4 + i}>
-              <div className="flex items-start gap-3">
-                <div className="p-2.5 rounded-xl bg-primary/10 shrink-0 group-hover:bg-primary/20 transition-colors">
-                  {card.icon}
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-1">{card.title}</h4>
-                  <p className="text-text-secondary text-sm leading-relaxed">
-                    {card.description}
-                  </p>
-                </div>
-              </div>
-            </BentoCard>
-          ))}
+          <BentoCard className="rounded-2xl" index={4}>
+            <CompactCard
+              icon={<Rocket className="text-primary" size={20} />}
+              title="Bias Toward Action"
+              description="I believe in execution over deliberation. Products ship through decisive action and rapid iteration."
+            />
+          </BentoCard>
+          <BentoCard className="rounded-2xl" index={5}>
+            <CompactCard
+              icon={<Target className="text-primary" size={20} />}
+              title="Ship & Iterate"
+              description="Complex problems don't need perfect plans — they need motion, feedback loops, and relentless improvement."
+            />
+          </BentoCard>
         </div>
 
-        {/* Hobbies column */}
+        {/* Hobbies */}
         <div className="flex flex-col gap-4">
           <h3 className="text-xs font-semibold tracking-widest uppercase text-text-muted px-1">
             Hobbies
@@ -284,26 +291,25 @@ export default function About() {
           </BentoCard>
         </div>
 
-        {/* Craft column */}
+        {/* Craft */}
         <div className="flex flex-col gap-4">
           <h3 className="text-xs font-semibold tracking-widest uppercase text-text-muted px-1">
             Craft
           </h3>
-          {craftCards.map((card, i) => (
-            <BentoCard key={card.title} className="rounded-2xl p-6" index={8 + i}>
-              <div className="flex items-start gap-3">
-                <div className="p-2.5 rounded-xl bg-primary/10 shrink-0 group-hover:bg-primary/20 transition-colors">
-                  {card.icon}
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-1">{card.title}</h4>
-                  <p className="text-text-secondary text-sm leading-relaxed">
-                    {card.description}
-                  </p>
-                </div>
-              </div>
-            </BentoCard>
-          ))}
+          <BentoCard className="rounded-2xl" index={8}>
+            <CompactCard
+              icon={<Code2 className="text-primary" size={20} />}
+              title="Full-Stack Builder"
+              description="From Java-based LLMs and cloud architectures to Swift mobile apps and React frontends."
+            />
+          </BentoCard>
+          <BentoCard className="rounded-2xl" index={9}>
+            <CompactCard
+              icon={<Zap className="text-primary" size={20} />}
+              title="AI & Automation"
+              description="Leveraging AI to automate workflows, build intelligent agents, and unlock productivity at scale."
+            />
+          </BentoCard>
         </div>
       </div>
     </section>

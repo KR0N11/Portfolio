@@ -2,10 +2,16 @@
 
 import { useEffect, useRef } from "react";
 
+interface TrailPoint {
+  x: number;
+  y: number;
+  age: number;
+}
+
 export default function CursorGlow() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouse = useRef({ x: -9999, y: -9999 });
-  const smooth = useRef({ x: -9999, y: -9999 });
+  const trail = useRef<TrailPoint[]>([]);
 
   useEffect(() => {
     if (
@@ -34,118 +40,100 @@ export default function CursorGlow() {
     };
     window.addEventListener("mousemove", onMove);
 
-    /* ── wave grid settings ── */
-    const cols = 70;
-    const rows = 40;
-    const spacing = 22;
-    let time = 0;
+    const maxTrailLength = 50;
+    const maxAge = 1.2; // seconds before a point fully fades
+    let lastTime = performance.now();
     let raf = 0;
 
-    const loop = () => {
-      time += 0.012;
+    const loop = (now: number) => {
+      const dt = (now - lastTime) / 1000;
+      lastTime = now;
+
       const w = canvas.width;
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
 
-      /* smooth cursor follow */
-      smooth.current.x += (mouse.current.x - smooth.current.x) * 0.08;
-      smooth.current.y += (mouse.current.y - smooth.current.y) * 0.08;
+      const mx = mouse.current.x;
+      const my = mouse.current.y;
 
-      const mx = smooth.current.x;
-      const my = smooth.current.y;
-
-      /* center the grid on cursor */
-      const gridW = cols * spacing;
-      const gridH = rows * spacing;
-      const offsetX = mx - gridW / 2;
-      const offsetY = my - gridH / 2;
-
-      /* compute 3D points projected to 2D */
-      const points: { sx: number; sy: number; z: number }[][] = [];
-
-      for (let r = 0; r < rows; r++) {
-        points[r] = [];
-        for (let c = 0; c < cols; c++) {
-          const wx = offsetX + c * spacing;
-          const wy = offsetY + r * spacing;
-
-          /* distance from cursor */
-          const dx = wx - mx;
-          const dy = wy - my;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          /* wave height: ripples emanating from cursor */
-          const wave1 = Math.sin(dist * 0.025 - time * 3) * 35;
-          const wave2 = Math.sin(dist * 0.04 + time * 2) * 15;
-          const falloff = Math.max(0, 1 - dist / 350);
-          const z = (wave1 + wave2) * falloff * falloff;
-
-          /* isometric-ish 3D projection */
-          const tiltX = 0.65;
-          const tiltScale = 0.5;
-          const sx = wx;
-          const sy = wy - z * tiltScale + (r - rows / 2) * spacing * (tiltX - 1) * 0.3;
-
-          points[r][c] = { sx, sy, z };
+      // Add new point to the trail
+      if (mx > -9000 && my > -9000) {
+        const last = trail.current[trail.current.length - 1];
+        // Only add point if cursor moved enough
+        if (!last || Math.hypot(mx - last.x, my - last.y) > 3) {
+          trail.current.push({ x: mx, y: my, age: 0 });
         }
       }
 
-      /* draw wireframe lines */
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const p = points[r][c];
+      // Age and prune trail points
+      for (let i = trail.current.length - 1; i >= 0; i--) {
+        trail.current[i].age += dt;
+        if (trail.current[i].age > maxAge) {
+          trail.current.splice(i, 1);
+        }
+      }
 
-          /* fade by distance from cursor */
-          const dx = p.sx - mx;
-          const dy = p.sy - my;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          const alpha = Math.max(0, 1 - dist / 320) * 0.35;
+      // Keep trail length manageable
+      while (trail.current.length > maxTrailLength) {
+        trail.current.shift();
+      }
+
+      const pts = trail.current;
+
+      // Draw the trail as connected circles with fading opacity
+      if (pts.length > 1) {
+        // Draw trail line
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        for (let i = 1; i < pts.length; i++) {
+          const p = pts[i];
+          const prev = pts[i - 1];
+          const progress = 1 - p.age / maxAge; // 1 = newest, 0 = about to fade
+          const alpha = progress * 0.5;
+          const size = progress * 4 + 1;
 
           if (alpha < 0.01) continue;
 
-          /* color based on height */
-          const hue = 200 + p.z * 0.5;
-          const lightness = 55 + p.z * 0.3;
-          const color = `hsla(${hue}, 80%, ${lightness}%, ${alpha})`;
+          // Gradient from cyan to blue along the trail
+          const hue = 190 + (1 - progress) * 30;
+          const lightness = 60 + progress * 10;
 
-          ctx.strokeStyle = color;
-          ctx.lineWidth = 0.6;
+          ctx.strokeStyle = `hsla(${hue}, 85%, ${lightness}%, ${alpha})`;
+          ctx.lineWidth = size;
+          ctx.beginPath();
+          ctx.moveTo(prev.x, prev.y);
+          ctx.lineTo(p.x, p.y);
+          ctx.stroke();
+        }
 
-          /* horizontal line to right neighbor */
-          if (c < cols - 1) {
-            const pn = points[r][c + 1];
-            const dn = Math.sqrt((pn.sx - mx) ** 2 + (pn.sy - my) ** 2);
-            const an = Math.max(0, 1 - dn / 320) * 0.35;
-            if (an > 0.01) {
-              ctx.beginPath();
-              ctx.moveTo(p.sx, p.sy);
-              ctx.lineTo(pn.sx, pn.sy);
-              ctx.stroke();
-            }
-          }
+        // Draw glowing dots along the trail
+        for (let i = 0; i < pts.length; i++) {
+          const p = pts[i];
+          const progress = 1 - p.age / maxAge;
+          const alpha = progress * 0.6;
+          const radius = progress * 3 + 0.5;
 
-          /* vertical line to bottom neighbor */
-          if (r < rows - 1) {
-            const pn = points[r + 1][c];
-            const dn = Math.sqrt((pn.sx - mx) ** 2 + (pn.sy - my) ** 2);
-            const an = Math.max(0, 1 - dn / 320) * 0.35;
-            if (an > 0.01) {
-              ctx.beginPath();
-              ctx.moveTo(p.sx, p.sy);
-              ctx.lineTo(pn.sx, pn.sy);
-              ctx.stroke();
-            }
-          }
+          if (alpha < 0.01) continue;
+
+          const hue = 190 + (1 - progress) * 30;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${hue}, 90%, 70%, ${alpha})`;
+          ctx.fill();
         }
       }
 
-      /* subtle glow under cursor */
-      const grd = ctx.createRadialGradient(mx, my, 0, mx, my, 200);
-      grd.addColorStop(0, "rgba(56,189,248,0.06)");
-      grd.addColorStop(0.5, "rgba(56,189,248,0.02)");
-      grd.addColorStop(1, "transparent");
-      ctx.fillStyle = grd;
-      ctx.fillRect(mx - 200, my - 200, 400, 400);
+      // Glow around current cursor position
+      if (mx > -9000 && my > -9000) {
+        const grd = ctx.createRadialGradient(mx, my, 0, mx, my, 120);
+        grd.addColorStop(0, "rgba(56,189,248,0.08)");
+        grd.addColorStop(0.4, "rgba(56,189,248,0.03)");
+        grd.addColorStop(1, "transparent");
+        ctx.fillStyle = grd;
+        ctx.fillRect(mx - 120, my - 120, 240, 240);
+      }
 
       raf = requestAnimationFrame(loop);
     };

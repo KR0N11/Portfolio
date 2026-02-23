@@ -11,6 +11,88 @@ import {
 import { ExternalLink } from "lucide-react";
 import { projects } from "@/data/portfolio";
 
+/* ── iPhone Frame ── */
+function PhoneFrame({
+  src,
+  alt,
+}: {
+  src: string;
+  alt: string;
+}) {
+  return (
+    <div className="flex justify-center py-6 px-4">
+      <div className="relative w-[160px] sm:w-[180px] mx-auto">
+        {/* Phone shell */}
+        <div className="relative rounded-[28px] border-[3px] border-[#2a2a2e] dark:border-[#3a3a3e] bg-black shadow-2xl overflow-hidden">
+          {/* Notch / Dynamic Island */}
+          <div className="relative z-20 flex justify-center pt-2 pb-1 bg-black">
+            <div className="w-20 h-[22px] bg-black rounded-full" />
+          </div>
+          {/* Screen */}
+          <div className="relative aspect-[9/19] overflow-hidden bg-[#1a1a1e]">
+            <Image
+              src={src}
+              alt={alt}
+              fill
+              className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
+              sizes="180px"
+            />
+          </div>
+          {/* Home indicator */}
+          <div className="flex justify-center py-2 bg-black">
+            <div className="w-24 h-1 bg-white/20 rounded-full" />
+          </div>
+        </div>
+        {/* Reflection/glow effect */}
+        <div className="absolute -inset-3 bg-primary/5 rounded-[36px] blur-xl -z-10 group-hover:bg-primary/10 transition-colors duration-500" />
+      </div>
+    </div>
+  );
+}
+
+/* ── Browser Frame ── */
+function BrowserFrame({
+  src,
+  alt,
+}: {
+  src: string;
+  alt: string;
+}) {
+  return (
+    <div className="px-4 pt-4 pb-2">
+      <div className="relative rounded-lg border border-border/50 overflow-hidden bg-[#1a1a1e] shadow-lg">
+        {/* Browser toolbar */}
+        <div className="flex items-center gap-2 px-3 py-2 bg-[#2a2a2e] dark:bg-[#1e1e22] border-b border-border/30">
+          {/* Traffic lights */}
+          <div className="flex gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+          </div>
+          {/* URL bar */}
+          <div className="flex-1 mx-2">
+            <div className="bg-[#1a1a1e] dark:bg-[#141416] rounded-md px-3 py-1 text-[10px] text-text-muted font-mono truncate">
+              localhost:3000
+            </div>
+          </div>
+        </div>
+        {/* Screen content */}
+        <div className="relative aspect-[16/10] overflow-hidden">
+          <Image
+            src={src}
+            alt={alt}
+            fill
+            className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        </div>
+      </div>
+      {/* Glow */}
+      <div className="absolute -inset-2 bg-primary/5 rounded-2xl blur-xl -z-10 group-hover:bg-primary/10 transition-colors duration-500" />
+    </div>
+  );
+}
+
 function ProjectCard({
   project,
   index,
@@ -45,6 +127,8 @@ function ProjectCard({
     y.set(0);
   };
 
+  const isPhone = project.device === "phone";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -63,17 +147,14 @@ function ProjectCard({
         }}
         className="glass-card overflow-hidden h-full hover:border-primary/50 transition-all duration-300 group cursor-default"
       >
-        {/* Project screenshot */}
+        {/* Device mockup */}
         {project.image && (
-          <div className="relative w-full h-44 overflow-hidden">
-            <Image
-              src={project.image}
-              alt={`${project.title} screenshot`}
-              fill
-              className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-bg-card via-transparent to-transparent" />
+          <div className="relative overflow-hidden">
+            {isPhone ? (
+              <PhoneFrame src={project.image} alt={`${project.title} screenshot`} />
+            ) : (
+              <BrowserFrame src={project.image} alt={`${project.title} screenshot`} />
+            )}
           </div>
         )}
 
