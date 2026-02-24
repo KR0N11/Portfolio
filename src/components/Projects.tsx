@@ -19,6 +19,109 @@ const PROJECT_IMAGES: Record<string, string> = {
   TutorVerse: "/image/Tutorverse_1.png",
 };
 
+// Mobile apps use phone frame, web apps use browser frame
+const PROJECT_FRAME: Record<string, "phone" | "browser"> = {
+  RELAY: "phone",
+  MOODIFY: "browser",
+  Blitz: "browser",
+  TutorVerse: "phone",
+};
+
+/* ── Phone Frame Mockup ── */
+function PhoneFrame({
+  image,
+  alt,
+  color,
+}: {
+  image: string;
+  alt: string;
+  color: string;
+}) {
+  return (
+    <div className="flex items-center justify-center py-8 px-4">
+      <div
+        className="relative w-[160px] h-[320px] md:w-[180px] md:h-[360px] rounded-[2rem] border-[3px] overflow-hidden shadow-2xl"
+        style={{
+          borderColor: `${color}30`,
+          boxShadow: `0 20px 60px ${color}15, 0 0 0 1px ${color}10`,
+        }}
+      >
+        {/* Phone notch */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-[#0a0a0a] rounded-b-2xl z-10 border-b border-x"
+          style={{ borderColor: `${color}20` }}
+        />
+
+        {/* Screen content */}
+        <div className="relative w-full h-full bg-[#111]">
+          <Image
+            src={image}
+            alt={alt}
+            fill
+            className="object-cover object-top"
+            sizes="200px"
+          />
+        </div>
+
+        {/* Home indicator */}
+        <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-white/20 z-10" />
+      </div>
+    </div>
+  );
+}
+
+/* ── Browser Frame Mockup ── */
+function BrowserFrame({
+  image,
+  alt,
+  color,
+}: {
+  image: string;
+  alt: string;
+  color: string;
+}) {
+  return (
+    <div className="flex items-center justify-center py-6 px-4">
+      <div
+        className="relative w-full max-w-[320px] rounded-xl border overflow-hidden shadow-2xl"
+        style={{
+          borderColor: `${color}20`,
+          boxShadow: `0 20px 60px ${color}10, 0 0 0 1px ${color}08`,
+        }}
+      >
+        {/* Browser toolbar */}
+        <div
+          className="flex items-center gap-2 px-3 py-2 border-b"
+          style={{
+            backgroundColor: `${color}08`,
+            borderColor: `${color}15`,
+          }}
+        >
+          <div className="flex gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+            <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+            <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+          </div>
+          <div
+            className="flex-1 h-5 rounded-md mx-2"
+            style={{ backgroundColor: `${color}08` }}
+          />
+        </div>
+
+        {/* Page content */}
+        <div className="relative w-full aspect-[16/10] bg-[#111]">
+          <Image
+            src={image}
+            alt={alt}
+            fill
+            className="object-cover object-top"
+            sizes="(max-width: 768px) 100vw, 400px"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ProjectCard({
   project,
   index,
@@ -28,7 +131,7 @@ function ProjectCard({
 }) {
   const color = PROJECT_COLORS[project.title] || "#38bdf8";
   const image = PROJECT_IMAGES[project.title];
-  const num = String(index + 1).padStart(2, "0");
+  const frame = PROJECT_FRAME[project.title] || "browser";
 
   return (
     <motion.div
@@ -39,24 +142,19 @@ function ProjectCard({
       className="group"
     >
       <div className="rounded-2xl bg-white/[0.03] border border-white/[0.06] overflow-hidden hover:bg-white/[0.05] transition-all duration-500 h-full flex flex-col">
-        {/* Screenshot */}
+        {/* Device Frame */}
         {image && (
-          <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/[0.06]">
-            <Image
-              src={image}
-              alt={`${project.title} screenshot`}
-              fill
-              className="object-cover object-top group-hover:scale-[1.03] transition-transform duration-700"
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-60" />
-            {/* Number overlay */}
-            <span
-              className="absolute bottom-3 left-4 text-3xl font-bold font-mono"
-              style={{ color: `${color}50` }}
-            >
-              {num}
-            </span>
+          <div
+            className="relative overflow-hidden border-b border-white/[0.06]"
+            style={{
+              background: `radial-gradient(ellipse at center, ${color}08 0%, transparent 70%)`,
+            }}
+          >
+            {frame === "phone" ? (
+              <PhoneFrame image={image} alt={`${project.title} screenshot`} color={color} />
+            ) : (
+              <BrowserFrame image={image} alt={`${project.title} screenshot`} color={color} />
+            )}
           </div>
         )}
 
