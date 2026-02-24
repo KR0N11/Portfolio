@@ -46,67 +46,74 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Top horizontal navbar */}
+      {/* Floating glass pill navbar - centered */}
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/[0.06]"
-            : "bg-transparent"
-        }`}
+        className={`fixed top-5 left-1/2 -translate-x-1/2 z-50 transition-all duration-500`}
         role="navigation"
         aria-label="Main navigation"
       >
-        <div className="max-w-6xl mx-auto px-6 md:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <motion.button
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="text-lg font-semibold text-white/90 hover:text-white transition-colors cursor-pointer tracking-tight"
-              whileHover={{ scale: 1.02 }}
-            >
-              pcl.
-            </motion.button>
+        <div
+          className={`flex items-center gap-1 px-2 py-1.5 rounded-full border transition-all duration-500 ${
+            scrolled
+              ? "bg-white/[0.08] backdrop-blur-2xl border-white/[0.12] shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+              : "bg-white/[0.04] backdrop-blur-xl border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.2)]"
+          }`}
+        >
+          {/* Logo */}
+          <motion.button
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="text-sm font-semibold text-white/80 hover:text-white transition-colors cursor-pointer tracking-tight px-3 py-1.5"
+            whileHover={{ scale: 1.02 }}
+          >
+            pcl.
+          </motion.button>
 
-            {/* Desktop nav links */}
-            <div className="hidden md:flex items-center gap-1">
-              {navLinks.map((link) => {
-                const isActive = activeSection === link.href.replace("#", "");
-                return (
-                  <button
-                    key={link.href}
-                    onClick={() => handleNavClick(link.href)}
-                    className={`relative px-4 py-2 text-[13px] font-medium rounded-full transition-all duration-300 cursor-pointer ${
-                      isActive
-                        ? "text-white"
-                        : "text-white/40 hover:text-white/70"
-                    }`}
-                  >
-                    {isActive && (
-                      <motion.div
-                        layoutId="navPill"
-                        className="absolute inset-0 rounded-full bg-white/[0.08] border border-white/[0.06]"
-                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                      />
-                    )}
-                    <span className="relative z-10">{link.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+          {/* Separator */}
+          <div className="w-px h-4 bg-white/[0.1] hidden md:block" />
 
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 text-white/60 hover:text-white transition-colors cursor-pointer"
-              aria-label="Toggle menu"
-              aria-expanded={mobileOpen}
-            >
-              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
+          {/* Desktop nav links */}
+          <div className="hidden md:flex items-center gap-0.5">
+            {navLinks.map((link) => {
+              const isActive = activeSection === link.href.replace("#", "");
+              return (
+                <button
+                  key={link.href}
+                  onClick={() => handleNavClick(link.href)}
+                  className={`relative px-3.5 py-1.5 text-[13px] font-medium rounded-full transition-all duration-300 cursor-pointer ${
+                    isActive
+                      ? "text-white"
+                      : "text-white/40 hover:text-white/70"
+                  }`}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="navPill"
+                      className="absolute inset-0 rounded-full bg-white/[0.12] border border-white/[0.08]"
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                  <span className="relative z-10">{link.label}</span>
+                </button>
+              );
+            })}
           </div>
+
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden p-2 text-white/60 hover:text-white transition-colors cursor-pointer"
+            aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
         </div>
       </motion.nav>
 
@@ -117,7 +124,7 @@ export default function Navbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-[#0a0a0a]/95 backdrop-blur-2xl pt-20 px-8 md:hidden"
+            className="fixed inset-0 z-40 bg-[#0a0a0a]/95 backdrop-blur-2xl pt-24 px-8 md:hidden"
           >
             <div className="flex flex-col gap-2 mt-8">
               {navLinks.map((link, i) => (

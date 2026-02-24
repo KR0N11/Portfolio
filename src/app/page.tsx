@@ -7,6 +7,7 @@ import About from "@/components/About";
 import Skills from "@/components/Skills";
 import Experience from "@/components/Experience";
 import Projects from "@/components/Projects";
+import Achievements from "@/components/Achievements";
 import Footer from "@/components/Footer";
 
 const CursorGlow = dynamic(() => import("@/components/CursorGlow"), {
@@ -24,6 +25,7 @@ export default function Home() {
         <Skills />
         <Experience />
         <Projects />
+        <Achievements />
         <Footer />
       </main>
     </>

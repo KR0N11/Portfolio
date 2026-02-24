@@ -1,16 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin,
   GraduationCap,
-  Trophy,
   Dumbbell,
   Mountain,
   CookingPot,
   Code2,
   Globe,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 const fadeIn = {
@@ -26,8 +28,8 @@ const fadeIn = {
   }),
 };
 
-/* ── Name / Intro Widget ── */
-function NameWidget() {
+/* ── Profile / Intro Widget with Photo ── */
+function ProfileWidget() {
   return (
     <motion.div
       custom={0}
@@ -35,55 +37,71 @@ function NameWidget() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-8 md:col-span-2 md:row-span-2 flex flex-col justify-between relative overflow-hidden group hover:bg-white/[0.05] transition-colors duration-500"
+      className="rounded-2xl bg-white/[0.03] border border-white/[0.06] md:col-span-2 md:row-span-2 relative overflow-hidden group hover:bg-white/[0.05] transition-colors duration-500"
     >
-      <div className="relative z-10">
-        <motion.p
-          className="text-white/30 text-sm font-mono mb-6 tracking-wider"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          &mdash; hello, i&apos;m
-        </motion.p>
+      <div className="flex flex-col h-full">
+        {/* Profile picture */}
+        <div className="relative w-full aspect-[4/3] overflow-hidden">
+          <Image
+            src="/image/me.jpg"
+            alt="Ping Chun Lui"
+            fill
+            className="object-cover object-top group-hover:scale-[1.03] transition-transform duration-700"
+            sizes="(max-width: 768px) 100vw, 50vw"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/20 to-transparent" />
+        </div>
 
-        <motion.h3
-          className="text-4xl md:text-5xl font-bold text-white mb-3 tracking-tight"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-        >
-          Ping Chun Lui
-        </motion.h3>
-        <motion.p
-          className="text-white/40 text-base leading-relaxed max-w-sm"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5, duration: 0.6 }}
-        >
-          Software developer who ships products, solves hard problems, and
-          moves fast with purpose.
-        </motion.p>
+        {/* Info overlay at bottom */}
+        <div className="p-6 -mt-16 relative z-10">
+          <motion.p
+            className="text-white/30 text-sm font-mono mb-2 tracking-wider"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            &mdash; hello, i&apos;m
+          </motion.p>
+
+          <motion.h3
+            className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+          >
+            Ping Chun Lui
+          </motion.h3>
+          <motion.p
+            className="text-white/40 text-sm leading-relaxed max-w-sm"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+          >
+            Software developer who ships products, solves hard problems, and
+            moves fast with purpose.
+          </motion.p>
+
+          <motion.div
+            className="flex items-center gap-2 mt-4"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 4, repeat: Infinity }}
+          >
+            <div className="w-2 h-2 rounded-full bg-emerald-400" />
+            <span className="text-xs text-white/30 font-mono">
+              Open to opportunities
+            </span>
+          </motion.div>
+        </div>
       </div>
-
-      <motion.div
-        className="relative z-10 flex items-center gap-2 mt-8"
-        animate={{ opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 4, repeat: Infinity }}
-      >
-        <div className="w-2 h-2 rounded-full bg-emerald-400" />
-        <span className="text-xs text-white/30 font-mono">
-          Open to opportunities
-        </span>
-      </motion.div>
     </motion.div>
   );
 }
 
-/* ── Map Widget — Montreal ── */
+/* ── Map Widget — Montreal with Coordinates + Scanner Line ── */
 function MapWidget() {
   return (
     <motion.div
@@ -96,7 +114,11 @@ function MapWidget() {
     >
       {/* Montreal stylized map */}
       <div className="absolute inset-0 opacity-30 group-hover:opacity-40 transition-opacity duration-500">
-        <svg viewBox="0 0 300 300" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
+        <svg
+          viewBox="0 0 300 300"
+          className="w-full h-full"
+          preserveAspectRatio="xMidYMid slice"
+        >
           {/* St. Lawrence River */}
           <path
             d="M0,200 Q50,180 100,195 Q150,210 200,190 Q250,170 300,185"
@@ -111,28 +133,19 @@ function MapWidget() {
             strokeWidth="8"
           />
 
-          {/* Major streets - grid pattern (downtown) */}
-          {/* Horizontal streets */}
+          {/* Street grid */}
           <line x1="40" y1="60" x2="260" y2="60" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
           <line x1="30" y1="85" x2="270" y2="85" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
           <line x1="50" y1="110" x2="250" y2="110" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
           <line x1="40" y1="135" x2="260" y2="135" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
           <line x1="60" y1="160" x2="240" y2="160" stroke="rgba(255,255,255,0.07)" strokeWidth="0.8" />
-
-          {/* Vertical streets */}
           <line x1="80" y1="40" x2="80" y2="185" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
           <line x1="120" y1="30" x2="120" y2="190" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
           <line x1="150" y1="35" x2="150" y2="185" stroke="rgba(255,255,255,0.1)" strokeWidth="1.2" />
           <line x1="180" y1="40" x2="180" y2="188" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
           <line x1="220" y1="45" x2="220" y2="180" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
 
-          {/* Ste-Catherine (main street, thicker) */}
-          <line x1="30" y1="110" x2="270" y2="110" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
-
-          {/* Boulevard St-Laurent (diagonal) */}
-          <line x1="150" y1="30" x2="160" y2="190" stroke="rgba(255,255,255,0.1)" strokeWidth="1.2" />
-
-          {/* Mont Royal outline */}
+          {/* Mont Royal */}
           <path
             d="M100,55 Q130,20 170,30 Q200,38 210,60"
             fill="rgba(80,160,80,0.08)"
@@ -150,10 +163,20 @@ function MapWidget() {
         </svg>
       </div>
 
-      {/* Pulsing location marker */}
+      {/* Vertical scanner line */}
       <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%]"
-      >
+        className="absolute top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-cyan-400/40 to-transparent"
+        animate={{ left: ["20%", "80%", "20%"] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute top-0 bottom-0 w-8 bg-gradient-to-r from-cyan-400/5 to-transparent"
+        animate={{ left: ["20%", "80%", "20%"] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* Pulsing location marker */}
+      <motion.div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%]">
         <div className="relative">
           <motion.div
             className="absolute -inset-3 rounded-full bg-white/10"
@@ -173,18 +196,72 @@ function MapWidget() {
         </div>
         <h3 className="text-xl font-semibold text-white">Montr&eacute;al</h3>
         <p className="text-white/30 text-xs">QC, Canada</p>
+        {/* Coordinates */}
+        <div className="flex items-center gap-3 mt-2">
+          <span className="text-[10px] font-mono text-cyan-400/60">
+            45.5017&deg; N
+          </span>
+          <span className="text-[10px] font-mono text-cyan-400/60">
+            73.5673&deg; W
+          </span>
+        </div>
       </div>
     </motion.div>
   );
 }
 
-/* ── Mindset / Hobbies Widget ── */
-function MindsetWidget() {
+/* ── Hobbies Carousel Widget ── */
+function HobbiesCarousel() {
   const hobbies = [
-    { icon: Dumbbell, text: "Gym", color: "rgb(239, 68, 68)" },
-    { icon: Mountain, text: "Bouldering", color: "rgb(34, 197, 94)" },
-    { icon: CookingPot, text: "Cooking", color: "rgb(251, 191, 36)" },
+    {
+      icon: Dumbbell,
+      title: "Gym",
+      description: "Strength training & discipline",
+      color: "rgb(239, 68, 68)",
+      gradient: "from-red-500/20 to-red-900/10",
+    },
+    {
+      icon: Mountain,
+      title: "Bouldering",
+      description: "Problem solving on walls",
+      color: "rgb(34, 197, 94)",
+      gradient: "from-green-500/20 to-green-900/10",
+      image: "/image/Bouldering.png",
+    },
+    {
+      icon: CookingPot,
+      title: "Cooking",
+      description: "Creating from scratch",
+      color: "rgb(251, 191, 36)",
+      gradient: "from-yellow-500/20 to-yellow-900/10",
+    },
   ];
+
+  const [current, setCurrent] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startAutoScroll = () => {
+    intervalRef.current = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % hobbies.length);
+    }, 4000);
+  };
+
+  useEffect(() => {
+    startAutoScroll();
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const goTo = (idx: number) => {
+    setCurrent(idx);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    startAutoScroll();
+  };
+
+  const prev = () => goTo((current - 1 + hobbies.length) % hobbies.length);
+  const next = () => goTo((current + 1) % hobbies.length);
 
   return (
     <motion.div
@@ -193,49 +270,98 @@ function MindsetWidget() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      className="rounded-2xl bg-white/[0.03] border border-white/[0.06] md:col-span-2 group hover:bg-white/[0.05] transition-colors duration-500 overflow-hidden"
+      className="rounded-2xl bg-white/[0.03] border border-white/[0.06] md:col-span-2 relative overflow-hidden group hover:bg-white/[0.05] transition-colors duration-500"
     >
-      <div className="flex flex-col sm:flex-row">
-        {/* Bouldering photo */}
-        <div className="relative w-full sm:w-2/5 aspect-[4/3] sm:aspect-auto overflow-hidden">
-          <Image
-            src="/image/Bouldering.png"
-            alt="Bouldering with friends"
-            fill
-            className="object-cover group-hover:scale-[1.03] transition-transform duration-700"
-            sizes="(max-width: 640px) 100vw, 40vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0a0a0a]/30 hidden sm:block" />
+      <div className="p-6">
+        <p className="text-xs text-white/25 font-mono uppercase tracking-widest mb-4">
+          When I&apos;m not coding
+        </p>
+
+        {/* Carousel container */}
+        <div className="relative h-[200px] overflow-hidden rounded-xl">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ duration: 0.4 }}
+              className="absolute inset-0"
+            >
+              <div
+                className={`h-full rounded-xl bg-gradient-to-br ${hobbies[current].gradient} border border-white/[0.06] flex items-center justify-between p-6 relative overflow-hidden`}
+              >
+                {/* Background image if exists */}
+                {hobbies[current].image && (
+                  <div className="absolute inset-0">
+                    <Image
+                      src={hobbies[current].image!}
+                      alt={hobbies[current].title}
+                      fill
+                      className="object-cover opacity-30"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/80 to-[#0a0a0a]/40" />
+                  </div>
+                )}
+
+                <div className="relative z-10">
+                  <div
+                    className="p-3 rounded-xl inline-block mb-3"
+                    style={{ backgroundColor: `${hobbies[current].color}15` }}
+                  >
+                    {(() => {
+                      const Icon = hobbies[current].icon;
+                      return <Icon size={28} style={{ color: hobbies[current].color }} />;
+                    })()}
+                  </div>
+                  <h4 className="text-2xl font-bold text-white mb-1">
+                    {hobbies[current].title}
+                  </h4>
+                  <p className="text-white/40 text-sm">
+                    {hobbies[current].description}
+                  </p>
+                </div>
+
+                {/* Large faded icon in background */}
+                <div className="absolute right-6 bottom-4 opacity-[0.06]">
+                  {(() => {
+                    const Icon = hobbies[current].icon;
+                    return <Icon size={120} style={{ color: hobbies[current].color }} />;
+                  })()}
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Nav arrows */}
+          <button
+            onClick={prev}
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-20 p-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/[0.1] text-white/50 hover:text-white hover:bg-black/60 transition-all cursor-pointer"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <button
+            onClick={next}
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-20 p-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/[0.1] text-white/50 hover:text-white hover:bg-black/60 transition-all cursor-pointer"
+          >
+            <ChevronRight size={16} />
+          </button>
         </div>
 
-        {/* Hobbies list */}
-        <div className="p-6 flex-1 flex flex-col justify-center">
-          <p className="text-xs text-white/25 font-mono uppercase tracking-widest mb-5">
-            When I&apos;m not coding
-          </p>
-
-          <div className="flex flex-col gap-4">
-            {hobbies.map((h, i) => (
-              <motion.div
-                key={h.text}
-                className="flex items-center gap-4"
-                initial={{ opacity: 0, x: -15 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3 + i * 0.12, duration: 0.5 }}
-              >
-                <div
-                  className="p-2.5 rounded-xl transition-colors duration-300"
-                  style={{ backgroundColor: `${h.color}15` }}
-                >
-                  <h.icon size={20} style={{ color: h.color }} />
-                </div>
-                <span className="text-white/60 text-sm font-medium">
-                  {h.text}
-                </span>
-              </motion.div>
-            ))}
-          </div>
+        {/* Dots indicator */}
+        <div className="flex items-center justify-center gap-2 mt-4">
+          {hobbies.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              className={`rounded-full transition-all duration-300 cursor-pointer ${
+                i === current
+                  ? "w-6 h-1.5 bg-white/40"
+                  : "w-1.5 h-1.5 bg-white/15 hover:bg-white/25"
+              }`}
+            />
+          ))}
         </div>
       </div>
     </motion.div>
@@ -314,42 +440,6 @@ function EducationWidget() {
   );
 }
 
-/* ── Certifications Widget ── */
-function CertsWidget() {
-  return (
-    <motion.div
-      custom={5}
-      variants={fadeIn}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
-      className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-6 group hover:bg-white/[0.05] transition-colors duration-500"
-    >
-      <Trophy className="text-white/30 mb-4" size={20} />
-      <div className="space-y-2.5">
-        {[
-          { cert: "PL-900", name: "Power Platform" },
-          { cert: "PL-400", name: "Platform Developer" },
-        ].map((c, i) => (
-          <motion.div
-            key={c.cert}
-            className="flex items-center gap-2"
-            initial={{ opacity: 0, x: -8 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 + i * 0.12 }}
-          >
-            <span className="text-amber-400/70 font-mono text-[11px] font-semibold">
-              {c.cert}
-            </span>
-            <span className="text-white/30 text-xs">{c.name}</span>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
 /* ── Languages Widget ── */
 function LanguagesWidget() {
   const langs = [
@@ -415,17 +505,16 @@ export default function About() {
 
       {/* Bento Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-        {/* Row 1: Name (2cols, 2rows) | Map | Craft */}
-        <NameWidget />
+        {/* Row 1: Profile with photo (2cols, 2rows) | Map | Craft */}
+        <ProfileWidget />
         <MapWidget />
         <CraftWidget />
 
-        {/* Row 2: Mindset/Hobbies (2 cols) */}
-        <MindsetWidget />
+        {/* Row 2: Hobbies Carousel (2 cols) */}
+        <HobbiesCarousel />
 
-        {/* Row 3: Education | Certs | Languages */}
+        {/* Row 3: Education | Languages */}
         <EducationWidget />
-        <CertsWidget />
         <LanguagesWidget />
       </div>
     </section>
