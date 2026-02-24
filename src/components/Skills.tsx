@@ -8,8 +8,8 @@ import SkillsMobile from "./SkillsMobile";
 const SkillsGlobe = dynamic(() => import("./SkillsGlobe"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[480px] flex items-center justify-center text-text-muted">
-      Loading skills...
+    <div className="w-full h-[480px] flex items-center justify-center text-white/20">
+      Loading...
     </div>
   ),
 });
@@ -27,7 +27,7 @@ export default function Skills() {
   return (
     <section
       id="skills"
-      className="section-padding max-w-7xl mx-auto"
+      className="section-padding max-w-5xl mx-auto"
       aria-label="Skills"
     >
       <motion.div
@@ -37,15 +37,15 @@ export default function Skills() {
         transition={{ duration: 0.6 }}
         className="mb-8 md:mb-12"
       >
-        <p className="text-primary text-sm font-semibold tracking-widest uppercase mb-2">
-          Tech Stack
+        <p className="text-white/20 text-sm font-mono tracking-wider mb-3">
+          02 &mdash; skills
         </p>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-          My <span className="text-gradient">Skills</span>
+        <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-3">
+          Tech Stack
         </h2>
-        <p className="text-text-secondary text-lg max-w-2xl">
+        <p className="text-white/30 text-sm max-w-lg">
           {isMobile
-            ? "Tap a category to explore the skills within."
+            ? "Tap a category to explore."
             : "Drag the globe to explore. Filter by category."}
         </p>
       </motion.div>
