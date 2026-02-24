@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { skillCategories } from "@/data/portfolio";
 
-/* ── flatten all skills with category metadata ── */
 interface GlobeItem {
   name: string;
   icon: string | null;
@@ -22,7 +21,6 @@ function flatten(): GlobeItem[] {
   return out;
 }
 
-/* ── fibonacci sphere for even point distribution ── */
 function fibSphere(count: number, index: number) {
   const phi = Math.acos(1 - (2 * (index + 0.5)) / count);
   const theta = Math.PI * (1 + Math.sqrt(5)) * index;
@@ -33,7 +31,6 @@ function fibSphere(count: number, index: number) {
   };
 }
 
-/* ── wireframe globe canvas ── */
 function useGlobeCanvas(
   canvasRef: React.RefObject<HTMLCanvasElement | null>,
   rotation: React.RefObject<number>,
@@ -65,7 +62,7 @@ function useGlobeCanvas(
       ctx.clearRect(0, 0, w, h);
 
       /* outer circle */
-      ctx.strokeStyle = "rgba(56,189,248,0.18)";
+      ctx.strokeStyle = "rgba(255,255,255,0.06)";
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
@@ -76,7 +73,7 @@ function useGlobeCanvas(
         const latRad = (lat * Math.PI) / 180;
         const y = cy - r * Math.sin(latRad);
         const lr = r * Math.cos(latRad);
-        ctx.strokeStyle = "rgba(56,189,248,0.08)";
+        ctx.strokeStyle = "rgba(255,255,255,0.03)";
         ctx.lineWidth = 0.6;
         ctx.beginPath();
         ctx.ellipse(cx, y, lr, lr * 0.25, 0, 0, Math.PI * 2);
@@ -87,8 +84,8 @@ function useGlobeCanvas(
       for (let i = 0; i < 8; i++) {
         const angle = (i / 8) * Math.PI + rot;
         const lw = r * Math.sin(angle);
-        const alpha = Math.abs(Math.sin(angle)) * 0.14 + 0.04;
-        ctx.strokeStyle = `rgba(56,189,248,${alpha})`;
+        const alpha = Math.abs(Math.sin(angle)) * 0.06 + 0.02;
+        ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
         ctx.lineWidth = 0.6;
         ctx.beginPath();
         ctx.ellipse(cx, cy, Math.abs(lw), r, 0, 0, Math.PI * 2);
@@ -106,7 +103,6 @@ function useGlobeCanvas(
   }, [canvasRef, rotation]);
 }
 
-/* ── icon with CDN image + text fallback ── */
 function TechIcon({
   item,
   style,
@@ -130,13 +126,12 @@ function TechIcon({
           width: 44,
           height: 44,
           background: highlighted
-            ? `${item.color}22`
-            : "rgba(255,255,255,0.05)",
-          border: `1.5px solid ${highlighted ? item.color : "rgba(255,255,255,0.1)"}`,
+            ? `${item.color}18`
+            : "rgba(255,255,255,0.03)",
+          border: `1px solid ${highlighted ? `${item.color}40` : "rgba(255,255,255,0.06)"}`,
           boxShadow: highlighted
-            ? `0 0 16px ${item.color}44, 0 0 4px ${item.color}22`
+            ? `0 0 12px ${item.color}22`
             : "none",
-          filter: highlighted ? "none" : "brightness(0.8)",
         }}
       >
         {item.icon && !imgError ? (
@@ -162,7 +157,7 @@ function TechIcon({
       <span
         className="text-[10px] font-medium whitespace-nowrap transition-colors duration-300"
         style={{
-          color: highlighted ? "#f1f5f9" : "rgba(148,163,184,0.7)",
+          color: highlighted ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.25)",
         }}
       >
         {item.name}
@@ -171,7 +166,6 @@ function TechIcon({
   );
 }
 
-/* ── main globe component ── */
 export default function SkillsGlobe() {
   const items = useMemo(flatten, []);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -186,7 +180,6 @@ export default function SkillsGlobe() {
 
   useGlobeCanvas(canvasRef, rotation);
 
-  /* animation loop: update icon positions */
   useEffect(() => {
     let raf = 0;
     const update = () => {
@@ -209,7 +202,6 @@ export default function SkillsGlobe() {
 
       const next = items.map((_, i) => {
         const pt = fibSphere(items.length, i);
-        /* apply Y rotation */
         const cosR = Math.cos(rot);
         const sinR = Math.sin(rot);
         const rx = pt.x * cosR - pt.z * sinR;
@@ -232,7 +224,6 @@ export default function SkillsGlobe() {
     return () => cancelAnimationFrame(raf);
   }, [items]);
 
-  /* drag interaction */
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
       dragStart.current = { x: e.clientX, rot: rotation.current };
@@ -261,19 +252,18 @@ export default function SkillsGlobe() {
 
   return (
     <div className="w-full">
-      {/* category filter */}
       <div className="flex flex-wrap justify-center gap-2 mb-6">
         <button
           onClick={() => setActiveCategory(null)}
           className="px-3 py-1.5 text-xs rounded-full border transition-all duration-300 cursor-pointer"
           style={{
             borderColor: !activeCategory
-              ? "var(--color-primary)"
-              : "var(--color-border)",
+              ? "rgba(255,255,255,0.3)"
+              : "rgba(255,255,255,0.06)",
             background: !activeCategory
-              ? "var(--color-primary)"
+              ? "rgba(255,255,255,0.1)"
               : "transparent",
-            color: !activeCategory ? "#fff" : "var(--color-text-secondary)",
+            color: !activeCategory ? "#fff" : "rgba(255,255,255,0.3)",
           }}
         >
           All
@@ -287,13 +277,13 @@ export default function SkillsGlobe() {
             className="px-3 py-1.5 text-xs rounded-full border transition-all duration-300 cursor-pointer"
             style={{
               borderColor:
-                activeCategory === cat.name ? cat.color : "var(--color-border)",
+                activeCategory === cat.name ? `${cat.color}60` : "rgba(255,255,255,0.06)",
               background:
-                activeCategory === cat.name ? cat.color : "transparent",
+                activeCategory === cat.name ? `${cat.color}20` : "transparent",
               color:
                 activeCategory === cat.name
-                  ? "#fff"
-                  : "var(--color-text-secondary)",
+                  ? cat.color
+                  : "rgba(255,255,255,0.3)",
             }}
           >
             {cat.name}
@@ -301,7 +291,6 @@ export default function SkillsGlobe() {
         ))}
       </div>
 
-      {/* globe container */}
       <div
         ref={containerRef}
         className="relative w-full h-[420px] sm:h-[480px] md:h-[540px] select-none"
@@ -323,7 +312,7 @@ export default function SkillsGlobe() {
             !activeCategory || item.category === activeCategory;
           const visible = pos.z > -0.6;
           const opacity = visible
-            ? Math.min(1, (pos.z + 0.6) * 1.2) * (highlighted ? 1 : 0.25)
+            ? Math.min(1, (pos.z + 0.6) * 1.2) * (highlighted ? 1 : 0.2)
             : 0;
 
           return (

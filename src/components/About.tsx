@@ -5,21 +5,21 @@ import {
   MapPin,
   GraduationCap,
   Trophy,
-  Beaker,
-  Rocket,
+  Dumbbell,
+  Mountain,
+  CookingPot,
   Code2,
-  User,
+  Globe,
 } from "lucide-react";
 
 const fadeIn = {
-  hidden: { opacity: 0, y: 20, scale: 0.95 },
+  hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    scale: 1,
     transition: {
-      delay: i * 0.08,
-      duration: 0.5,
+      delay: i * 0.1,
+      duration: 0.6,
       ease: [0.23, 1, 0.32, 1] as [number, number, number, number],
     },
   }),
@@ -34,60 +34,55 @@ function NameWidget() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      whileHover={{ scale: 1.02 }}
-      className="glass-card p-6 md:p-8 md:col-span-2 md:row-span-2 hover:border-primary/50 transition-all duration-300 flex flex-col justify-between relative overflow-hidden group"
+      className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-8 md:col-span-2 md:row-span-2 flex flex-col justify-between relative overflow-hidden group hover:bg-white/[0.05] transition-colors duration-500"
     >
-      {/* Animated gradient orb */}
-      <motion.div
-        className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-primary/5 blur-3xl"
-        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
-        transition={{ duration: 6, repeat: Infinity }}
-      />
-
       <div className="relative z-10">
-        {/* Profile avatar placeholder */}
-        <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-          <User className="text-primary" size={36} />
-        </div>
+        <motion.p
+          className="text-white/30 text-sm font-mono mb-6 tracking-wider"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2 }}
+        >
+          &mdash; hello, i&apos;m
+        </motion.p>
 
         <motion.h3
-          className="text-3xl md:text-4xl font-bold mb-2"
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          className="text-4xl md:text-5xl font-bold text-white mb-3 tracking-tight"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3, duration: 0.6 }}
         >
-          Ping Chun{" "}
-          <span className="text-gradient">Lui</span>
+          Ping Chun Lui
         </motion.h3>
         <motion.p
-          className="text-text-secondary text-sm md:text-base leading-relaxed max-w-sm"
+          className="text-white/40 text-base leading-relaxed max-w-sm"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.5, duration: 0.6 }}
         >
-          A software developer who ships products, solves hard problems, and
+          Software developer who ships products, solves hard problems, and
           moves fast with purpose.
         </motion.p>
       </div>
 
-      {/* Status badge */}
       <motion.div
-        className="relative z-10 flex items-center gap-2 mt-6"
-        animate={{ opacity: [0.7, 1, 0.7] }}
-        transition={{ duration: 3, repeat: Infinity }}
+        className="relative z-10 flex items-center gap-2 mt-8"
+        animate={{ opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 4, repeat: Infinity }}
       >
-        <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-        <span className="text-xs text-text-muted font-mono">
-          Available for opportunities
+        <div className="w-2 h-2 rounded-full bg-emerald-400" />
+        <span className="text-xs text-white/30 font-mono">
+          Open to opportunities
         </span>
       </motion.div>
     </motion.div>
   );
 }
 
-/* ── Map Widget ── */
+/* ── Map Widget — Montreal ── */
 function MapWidget() {
   return (
     <motion.div
@@ -96,91 +91,98 @@ function MapWidget() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      whileHover={{ scale: 1.02 }}
-      className="glass-card p-5 hover:border-primary/50 transition-all duration-300 relative overflow-hidden group"
+      className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-6 relative overflow-hidden group hover:bg-white/[0.05] transition-colors duration-500"
     >
-      {/* Stylized map background */}
-      <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity">
-        <svg viewBox="0 0 200 200" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
-          {/* Grid lines representing streets */}
-          {Array.from({ length: 12 }).map((_, i) => (
-            <line
-              key={`h-${i}`}
-              x1="0"
-              y1={i * 18}
-              x2="200"
-              y2={i * 18}
-              stroke="var(--color-primary)"
-              strokeWidth="0.3"
-              opacity="0.4"
-            />
-          ))}
-          {Array.from({ length: 12 }).map((_, i) => (
-            <line
-              key={`v-${i}`}
-              x1={i * 18}
-              y1="0"
-              x2={i * 18}
-              y2="200"
-              stroke="var(--color-primary)"
-              strokeWidth="0.3"
-              opacity="0.4"
-            />
-          ))}
-          {/* Diagonal avenues */}
-          <line x1="20" y1="0" x2="180" y2="200" stroke="var(--color-primary)" strokeWidth="0.5" opacity="0.3" />
-          <line x1="60" y1="0" x2="200" y2="160" stroke="var(--color-primary)" strokeWidth="0.5" opacity="0.3" />
-          {/* River curve */}
+      {/* Montreal stylized map */}
+      <div className="absolute inset-0 opacity-30 group-hover:opacity-40 transition-opacity duration-500">
+        <svg viewBox="0 0 300 300" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
+          {/* St. Lawrence River */}
           <path
-            d="M0,120 Q60,100 100,130 Q140,160 200,140"
+            d="M0,200 Q50,180 100,195 Q150,210 200,190 Q250,170 300,185"
             fill="none"
-            stroke="var(--color-primary)"
-            strokeWidth="1.5"
-            opacity="0.25"
+            stroke="rgba(100,160,255,0.3)"
+            strokeWidth="12"
           />
-          {/* Key blocks */}
-          <rect x="60" y="40" width="30" height="20" rx="3" fill="var(--color-primary)" opacity="0.08" />
-          <rect x="100" y="70" width="40" height="25" rx="3" fill="var(--color-primary)" opacity="0.08" />
-          <rect x="40" y="80" width="25" height="30" rx="3" fill="var(--color-primary)" opacity="0.06" />
+          <path
+            d="M0,215 Q60,195 120,210 Q180,225 240,200 Q270,188 300,195"
+            fill="none"
+            stroke="rgba(100,160,255,0.15)"
+            strokeWidth="8"
+          />
+
+          {/* Major streets - grid pattern (downtown) */}
+          {/* Horizontal streets */}
+          <line x1="40" y1="60" x2="260" y2="60" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+          <line x1="30" y1="85" x2="270" y2="85" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
+          <line x1="50" y1="110" x2="250" y2="110" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+          <line x1="40" y1="135" x2="260" y2="135" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
+          <line x1="60" y1="160" x2="240" y2="160" stroke="rgba(255,255,255,0.07)" strokeWidth="0.8" />
+
+          {/* Vertical streets */}
+          <line x1="80" y1="40" x2="80" y2="185" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
+          <line x1="120" y1="30" x2="120" y2="190" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+          <line x1="150" y1="35" x2="150" y2="185" stroke="rgba(255,255,255,0.1)" strokeWidth="1.2" />
+          <line x1="180" y1="40" x2="180" y2="188" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+          <line x1="220" y1="45" x2="220" y2="180" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
+
+          {/* Ste-Catherine (main street, thicker) */}
+          <line x1="30" y1="110" x2="270" y2="110" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+
+          {/* Boulevard St-Laurent (diagonal) */}
+          <line x1="150" y1="30" x2="160" y2="190" stroke="rgba(255,255,255,0.1)" strokeWidth="1.2" />
+
+          {/* Mont Royal outline */}
+          <path
+            d="M100,55 Q130,20 170,30 Q200,38 210,60"
+            fill="rgba(80,160,80,0.08)"
+            stroke="rgba(80,160,80,0.15)"
+            strokeWidth="1"
+          />
+
+          {/* Building blocks */}
+          <rect x="85" y="65" width="30" height="15" rx="2" fill="rgba(255,255,255,0.04)" />
+          <rect x="125" y="88" width="20" height="18" rx="2" fill="rgba(255,255,255,0.05)" />
+          <rect x="155" y="65" width="22" height="20" rx="2" fill="rgba(255,255,255,0.04)" />
+          <rect x="185" y="115" width="28" height="16" rx="2" fill="rgba(255,255,255,0.04)" />
+          <rect x="95" y="138" width="18" height="18" rx="2" fill="rgba(255,255,255,0.03)" />
+          <rect x="125" y="115" width="22" height="16" rx="2" fill="rgba(255,255,255,0.05)" />
         </svg>
       </div>
 
       {/* Pulsing location marker */}
       <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%]"
       >
         <div className="relative">
-          <div className="w-4 h-4 rounded-full bg-primary" />
           <motion.div
-            className="absolute inset-0 rounded-full bg-primary"
-            animate={{ scale: [1, 3], opacity: [0.4, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute -inset-3 rounded-full bg-white/10"
+            animate={{ scale: [1, 2.5], opacity: [0.3, 0] }}
+            transition={{ duration: 2.5, repeat: Infinity }}
           />
+          <div className="w-3 h-3 rounded-full bg-white border-2 border-white/50" />
         </div>
       </motion.div>
 
-      <div className="relative z-10 flex flex-col justify-end h-full min-h-[140px]">
+      <div className="relative z-10 flex flex-col justify-end h-full min-h-[160px]">
         <div className="flex items-center gap-2 mb-1">
-          <MapPin className="text-primary" size={16} />
-          <span className="text-xs text-text-muted font-mono uppercase tracking-wider">
+          <MapPin className="text-white/50" size={14} />
+          <span className="text-[11px] text-white/30 font-mono uppercase tracking-widest">
             Location
           </span>
         </div>
-        <h3 className="text-lg font-bold">Montreal</h3>
-        <p className="text-text-secondary text-xs">Quebec, Canada</p>
+        <h3 className="text-xl font-semibold text-white">Montr&eacute;al</h3>
+        <p className="text-white/30 text-xs">QC, Canada</p>
       </div>
     </motion.div>
   );
 }
 
-/* ── Mindset Widget ── */
+/* ── Mindset / Hobbies Widget ── */
 function MindsetWidget() {
-  const principles = [
-    { text: "Ship first, iterate fast", delay: 0 },
-    { text: "Execution over deliberation", delay: 0.15 },
-    { text: "Motion creates opportunity", delay: 0.3 },
+  const hobbies = [
+    { icon: Dumbbell, text: "Gym", color: "rgb(239, 68, 68)" },
+    { icon: Mountain, text: "Bouldering", color: "rgb(34, 197, 94)" },
+    { icon: CookingPot, text: "Cooking", color: "rgb(251, 191, 36)" },
   ];
 
   return (
@@ -190,33 +192,30 @@ function MindsetWidget() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      whileHover={{ scale: 1.02 }}
-      className="glass-card p-6 hover:border-primary/50 transition-all duration-300 group md:col-span-2"
+      className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-6 md:col-span-2 group hover:bg-white/[0.05] transition-colors duration-500"
     >
-      <div className="flex items-center gap-3 mb-5">
-        <div className="p-2.5 rounded-xl bg-amber-500/10 group-hover:bg-amber-500/20 transition-colors">
-          <Rocket className="text-amber-400" size={22} />
-        </div>
-        <h3 className="text-lg font-bold">Mindset</h3>
-      </div>
+      <p className="text-xs text-white/25 font-mono uppercase tracking-widest mb-5">
+        When I&apos;m not coding
+      </p>
 
-      <div className="space-y-3">
-        {principles.map((p, i) => (
+      <div className="flex flex-col gap-4">
+        {hobbies.map((h, i) => (
           <motion.div
-            key={i}
-            className="flex items-center gap-3 group/item"
-            initial={{ opacity: 0, x: -10 }}
+            key={h.text}
+            className="flex items-center gap-4"
+            initial={{ opacity: 0, x: -15 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.4 + p.delay, duration: 0.5 }}
+            transition={{ delay: 0.3 + i * 0.12, duration: 0.5 }}
           >
-            <motion.div
-              className="w-1.5 h-1.5 rounded-full bg-amber-400"
-              animate={{ scale: [1, 1.5, 1] }}
-              transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
-            />
-            <span className="text-sm text-text-secondary group-hover/item:text-text transition-colors">
-              {p.text}
+            <div
+              className="p-2.5 rounded-xl transition-colors duration-300"
+              style={{ backgroundColor: `${h.color}15` }}
+            >
+              <h.icon size={20} style={{ color: h.color }} />
+            </div>
+            <span className="text-white/60 text-sm font-medium">
+              {h.text}
             </span>
           </motion.div>
         ))}
@@ -243,14 +242,13 @@ function CraftWidget() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      whileHover={{ scale: 1.02 }}
-      className="glass-card p-6 hover:border-primary/50 transition-all duration-300 group"
+      className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-6 group hover:bg-white/[0.05] transition-colors duration-500"
     >
       <div className="flex items-center gap-3 mb-5">
-        <div className="p-2.5 rounded-xl bg-violet-500/10 group-hover:bg-violet-500/20 transition-colors">
-          <Code2 className="text-violet-400" size={22} />
-        </div>
-        <h3 className="text-lg font-bold">Craft</h3>
+        <Code2 className="text-white/40" size={18} />
+        <p className="text-xs text-white/25 font-mono uppercase tracking-widest">
+          Stack
+        </p>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -259,27 +257,19 @@ function CraftWidget() {
             key={s.name}
             className="px-3 py-1.5 text-xs rounded-lg border font-mono"
             style={{
-              borderColor: `${s.color}30`,
-              color: s.color,
+              borderColor: `${s.color}25`,
+              color: `${s.color}cc`,
               backgroundColor: `${s.color}08`,
             }}
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.5 + i * 0.08 }}
-            whileHover={{
-              scale: 1.1,
-              backgroundColor: `${s.color}20`,
-            }}
+            transition={{ delay: 0.4 + i * 0.06 }}
           >
             {s.name}
           </motion.span>
         ))}
       </div>
-
-      <p className="text-text-muted text-xs mt-4 font-mono">
-        Full-stack across the entire stack
-      </p>
     </motion.div>
   );
 }
@@ -293,38 +283,21 @@ function EducationWidget() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      whileHover={{ scale: 1.02 }}
-      className="glass-card p-6 hover:border-primary/50 transition-all duration-300 group"
+      className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-6 group hover:bg-white/[0.05] transition-colors duration-500"
     >
-      <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 rounded-xl bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors">
-          <GraduationCap className="text-blue-400" size={22} />
-        </div>
-        <h3 className="text-lg font-bold">Education</h3>
-      </div>
-
-      <div>
-        <p className="text-sm font-semibold">Coll&egrave;ge LaSalle</p>
-        <p className="text-xs text-text-secondary mt-1">
-          DEC in Computer Science (Co-op)
-        </p>
-        <motion.div
-          className="mt-3 flex items-center gap-2"
-          animate={{ opacity: [0.6, 1, 0.6] }}
-          transition={{ duration: 3, repeat: Infinity }}
-        >
-          <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-          <span className="text-xs text-text-muted font-mono">
-            Graduating 2026
-          </span>
-        </motion.div>
+      <GraduationCap className="text-white/30 mb-4" size={20} />
+      <p className="text-sm font-medium text-white/80">Coll&egrave;ge LaSalle</p>
+      <p className="text-xs text-white/30 mt-1">DEC in Computer Science</p>
+      <div className="flex items-center gap-2 mt-4">
+        <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
+        <span className="text-[11px] text-white/25 font-mono">2026</span>
       </div>
     </motion.div>
   );
 }
 
-/* ── Science Club Widget ── */
-function ScienceWidget() {
+/* ── Certifications Widget ── */
+function CertsWidget() {
   return (
     <motion.div
       custom={5}
@@ -332,76 +305,26 @@ function ScienceWidget() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      whileHover={{ scale: 1.02 }}
-      className="glass-card p-6 hover:border-primary/50 transition-all duration-300 group"
+      className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-6 group hover:bg-white/[0.05] transition-colors duration-500"
     >
-      <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 rounded-xl bg-emerald-500/10 group-hover:bg-emerald-500/20 transition-colors">
-          <Beaker className="text-emerald-400" size={22} />
-        </div>
-        <h3 className="text-lg font-bold">AI & Automation</h3>
-      </div>
-
-      <p className="text-sm text-text-secondary leading-relaxed">
-        Building intelligent agents, leveraging LLMs, and automating
-        workflows at scale.
-      </p>
-
-      {/* Animated pulse dots */}
-      <div className="flex gap-1.5 mt-4">
-        {[0, 1, 2, 3, 4].map((i) => (
-          <motion.div
-            key={i}
-            className="w-1.5 h-4 rounded-full bg-emerald-400"
-            animate={{ scaleY: [0.3, 1, 0.3] }}
-            transition={{
-              duration: 1.2,
-              repeat: Infinity,
-              delay: i * 0.15,
-            }}
-          />
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
-/* ── Competitions Widget ── */
-function CompetitionsWidget() {
-  return (
-    <motion.div
-      custom={6}
-      variants={fadeIn}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
-      whileHover={{ scale: 1.02 }}
-      className="glass-card p-6 hover:border-primary/50 transition-all duration-300 group"
-    >
-      <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 rounded-xl bg-yellow-500/10 group-hover:bg-yellow-500/20 transition-colors">
-          <Trophy className="text-yellow-400" size={22} />
-        </div>
-        <h3 className="text-lg font-bold">Certifications</h3>
-      </div>
-
-      <div className="space-y-2">
+      <Trophy className="text-white/30 mb-4" size={20} />
+      <div className="space-y-2.5">
         {[
-          { cert: "PL-900", name: "Power Platform Fundamentals" },
-          { cert: "PL-400", name: "Power Platform Developer" },
+          { cert: "PL-900", name: "Power Platform" },
+          { cert: "PL-400", name: "Platform Developer" },
         ].map((c, i) => (
           <motion.div
             key={c.cert}
-            className="flex items-center gap-2 text-sm"
-            initial={{ opacity: 0, x: -10 }}
+            className="flex items-center gap-2"
+            initial={{ opacity: 0, x: -8 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.5 + i * 0.15 }}
+            transition={{ delay: 0.4 + i * 0.12 }}
           >
-            <span className="text-yellow-400 font-mono text-xs font-bold">
+            <span className="text-amber-400/70 font-mono text-[11px] font-semibold">
               {c.cert}
             </span>
-            <span className="text-text-secondary text-xs">{c.name}</span>
+            <span className="text-white/30 text-xs">{c.name}</span>
           </motion.div>
         ))}
       </div>
@@ -409,39 +332,37 @@ function CompetitionsWidget() {
   );
 }
 
-/* ── Trilingual Widget ── */
-function TrilingualWidget() {
+/* ── Languages Widget ── */
+function LanguagesWidget() {
   const langs = [
-    { lang: "English", level: "Native", width: "100%" },
-    { lang: "French", level: "Fluent", width: "90%" },
-    { lang: "Chinese", level: "Fluent", width: "90%" },
+    { lang: "EN", level: 100 },
+    { lang: "FR", level: 90 },
+    { lang: "ZH", level: 90 },
   ];
 
   return (
     <motion.div
-      custom={7}
+      custom={6}
       variants={fadeIn}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      whileHover={{ scale: 1.02 }}
-      className="glass-card p-6 hover:border-primary/50 transition-all duration-300 group md:col-span-2"
+      className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-6 group hover:bg-white/[0.05] transition-colors duration-500"
     >
-      <h3 className="text-lg font-bold mb-4">Languages</h3>
+      <Globe className="text-white/30 mb-4" size={20} />
       <div className="space-y-3">
         {langs.map((l, i) => (
-          <div key={l.lang}>
-            <div className="flex justify-between text-xs mb-1">
-              <span className="text-text-secondary">{l.lang}</span>
-              <span className="text-text-muted font-mono">{l.level}</span>
-            </div>
-            <div className="h-1.5 rounded-full bg-primary/10 overflow-hidden">
+          <div key={l.lang} className="flex items-center gap-3">
+            <span className="text-[11px] font-mono text-white/30 w-6">
+              {l.lang}
+            </span>
+            <div className="flex-1 h-1 rounded-full bg-white/[0.06] overflow-hidden">
               <motion.div
-                className="h-full rounded-full bg-primary/60"
+                className="h-full rounded-full bg-white/20"
                 initial={{ width: 0 }}
-                whileInView={{ width: l.width }}
+                whileInView={{ width: `${l.level}%` }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.5 + i * 0.15, duration: 0.8, ease: "easeOut" }}
+                transition={{ delay: 0.5 + i * 0.12, duration: 0.8 }}
               />
             </div>
           </div>
@@ -456,7 +377,7 @@ export default function About() {
   return (
     <section
       id="about"
-      className="section-padding max-w-7xl mx-auto"
+      className="section-padding max-w-5xl mx-auto"
       aria-label="About me"
     >
       <motion.div
@@ -464,31 +385,30 @@ export default function About() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.6 }}
-        className="mb-16"
+        className="mb-12"
       >
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-          About <span className="text-gradient">Me</span>
-        </h2>
-        <p className="text-text-secondary text-lg max-w-2xl">
-          A snapshot of who I am, where I&apos;m from, and what drives me.
+        <p className="text-white/20 text-sm font-mono tracking-wider mb-3">
+          01 &mdash; about
         </p>
+        <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+          Get to know me
+        </h2>
       </motion.div>
 
-      {/* Bento Widget Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-5">
-        {/* Row 1: Name (2 cols, 2 rows) | Map (1 col) | Craft (1 col) */}
+      {/* Bento Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+        {/* Row 1: Name (2cols, 2rows) | Map | Craft */}
         <NameWidget />
         <MapWidget />
         <CraftWidget />
 
-        {/* Row 2: (Name continues) | Mindset (2 cols) */}
+        {/* Row 2: Mindset/Hobbies (2 cols) */}
         <MindsetWidget />
 
-        {/* Row 3: Education | Science | Competitions | Languages */}
+        {/* Row 3: Education | Certs | Languages */}
         <EducationWidget />
-        <ScienceWidget />
-        <CompetitionsWidget />
-        <TrilingualWidget />
+        <CertsWidget />
+        <LanguagesWidget />
       </div>
     </section>
   );

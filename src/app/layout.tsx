@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { ThemeProvider } from "@/context/ThemeContext";
 import "./globals.css";
 
 const inter = localFont({
@@ -38,7 +37,7 @@ const inter = localFont({
 export const metadata: Metadata = {
   title: "Ping Chun Lui | Software Developer",
   description:
-    "Portfolio of Ping Chun Lui — Software Developer specializing in AI, cloud, and full-stack development. Bias toward action, shipping products, and solving complex problems.",
+    "Portfolio of Ping Chun Lui — Software Developer specializing in AI, cloud, and full-stack development.",
   keywords: [
     "Software Developer",
     "AI Developer",
@@ -58,12 +57,6 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Ping Chun Lui | Software Developer",
-    description:
-      "Portfolio showcasing software development, AI agents, cloud solutions, and full-stack projects.",
-  },
 };
 
 export default function RootLayout({
@@ -72,9 +65,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} antialiased`}>
-        <ThemeProvider>{children}</ThemeProvider>
+        {children}
       </body>
     </html>
   );
