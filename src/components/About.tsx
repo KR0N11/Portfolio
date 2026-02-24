@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   MapPin,
@@ -192,33 +193,50 @@ function MindsetWidget() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      className="rounded-2xl bg-white/[0.03] border border-white/[0.06] p-6 md:col-span-2 group hover:bg-white/[0.05] transition-colors duration-500"
+      className="rounded-2xl bg-white/[0.03] border border-white/[0.06] md:col-span-2 group hover:bg-white/[0.05] transition-colors duration-500 overflow-hidden"
     >
-      <p className="text-xs text-white/25 font-mono uppercase tracking-widest mb-5">
-        When I&apos;m not coding
-      </p>
+      <div className="flex flex-col sm:flex-row">
+        {/* Bouldering photo */}
+        <div className="relative w-full sm:w-2/5 aspect-[4/3] sm:aspect-auto overflow-hidden">
+          <Image
+            src="/image/Bouldering.png"
+            alt="Bouldering with friends"
+            fill
+            className="object-cover group-hover:scale-[1.03] transition-transform duration-700"
+            sizes="(max-width: 640px) 100vw, 40vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0a0a0a]/30 hidden sm:block" />
+        </div>
 
-      <div className="flex flex-col gap-4">
-        {hobbies.map((h, i) => (
-          <motion.div
-            key={h.text}
-            className="flex items-center gap-4"
-            initial={{ opacity: 0, x: -15 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 + i * 0.12, duration: 0.5 }}
-          >
-            <div
-              className="p-2.5 rounded-xl transition-colors duration-300"
-              style={{ backgroundColor: `${h.color}15` }}
-            >
-              <h.icon size={20} style={{ color: h.color }} />
-            </div>
-            <span className="text-white/60 text-sm font-medium">
-              {h.text}
-            </span>
-          </motion.div>
-        ))}
+        {/* Hobbies list */}
+        <div className="p-6 flex-1 flex flex-col justify-center">
+          <p className="text-xs text-white/25 font-mono uppercase tracking-widest mb-5">
+            When I&apos;m not coding
+          </p>
+
+          <div className="flex flex-col gap-4">
+            {hobbies.map((h, i) => (
+              <motion.div
+                key={h.text}
+                className="flex items-center gap-4"
+                initial={{ opacity: 0, x: -15 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 + i * 0.12, duration: 0.5 }}
+              >
+                <div
+                  className="p-2.5 rounded-xl transition-colors duration-300"
+                  style={{ backgroundColor: `${h.color}15` }}
+                >
+                  <h.icon size={20} style={{ color: h.color }} />
+                </div>
+                <span className="text-white/60 text-sm font-medium">
+                  {h.text}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </div>
     </motion.div>
   );
