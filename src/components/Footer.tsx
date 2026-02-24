@@ -1,89 +1,177 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  Mail,
-  Github,
-  Linkedin,
-  ArrowUp,
-} from "lucide-react";
+import { Mail, Github, Linkedin, Phone } from "lucide-react";
 import { contactInfo } from "@/data/portfolio";
 
 export default function Footer() {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   return (
     <section id="contact" aria-label="Contact">
       {/* Contact Section */}
-      <div className="section-padding max-w-5xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="mb-12"
-        >
-          <p className="text-white/20 text-sm font-mono tracking-wider mb-3">
-            05 &mdash; contact
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4">
+      <div className="px-[4%] py-14 md:py-20">
+        <div className="max-w-5xl mx-auto">
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-[#999] text-sm mb-4"
+          >
+            Questions? Interested in working together?
+          </motion.p>
+          <motion.h2
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-2xl md:text-3xl font-bold text-white mb-2"
+          >
             Let&apos;s connect
-          </h2>
-          <p className="text-white/30 text-sm max-w-md">
-            Always open to interesting conversations and opportunities.
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-          className="flex flex-wrap gap-3"
-        >
-          <a
+          </motion.h2>
+          <motion.a
             href={`mailto:${contactInfo.email}`}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white/50 hover:text-white hover:bg-white/[0.06] transition-all duration-300 text-sm"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="text-[#999] hover:text-white hover:underline transition-colors text-sm"
           >
-            <Mail size={16} />
             {contactInfo.email}
-          </a>
-          <a
-            href={contactInfo.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white/50 hover:text-white hover:bg-white/[0.06] transition-all duration-300 text-sm"
+          </motion.a>
+
+          {/* Links */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="flex gap-4 mt-8"
           >
-            <Github size={16} />
-            GitHub
-          </a>
-          <a
-            href={contactInfo.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white/50 hover:text-white hover:bg-white/[0.06] transition-all duration-300 text-sm"
-          >
-            <Linkedin size={16} />
-            LinkedIn
-          </a>
-        </motion.div>
+            <a
+              href={`mailto:${contactInfo.email}`}
+              className="p-3 rounded bg-[#252525] text-[#999] hover:text-white hover:bg-[#333] transition-all"
+              aria-label="Email"
+            >
+              <Mail size={18} />
+            </a>
+            <a
+              href={contactInfo.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3 rounded bg-[#252525] text-[#999] hover:text-white hover:bg-[#333] transition-all"
+              aria-label="GitHub"
+            >
+              <Github size={18} />
+            </a>
+            <a
+              href={contactInfo.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3 rounded bg-[#252525] text-[#999] hover:text-white hover:bg-[#333] transition-all"
+              aria-label="LinkedIn"
+            >
+              <Linkedin size={18} />
+            </a>
+            <a
+              href={`tel:${contactInfo.phone}`}
+              className="p-3 rounded bg-[#252525] text-[#999] hover:text-white hover:bg-[#333] transition-all"
+              aria-label="Phone"
+            >
+              <Phone size={18} />
+            </a>
+          </motion.div>
+        </div>
       </div>
 
-      {/* Footer bar */}
-      <footer className="border-t border-white/[0.04]" role="contentinfo">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
-          <p className="text-white/15 text-xs font-mono">
-            &copy; {new Date().getFullYear()} Ping Chun Lui
-          </p>
-          <button
-            onClick={scrollToTop}
-            className="p-2 rounded-full border border-white/[0.06] text-white/20 hover:text-white/50 hover:border-white/[0.12] transition-all duration-300 cursor-pointer"
-            aria-label="Scroll to top"
-          >
-            <ArrowUp size={14} />
-          </button>
+      {/* Netflix-style footer */}
+      <footer className="border-t border-white/[0.04] px-[4%] py-8" role="contentinfo">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+            <div>
+              <p className="text-[#999] text-xs mb-3 font-medium">Navigate</p>
+              <ul className="space-y-2">
+                {["Home", "Projects", "Skills", "Experience"].map((item) => (
+                  <li key={item}>
+                    <button
+                      onClick={() => {
+                        if (item === "Home") {
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        } else {
+                          document
+                            .getElementById(item.toLowerCase())
+                            ?.scrollIntoView({ behavior: "smooth" });
+                        }
+                      }}
+                      className="text-[#666] text-xs hover:text-[#999] transition-colors cursor-pointer"
+                    >
+                      {item}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-[#999] text-xs mb-3 font-medium">More</p>
+              <ul className="space-y-2">
+                {["Achievements", "Contact"].map((item) => (
+                  <li key={item}>
+                    <button
+                      onClick={() => {
+                        document
+                          .getElementById(item.toLowerCase())
+                          ?.scrollIntoView({ behavior: "smooth" });
+                      }}
+                      className="text-[#666] text-xs hover:text-[#999] transition-colors cursor-pointer"
+                    >
+                      {item}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-[#999] text-xs mb-3 font-medium">Connect</p>
+              <ul className="space-y-2">
+                <li>
+                  <a
+                    href={contactInfo.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#666] text-xs hover:text-[#999] transition-colors"
+                  >
+                    GitHub
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={contactInfo.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#666] text-xs hover:text-[#999] transition-colors"
+                  >
+                    LinkedIn
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-[#999] text-xs mb-3 font-medium">Location</p>
+              <p className="text-[#666] text-xs">Montr&eacute;al, QC</p>
+              <p className="text-[#666] text-xs">Canada</p>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="flex items-center justify-between pt-6 border-t border-white/[0.04]">
+            <span
+              className="text-sm font-bold"
+              style={{ color: "#E50914" }}
+            >
+              PCL
+            </span>
+            <p className="text-[#444] text-[11px]">
+              &copy; {new Date().getFullYear()} Ping Chun Lui
+            </p>
+          </div>
         </div>
       </footer>
     </section>

@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Play, Plus, ChevronDown, ThumbsUp } from "lucide-react";
 import { projects } from "@/data/portfolio";
+import ScrollRow from "./ScrollRow";
 
 const PROJECT_COLORS: Record<string, string> = {
   RELAY: "#38bdf8",
@@ -19,7 +21,6 @@ const PROJECT_IMAGES: Record<string, string> = {
   TutorVerse: "/image/Tutorverse_1.png",
 };
 
-// Mobile apps use phone frame, web apps use browser frame
 const PROJECT_FRAME: Record<string, "phone" | "browser"> = {
   RELAY: "phone",
   MOODIFY: "browser",
@@ -27,168 +28,146 @@ const PROJECT_FRAME: Record<string, "phone" | "browser"> = {
   TutorVerse: "phone",
 };
 
-/* ── Phone Frame Mockup ── */
-function PhoneFrame({
-  image,
-  alt,
-  color,
-}: {
-  image: string;
-  alt: string;
-  color: string;
-}) {
-  return (
-    <div className="flex items-center justify-center py-8 px-4">
-      <div
-        className="relative w-[160px] h-[320px] md:w-[180px] md:h-[360px] rounded-[2rem] border-[3px] overflow-hidden shadow-2xl"
-        style={{
-          borderColor: `${color}30`,
-          boxShadow: `0 20px 60px ${color}15, 0 0 0 1px ${color}10`,
-        }}
-      >
-        {/* Phone notch */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-[#0a0a0a] rounded-b-2xl z-10 border-b border-x"
-          style={{ borderColor: `${color}20` }}
-        />
-
-        {/* Screen content */}
-        <div className="relative w-full h-full bg-[#111]">
-          <Image
-            src={image}
-            alt={alt}
-            fill
-            className="object-cover object-top"
-            sizes="200px"
-          />
-        </div>
-
-        {/* Home indicator */}
-        <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-white/20 z-10" />
-      </div>
-    </div>
-  );
-}
-
-/* ── Browser Frame Mockup ── */
-function BrowserFrame({
-  image,
-  alt,
-  color,
-}: {
-  image: string;
-  alt: string;
-  color: string;
-}) {
-  return (
-    <div className="flex items-center justify-center py-6 px-4">
-      <div
-        className="relative w-full max-w-[320px] rounded-xl border overflow-hidden shadow-2xl"
-        style={{
-          borderColor: `${color}20`,
-          boxShadow: `0 20px 60px ${color}10, 0 0 0 1px ${color}08`,
-        }}
-      >
-        {/* Browser toolbar */}
-        <div
-          className="flex items-center gap-2 px-3 py-2 border-b"
-          style={{
-            backgroundColor: `${color}08`,
-            borderColor: `${color}15`,
-          }}
-        >
-          <div className="flex gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
-            <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
-            <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
-          </div>
-          <div
-            className="flex-1 h-5 rounded-md mx-2"
-            style={{ backgroundColor: `${color}08` }}
-          />
-        </div>
-
-        {/* Page content */}
-        <div className="relative w-full aspect-[16/10] bg-[#111]">
-          <Image
-            src={image}
-            alt={alt}
-            fill
-            className="object-cover object-top"
-            sizes="(max-width: 768px) 100vw, 400px"
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
+/* ── Netflix Project Card ── */
 function ProjectCard({
   project,
   index,
+  onExpand,
 }: {
   project: (typeof projects)[0];
   index: number;
+  onExpand: (idx: number) => void;
 }) {
   const color = PROJECT_COLORS[project.title] || "#38bdf8";
   const image = PROJECT_IMAGES[project.title];
   const frame = PROJECT_FRAME[project.title] || "browser";
+  const isNew =
+    project.period.includes("2025") || project.period.includes("2026");
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ delay: index * 0.1, duration: 0.6 }}
-      className="group"
-    >
-      <div className="rounded-2xl bg-white/[0.03] border border-white/[0.06] overflow-hidden hover:bg-white/[0.05] transition-all duration-500 h-full flex flex-col">
-        {/* Device Frame */}
-        {image && (
-          <div
-            className="relative overflow-hidden border-b border-white/[0.06]"
-            style={{
-              background: `radial-gradient(ellipse at center, ${color}08 0%, transparent 70%)`,
-            }}
-          >
-            {frame === "phone" ? (
-              <PhoneFrame image={image} alt={`${project.title} screenshot`} color={color} />
-            ) : (
-              <BrowserFrame image={image} alt={`${project.title} screenshot`} color={color} />
-            )}
-          </div>
-        )}
+    <div className="flex-shrink-0 w-[280px] md:w-[320px]">
+      <div className="netflix-card rounded-md overflow-hidden bg-[#181818] group cursor-pointer">
+        {/* Thumbnail */}
+        <div className="relative aspect-video overflow-hidden">
+          {image ? (
+            <>
+              {frame === "phone" ? (
+                /* Phone frame inside card */
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-[#111]">
+                  <div
+                    className="relative w-[80px] h-[160px] rounded-[14px] border-2 overflow-hidden shadow-lg"
+                    style={{ borderColor: `${color}40` }}
+                  >
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-2.5 bg-[#0a0a0a] rounded-b-lg z-10" />
+                    <Image
+                      src={image}
+                      alt={project.title}
+                      fill
+                      className="object-cover object-top"
+                      sizes="80px"
+                    />
+                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full bg-white/20 z-10" />
+                  </div>
+                </div>
+              ) : (
+                /* Browser frame inside card */
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-[#111] p-4">
+                  <div
+                    className="relative w-full max-w-[260px] rounded-lg border overflow-hidden shadow-lg"
+                    style={{ borderColor: `${color}25` }}
+                  >
+                    <div
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 border-b"
+                      style={{
+                        backgroundColor: `${color}08`,
+                        borderColor: `${color}15`,
+                      }}
+                    >
+                      <div className="flex gap-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-white/15" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-white/15" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-white/15" />
+                      </div>
+                      <div
+                        className="flex-1 h-3 rounded mx-1"
+                        style={{ backgroundColor: `${color}08` }}
+                      />
+                    </div>
+                    <div className="relative aspect-[16/9]">
+                      <Image
+                        src={image}
+                        alt={project.title}
+                        fill
+                        className="object-cover object-top"
+                        sizes="260px"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
-        {/* Info */}
-        <div className="p-6 md:p-7 flex flex-col flex-1">
-          {/* Title + Arrow */}
-          <div className="flex items-start justify-between mb-1">
-            <h3 className="text-lg font-semibold text-white tracking-tight">
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#181818] via-transparent to-transparent opacity-80" />
+            </>
+          ) : (
+            <div className="w-full h-full bg-[#1a1a1a]" />
+          )}
+
+          {/* New badge */}
+          {isNew && (
+            <span className="absolute top-2 left-2 bg-[#E50914] text-white text-[10px] font-bold px-2 py-0.5 rounded">
+              NEW
+            </span>
+          )}
+
+          {/* Title overlay on image */}
+          <div className="absolute bottom-2 left-3 right-3">
+            <h3
+              className="text-lg font-bold drop-shadow-lg"
+              style={{ color: color }}
+            >
               {project.title}
             </h3>
-            <div className="p-1.5 rounded-full border border-white/[0.06] text-white/20 group-hover:text-white/60 group-hover:border-white/[0.12] transition-all duration-300">
-              <ArrowUpRight size={14} />
-            </div>
           </div>
-          <p className="text-[11px] text-white/20 font-mono mb-3">
+        </div>
+
+        {/* Info panel - visible on hover */}
+        <div className="p-3 opacity-0 max-h-0 group-hover:opacity-100 group-hover:max-h-[200px] transition-all duration-300 overflow-hidden">
+          {/* Action buttons */}
+          <div className="flex items-center gap-2 mb-2">
+            <button className="p-1.5 rounded-full bg-white text-black hover:bg-white/80 transition-colors">
+              <Play size={14} fill="black" />
+            </button>
+            <button className="p-1.5 rounded-full border border-[#999]/40 text-white hover:border-white transition-colors">
+              <Plus size={14} />
+            </button>
+            <button className="p-1.5 rounded-full border border-[#999]/40 text-white hover:border-white transition-colors">
+              <ThumbsUp size={14} />
+            </button>
+            <button
+              onClick={() => onExpand(index)}
+              className="p-1.5 rounded-full border border-[#999]/40 text-white hover:border-white transition-colors ml-auto"
+            >
+              <ChevronDown size={14} />
+            </button>
+          </div>
+
+          {/* Period */}
+          <p className="text-[#999] text-[11px] font-mono mb-1">
             {project.period}
           </p>
 
-          {/* Description */}
-          <p className="text-white/35 text-sm leading-relaxed mb-5 flex-1">
+          {/* Brief description */}
+          <p className="text-[#ccc] text-xs leading-relaxed line-clamp-2 mb-2">
             {project.description}
           </p>
 
           {/* Tech tags */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1">
             {project.tech.map((t) => (
               <span
                 key={t}
-                className="px-2.5 py-1 text-[11px] rounded-full font-mono border"
-                style={{
-                  borderColor: `${color}20`,
-                  color: `${color}90`,
-                  backgroundColor: `${color}08`,
-                }}
+                className="text-[10px] text-[#999] before:content-['·'] before:mr-1 first:before:content-none"
               >
                 {t}
               </span>
@@ -196,37 +175,124 @@ function ProjectCard({
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ── Expanded Detail Row (like Netflix's inline expand) ── */
+function ExpandedDetail({
+  project,
+  onClose,
+}: {
+  project: (typeof projects)[0];
+  onClose: () => void;
+}) {
+  const color = PROJECT_COLORS[project.title] || "#38bdf8";
+  const image = PROJECT_IMAGES[project.title];
+
+  return (
+    <motion.div
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: "auto", opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      transition={{ duration: 0.4 }}
+      className="overflow-hidden"
+    >
+      <div className="bg-[#181818] border-y border-white/[0.06] px-[4%] py-8">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Left - Info */}
+          <div className="md:col-span-2">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-[#46d369] font-bold text-sm">
+                Featured
+              </span>
+              <span className="text-[#999] text-sm">{project.period}</span>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-3">
+              {project.title}
+            </h3>
+            <p className="text-[#ddd] text-sm leading-relaxed mb-4">
+              {project.description}
+            </p>
+            {project.highlight && (
+              <p className="text-[#999] text-xs leading-relaxed mb-4">
+                <span className="text-[#777]">Highlight: </span>
+                {project.highlight}
+              </p>
+            )}
+            <div className="flex flex-wrap gap-2">
+              {project.tech.map((t) => (
+                <span
+                  key={t}
+                  className="px-2.5 py-1 text-[11px] rounded font-mono border"
+                  style={{
+                    borderColor: `${color}30`,
+                    color: `${color}`,
+                    backgroundColor: `${color}10`,
+                  }}
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Right - Image */}
+          <div className="md:col-span-1">
+            {image && (
+              <div className="relative aspect-video rounded-lg overflow-hidden">
+                <Image
+                  src={image}
+                  alt={project.title}
+                  fill
+                  className="object-cover"
+                  sizes="300px"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="block mx-auto mt-6 p-2 rounded-full border border-[#999]/30 text-[#999] hover:text-white hover:border-white transition-colors cursor-pointer"
+        >
+          <ChevronDown size={18} className="rotate-180" />
+        </button>
+      </div>
     </motion.div>
   );
 }
 
+/* ── Main Projects Section ── */
 export default function Projects() {
-  return (
-    <section
-      id="projects"
-      className="section-padding max-w-5xl mx-auto"
-      aria-label="Projects"
-    >
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6 }}
-        className="mb-12"
-      >
-        <p className="text-white/20 text-sm font-mono tracking-wider mb-3">
-          04 &mdash; work
-        </p>
-        <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-          Featured Projects
-        </h2>
-      </motion.div>
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+  return (
+    <section id="projects" aria-label="Projects" className="section-padding">
+      <ScrollRow title="Featured Projects" subtitle="My latest work">
         {projects.map((project, i) => (
-          <ProjectCard key={project.title} project={project} index={i} />
+          <ProjectCard
+            key={project.title}
+            project={project}
+            index={i}
+            onExpand={(idx) =>
+              setExpandedIdx(expandedIdx === idx ? null : idx)
+            }
+          />
         ))}
-      </div>
+      </ScrollRow>
+
+      {/* Expanded Detail */}
+      <AnimatePresence>
+        {expandedIdx !== null && (
+          <ExpandedDetail
+            project={projects[expandedIdx]}
+            onClose={() => setExpandedIdx(null)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 }
