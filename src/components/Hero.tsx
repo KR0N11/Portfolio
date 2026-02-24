@@ -18,14 +18,14 @@ function AnimatedBackground() {
       const orbs =
         theme === "dark"
           ? [
-              { x: 0.25, y: 0.35, r: 260, c: "rgba(255, 255, 255, 0.02)" },
-              { x: 0.7, y: 0.25, r: 300, c: "rgba(255, 255, 255, 0.015)" },
-              { x: 0.5, y: 0.75, r: 240, c: "rgba(255, 255, 255, 0.02)" },
+              { x: 0.25, y: 0.35, r: 260, c: "rgba(56, 189, 248, 0.04)" },
+              { x: 0.7, y: 0.25, r: 300, c: "rgba(30, 100, 200, 0.035)" },
+              { x: 0.5, y: 0.75, r: 240, c: "rgba(56, 189, 248, 0.03)" },
             ]
           : [
-              { x: 0.2, y: 0.3, r: 200, c: "rgba(0, 0, 0, 0.04)" },
-              { x: 0.7, y: 0.2, r: 250, c: "rgba(0, 0, 0, 0.03)" },
-              { x: 0.5, y: 0.7, r: 180, c: "rgba(0, 0, 0, 0.035)" },
+              { x: 0.2, y: 0.3, r: 200, c: "rgba(14, 165, 233, 0.08)" },
+              { x: 0.7, y: 0.2, r: 250, c: "rgba(56, 189, 248, 0.06)" },
+              { x: 0.5, y: 0.7, r: 180, c: "rgba(125, 211, 252, 0.07)" },
             ];
 
       orbs.forEach((orb, i) => {
@@ -115,7 +115,7 @@ export default function Hero() {
               variants={letterVariants}
               initial="hidden"
               animate="visible"
-              className={char === " " ? "inline" : "inline-block text-text"}
+              className={char === " " ? "inline" : "inline-block text-gradient"}
             >
               {char === " " ? "\u00A0" : char}
             </motion.span>
@@ -148,7 +148,7 @@ export default function Hero() {
           animate={{ opacity: 1 }}
           transition={{ delay: 2.2, duration: 0.8 }}
           onClick={scrollToWork}
-          className="group inline-flex flex-col items-center gap-2 text-text-muted hover:text-text transition-colors cursor-pointer"
+          className="group inline-flex flex-col items-center gap-2 text-text-muted hover:text-primary transition-colors cursor-pointer"
           aria-label="Scroll to view my work"
         >
           <span className="text-sm font-medium tracking-widest uppercase">
@@ -160,7 +160,7 @@ export default function Hero() {
           >
             <ChevronDown
               size={28}
-              className="group-hover:text-text transition-colors"
+              className="group-hover:text-primary transition-colors"
             />
           </motion.div>
         </motion.button>

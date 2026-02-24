@@ -3,18 +3,34 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Full-screen water-ripple effect driven by cursor movement.
- * Renders white/gray ripples with mix-blend-mode so they
- * visually interact with (distort) page content underneath.
+ * Full-screen particle field that drifts gently and gets
+ * pulled toward the cursor when it's nearby.
  */
 
-const SCALE = 5;
-const DAMPING = 0.96;
+const PARTICLE_COUNT = 180;
+const ATTRACT_RADIUS = 160;
+const ATTRACT_STRENGTH = 0.045;
+const RETURN_STRENGTH = 0.015;
+const DRIFT_SPEED = 0.15;
+const PARTICLE_SIZE_MIN = 1;
+const PARTICLE_SIZE_MAX = 2.5;
+
+interface Particle {
+  x: number;
+  y: number;
+  homeX: number;
+  homeY: number;
+  vx: number;
+  vy: number;
+  size: number;
+  alpha: number;
+  driftAngle: number;
+  driftSpeed: number;
+}
 
 export default function CursorGlow() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouse = useRef({ x: -1, y: -1 });
-  const prev = useRef({ x: -1, y: -1 });
+  const mouse = useRef({ x: -9999, y: -9999 });
 
   useEffect(() => {
     if (
@@ -30,122 +46,116 @@ export default function CursorGlow() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let cols = 0,
-      rows = 0;
-    let cur: Float32Array = new Float32Array(0);
-    let prv: Float32Array = new Float32Array(0);
-    let buf: HTMLCanvasElement;
-    let bCtx: CanvasRenderingContext2D | null = null;
-    let img: ImageData;
+    let particles: Particle[] = [];
+    let w = 0,
+      h = 0;
 
     const init = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      cols = Math.ceil(canvas.width / SCALE);
-      rows = Math.ceil(canvas.height / SCALE);
-      cur = new Float32Array(cols * rows);
-      prv = new Float32Array(cols * rows);
-      buf = document.createElement("canvas");
-      buf.width = cols;
-      buf.height = rows;
-      bCtx = buf.getContext("2d");
-      img = new ImageData(cols, rows);
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      particles = [];
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        const x = Math.random() * w;
+        const y = Math.random() * h;
+        particles.push({
+          x,
+          y,
+          homeX: x,
+          homeY: y,
+          vx: 0,
+          vy: 0,
+          size:
+            PARTICLE_SIZE_MIN +
+            Math.random() * (PARTICLE_SIZE_MAX - PARTICLE_SIZE_MIN),
+          alpha: 0.15 + Math.random() * 0.45,
+          driftAngle: Math.random() * Math.PI * 2,
+          driftSpeed: (0.5 + Math.random() * 0.5) * DRIFT_SPEED,
+        });
+      }
     };
     init();
     window.addEventListener("resize", init);
 
     const onMove = (e: MouseEvent) => {
-      prev.current.x = mouse.current.x;
-      prev.current.y = mouse.current.y;
       mouse.current.x = e.clientX;
       mouse.current.y = e.clientY;
     };
-    window.addEventListener("mousemove", onMove);
-
-    const disturb = (
-      cx: number,
-      cy: number,
-      radius: number,
-      strength: number
-    ) => {
-      const r = Math.ceil(radius / SCALE);
-      const sx = Math.floor(cx / SCALE);
-      const sy = Math.floor(cy / SCALE);
-      for (let dy = -r; dy <= r; dy++) {
-        for (let dx = -r; dx <= r; dx++) {
-          const x = sx + dx;
-          const y = sy + dy;
-          if (x > 0 && x < cols - 1 && y > 0 && y < rows - 1) {
-            const d = Math.sqrt(dx * dx + dy * dy) / r;
-            if (d < 1) {
-              cur[y * cols + x] += strength * (1 - d * d);
-            }
-          }
-        }
-      }
+    const onLeave = () => {
+      mouse.current.x = -9999;
+      mouse.current.y = -9999;
     };
+    window.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseleave", onLeave);
 
     let raf = 0;
 
     const loop = () => {
-      if (mouse.current.x > 0 && prev.current.x > 0) {
-        const dx = mouse.current.x - prev.current.x;
-        const dy = mouse.current.y - prev.current.y;
-        const speed = Math.sqrt(dx * dx + dy * dy);
-        if (speed > 1) {
-          disturb(
-            mouse.current.x,
-            mouse.current.y,
-            12 + Math.min(speed * 0.3, 16),
-            Math.min(speed * 2.5, 250)
-          );
+      ctx.clearRect(0, 0, w, h);
+
+      const mx = mouse.current.x;
+      const my = mouse.current.y;
+
+      for (const p of particles) {
+        /* gentle ambient drift */
+        p.driftAngle += 0.002;
+        const driftX = Math.cos(p.driftAngle) * p.driftSpeed;
+        const driftY = Math.sin(p.driftAngle) * p.driftSpeed;
+
+        /* attraction toward cursor */
+        const dx = mx - p.x;
+        const dy = my - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < ATTRACT_RADIUS && dist > 0) {
+          const force = (1 - dist / ATTRACT_RADIUS) * ATTRACT_STRENGTH;
+          p.vx += dx * force;
+          p.vy += dy * force;
+        }
+
+        /* spring back toward home */
+        p.vx += (p.homeX - p.x) * RETURN_STRENGTH;
+        p.vy += (p.homeY - p.y) * RETURN_STRENGTH;
+
+        /* apply drift */
+        p.vx += driftX * 0.05;
+        p.vy += driftY * 0.05;
+
+        /* damping */
+        p.vx *= 0.92;
+        p.vy *= 0.92;
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        /* draw */
+        const proximity = dist < ATTRACT_RADIUS ? 1 - dist / ATTRACT_RADIUS : 0;
+        const glow = p.alpha + proximity * 0.4;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size + proximity * 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(56, 189, 248, ${glow})`;
+        ctx.fill();
+
+        /* draw faint connecting lines to nearby cursor */
+        if (proximity > 0.2) {
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(mx, my);
+          ctx.strokeStyle = `rgba(56, 189, 248, ${proximity * 0.08})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
         }
       }
 
-      const tmp = prv;
-      prv = cur;
-      cur = tmp;
-
-      for (let y = 1; y < rows - 1; y++) {
-        for (let x = 1; x < cols - 1; x++) {
-          const i = y * cols + x;
-          cur[i] =
-            ((prv[i - 1] + prv[i + 1] + prv[i - cols] + prv[i + cols]) * 0.5 -
-              cur[i]) *
-            DAMPING;
-        }
-      }
-
-      /* render heightmap — white crests, dark gray troughs */
-      const d = img.data;
-      for (let i = 0; i < cols * rows; i++) {
-        const v = cur[i];
-        const a = Math.min(Math.abs(v) / 50, 1);
-        const p = i * 4;
-
-        if (v > 0) {
-          /* crest — white highlight */
-          const brightness = 180 + Math.floor(a * 75);
-          d[p] = brightness;
-          d[p + 1] = brightness;
-          d[p + 2] = brightness;
-          d[p + 3] = Math.floor(a * 100);
-        } else {
-          /* trough — dark gray */
-          const darkness = 40 + Math.floor(a * 30);
-          d[p] = darkness;
-          d[p + 1] = darkness;
-          d[p + 2] = darkness;
-          d[p + 3] = Math.floor(a * 80);
-        }
-      }
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (bCtx) {
-        bCtx.putImageData(img, 0, 0);
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
-        ctx.drawImage(buf, 0, 0, canvas.width, canvas.height);
+      /* subtle glow around cursor */
+      if (mx > 0 && my > 0) {
+        const gradient = ctx.createRadialGradient(mx, my, 0, mx, my, 120);
+        gradient.addColorStop(0, "rgba(56, 189, 248, 0.04)");
+        gradient.addColorStop(1, "transparent");
+        ctx.beginPath();
+        ctx.arc(mx, my, 120, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
       }
 
       raf = requestAnimationFrame(loop);
@@ -155,6 +165,7 @@ export default function CursorGlow() {
     return () => {
       window.removeEventListener("resize", init);
       window.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseleave", onLeave);
       cancelAnimationFrame(raf);
     };
   }, []);
@@ -163,7 +174,7 @@ export default function CursorGlow() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none"
-      style={{ zIndex: 50, mixBlendMode: "soft-light" }}
+      style={{ zIndex: 9999 }}
       aria-hidden="true"
     />
   );
