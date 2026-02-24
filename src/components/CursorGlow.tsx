@@ -2,35 +2,33 @@
 
 import { useEffect, useRef } from "react";
 
-/**
- * Full-screen particle field that drifts gently and gets
- * pulled toward the cursor when it's nearby.
- */
+const TRAIL_LENGTH = 20;
+const BASE_SIZE = 8;
+const PARTICLE_COUNT = 50;
+const ATTRACTION_RADIUS = 180;
+const ATTRACTION_FORCE = 0.012;
 
-const PARTICLE_COUNT = 180;
-const ATTRACT_RADIUS = 160;
-const ATTRACT_STRENGTH = 0.045;
-const RETURN_STRENGTH = 0.015;
-const DRIFT_SPEED = 0.15;
-const PARTICLE_SIZE_MIN = 1;
-const PARTICLE_SIZE_MAX = 2.5;
+interface TrailPoint {
+  x: number;
+  y: number;
+}
 
 interface Particle {
   x: number;
   y: number;
-  homeX: number;
-  homeY: number;
   vx: number;
   vy: number;
+  baseX: number;
+  baseY: number;
   size: number;
   alpha: number;
-  driftAngle: number;
-  driftSpeed: number;
 }
 
 export default function CursorGlow() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouse = useRef({ x: -9999, y: -9999 });
+  const mouse = useRef({ x: -100, y: -100 });
+  const trail = useRef<TrailPoint[]>([]);
+  const particles = useRef<Particle[]>([]);
 
   useEffect(() => {
     if (
@@ -46,43 +44,44 @@ export default function CursorGlow() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let particles: Particle[] = [];
-    let w = 0,
-      h = 0;
+    for (let i = 0; i < TRAIL_LENGTH; i++) {
+      trail.current.push({ x: -100, y: -100 });
+    }
 
-    const init = () => {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
-      particles = [];
+    const initParticles = () => {
+      particles.current = [];
       for (let i = 0; i < PARTICLE_COUNT; i++) {
-        const x = Math.random() * w;
-        const y = Math.random() * h;
-        particles.push({
+        const x = Math.random() * window.innerWidth;
+        const y = Math.random() * window.innerHeight;
+        particles.current.push({
           x,
           y,
-          homeX: x,
-          homeY: y,
-          vx: 0,
-          vy: 0,
-          size:
-            PARTICLE_SIZE_MIN +
-            Math.random() * (PARTICLE_SIZE_MAX - PARTICLE_SIZE_MIN),
-          alpha: 0.15 + Math.random() * 0.45,
-          driftAngle: Math.random() * Math.PI * 2,
-          driftSpeed: (0.5 + Math.random() * 0.5) * DRIFT_SPEED,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          baseX: x,
+          baseY: y,
+          size: Math.random() * 2 + 0.5,
+          alpha: Math.random() * 0.2 + 0.03,
         });
       }
     };
-    init();
-    window.addEventListener("resize", init);
+    initParticles();
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
+    };
+    resize();
+    window.addEventListener("resize", resize);
 
     const onMove = (e: MouseEvent) => {
       mouse.current.x = e.clientX;
       mouse.current.y = e.clientY;
     };
     const onLeave = () => {
-      mouse.current.x = -9999;
-      mouse.current.y = -9999;
+      mouse.current.x = -1000;
+      mouse.current.y = -1000;
     };
     window.addEventListener("mousemove", onMove);
     document.addEventListener("mouseleave", onLeave);
@@ -90,72 +89,95 @@ export default function CursorGlow() {
     let raf = 0;
 
     const loop = () => {
-      ctx.clearRect(0, 0, w, h);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      // Trail
+      const t = trail.current;
+      t[0].x += (mouse.current.x - t[0].x) * 0.35;
+      t[0].y += (mouse.current.y - t[0].y) * 0.35;
+
+      for (let i = 1; i < TRAIL_LENGTH; i++) {
+        const ease = 0.25 - i * 0.005;
+        t[i].x += (t[i - 1].x - t[i].x) * Math.max(ease, 0.06);
+        t[i].y += (t[i - 1].y - t[i].y) * Math.max(ease, 0.06);
+      }
+
+      for (let i = TRAIL_LENGTH - 1; i >= 0; i--) {
+        const progress = i / TRAIL_LENGTH;
+        const alpha = (1 - progress) * 0.3;
+        const size = BASE_SIZE * (1 - progress * 0.6);
+
+        ctx.beginPath();
+        ctx.arc(t[i].x, t[i].y, size, 0, Math.PI * 2);
+        // Red-tinted trail for Netflix theme
+        ctx.fillStyle = `rgba(229, 60, 60, ${alpha})`;
+        ctx.fill();
+      }
+
+      // Main cursor dot
+      ctx.beginPath();
+      ctx.arc(t[0].x, t[0].y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(229, 9, 20, 0.9)";
+      ctx.fill();
+
+      // Particles with cursor attraction
       const mx = mouse.current.x;
       const my = mouse.current.y;
 
-      for (const p of particles) {
-        /* gentle ambient drift */
-        p.driftAngle += 0.002;
-        const driftX = Math.cos(p.driftAngle) * p.driftSpeed;
-        const driftY = Math.sin(p.driftAngle) * p.driftSpeed;
-
-        /* attraction toward cursor */
+      for (let i = 0; i < particles.current.length; i++) {
+        const p = particles.current[i];
         const dx = mx - p.x;
         const dy = my - p.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist < ATTRACT_RADIUS && dist > 0) {
-          const force = (1 - dist / ATTRACT_RADIUS) * ATTRACT_STRENGTH;
-          p.vx += dx * force;
-          p.vy += dy * force;
+        if (dist < ATTRACTION_RADIUS && mx > 0 && my > 0) {
+          const force = (ATTRACTION_RADIUS - dist) / ATTRACTION_RADIUS;
+          p.vx += dx * ATTRACTION_FORCE * force;
+          p.vy += dy * ATTRACTION_FORCE * force;
+        } else {
+          p.vx += (p.baseX - p.x) * 0.002;
+          p.vy += (p.baseY - p.y) * 0.002;
         }
 
-        /* spring back toward home */
-        p.vx += (p.homeX - p.x) * RETURN_STRENGTH;
-        p.vy += (p.homeY - p.y) * RETURN_STRENGTH;
-
-        /* apply drift */
-        p.vx += driftX * 0.05;
-        p.vy += driftY * 0.05;
-
-        /* damping */
-        p.vx *= 0.92;
-        p.vy *= 0.92;
-
+        p.vx *= 0.96;
+        p.vy *= 0.96;
         p.x += p.vx;
         p.y += p.vy;
 
-        /* draw */
-        const proximity = dist < ATTRACT_RADIUS ? 1 - dist / ATTRACT_RADIUS : 0;
-        const glow = p.alpha + proximity * 0.4;
+        if (p.x < -10) p.x = canvas.width + 10;
+        if (p.x > canvas.width + 10) p.x = -10;
+        if (p.y < -10) p.y = canvas.height + 10;
+        if (p.y > canvas.height + 10) p.y = -10;
 
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size + proximity * 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(56, 189, 248, ${glow})`;
-        ctx.fill();
-
-        /* draw faint connecting lines to nearby cursor */
-        if (proximity > 0.2) {
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(mx, my);
-          ctx.strokeStyle = `rgba(56, 189, 248, ${proximity * 0.08})`;
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
+        let drawAlpha = p.alpha;
+        if (dist < ATTRACTION_RADIUS && mx > 0 && my > 0) {
+          const proximity = 1 - dist / ATTRACTION_RADIUS;
+          drawAlpha = p.alpha + proximity * 0.3;
         }
-      }
 
-      /* subtle glow around cursor */
-      if (mx > 0 && my > 0) {
-        const gradient = ctx.createRadialGradient(mx, my, 0, mx, my, 120);
-        gradient.addColorStop(0, "rgba(56, 189, 248, 0.04)");
-        gradient.addColorStop(1, "transparent");
         ctx.beginPath();
-        ctx.arc(mx, my, 120, 0, Math.PI * 2);
-        ctx.fillStyle = gradient;
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(229, 80, 80, ${drawAlpha})`;
         ctx.fill();
+
+        // Lines between close particles near cursor
+        if (dist < ATTRACTION_RADIUS * 0.7 && mx > 0 && my > 0) {
+          for (let j = i + 1; j < particles.current.length; j++) {
+            const p2 = particles.current[j];
+            const pdx = p2.x - p.x;
+            const pdy = p2.y - p.y;
+            const pdist = Math.sqrt(pdx * pdx + pdy * pdy);
+            if (pdist < 70) {
+              const lineAlpha = (1 - pdist / 70) * 0.08;
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.strokeStyle = `rgba(229, 60, 60, ${lineAlpha})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+        }
       }
 
       raf = requestAnimationFrame(loop);
@@ -163,7 +185,7 @@ export default function CursorGlow() {
     raf = requestAnimationFrame(loop);
 
     return () => {
-      window.removeEventListener("resize", init);
+      window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseleave", onLeave);
       cancelAnimationFrame(raf);
