@@ -14,63 +14,31 @@ function AnimatedBackground() {
     (ctx: CanvasRenderingContext2D, w: number, h: number, time: number) => {
       ctx.clearRect(0, 0, w, h);
 
-      if (theme === "dark") {
-        // Starry deep-space with gentle glowing particles
-        const starCount = 120;
-        for (let i = 0; i < starCount; i++) {
-          const seed = i * 7919;
-          const x = ((seed * 13) % w);
-          const y = ((seed * 17) % h);
-          const twinkle =
-            0.3 + 0.7 * Math.abs(Math.sin(time * 0.001 + i * 0.5));
-          const size = ((seed % 3) + 1) * twinkle;
+      /* Minimal slow-drifting orbs — adds depth without competing with the ripple overlay */
+      const orbs =
+        theme === "dark"
+          ? [
+              { x: 0.25, y: 0.35, r: 260, c: "rgba(56, 189, 248, 0.04)" },
+              { x: 0.7, y: 0.25, r: 300, c: "rgba(30, 100, 200, 0.035)" },
+              { x: 0.5, y: 0.75, r: 240, c: "rgba(56, 189, 248, 0.03)" },
+            ]
+          : [
+              { x: 0.2, y: 0.3, r: 200, c: "rgba(14, 165, 233, 0.08)" },
+              { x: 0.7, y: 0.2, r: 250, c: "rgba(56, 189, 248, 0.06)" },
+              { x: 0.5, y: 0.7, r: 180, c: "rgba(125, 211, 252, 0.07)" },
+            ];
 
-          ctx.beginPath();
-          ctx.arc(x, y, size, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(148, 163, 184, ${0.2 + twinkle * 0.6})`;
-          ctx.fill();
-        }
-
-        // Floating glow orbs
-        for (let i = 0; i < 5; i++) {
-          const cx = w * (0.15 + (i * 0.18));
-          const cy =
-            h * 0.5 +
-            Math.sin(time * 0.0005 + i * 1.5) * h * 0.15;
-          const radius = 80 + Math.sin(time * 0.0008 + i) * 30;
-          const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-          gradient.addColorStop(0, "rgba(56, 189, 248, 0.08)");
-          gradient.addColorStop(0.5, "rgba(56, 189, 248, 0.03)");
-          gradient.addColorStop(1, "rgba(56, 189, 248, 0)");
-          ctx.beginPath();
-          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-          ctx.fillStyle = gradient;
-          ctx.fill();
-        }
-      } else {
-        // Soft, slow-moving gradient orbs for light mode
-        const orbs = [
-          { x: 0.2, y: 0.3, r: 200, color: "rgba(14, 165, 233, 0.08)" },
-          { x: 0.7, y: 0.2, r: 250, color: "rgba(56, 189, 248, 0.06)" },
-          { x: 0.5, y: 0.7, r: 180, color: "rgba(125, 211, 252, 0.07)" },
-          { x: 0.85, y: 0.6, r: 220, color: "rgba(14, 165, 233, 0.05)" },
-          { x: 0.1, y: 0.8, r: 160, color: "rgba(56, 189, 248, 0.06)" },
-        ];
-
-        orbs.forEach((orb, i) => {
-          const cx =
-            w * orb.x + Math.sin(time * 0.0003 + i * 2) * 60;
-          const cy =
-            h * orb.y + Math.cos(time * 0.0004 + i * 1.5) * 50;
-          const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, orb.r);
-          gradient.addColorStop(0, orb.color);
-          gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
-          ctx.beginPath();
-          ctx.arc(cx, cy, orb.r, 0, Math.PI * 2);
-          ctx.fillStyle = gradient;
-          ctx.fill();
-        });
-      }
+      orbs.forEach((orb, i) => {
+        const cx = w * orb.x + Math.sin(time * 0.00025 + i * 2.2) * 70;
+        const cy = h * orb.y + Math.cos(time * 0.0003 + i * 1.7) * 55;
+        const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, orb.r);
+        gradient.addColorStop(0, orb.c);
+        gradient.addColorStop(1, "transparent");
+        ctx.beginPath();
+        ctx.arc(cx, cy, orb.r, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      });
     },
     [theme]
   );
@@ -123,7 +91,7 @@ const letterVariants = {
 };
 
 export default function Hero() {
-  const headline = "The World Responds Only to Motion";
+  const name = "Ping Chun Lui";
 
   const scrollToWork = () => {
     document.querySelector("#about")?.scrollIntoView({ behavior: "smooth" });
@@ -138,9 +106,9 @@ export default function Hero() {
       <AnimatedBackground />
 
       <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
-        {/* Main headline with staggered letter reveal */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight mb-6">
-          {headline.split("").map((char, i) => (
+        {/* Name — large staggered letter reveal */}
+        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-none mb-4">
+          {name.split("").map((char, i) => (
             <motion.span
               key={i}
               custom={i}
@@ -154,23 +122,31 @@ export default function Hero() {
           ))}
         </h1>
 
-        {/* Sub-headline */}
+        {/* Role */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2, duration: 0.8 }}
-          className="text-lg sm:text-xl md:text-2xl text-text-secondary font-light tracking-wide mb-12"
+          transition={{ delay: 1.2, duration: 0.8 }}
+          className="text-lg sm:text-xl md:text-2xl text-text-muted font-light tracking-[0.25em] uppercase mb-8"
         >
-          Ping Chun Lui{" "}
-          <span className="text-primary font-normal">|</span> Software
-          Developer
+          Software Developer
+        </motion.p>
+
+        {/* Quote */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.5 }}
+          transition={{ delay: 1.8, duration: 1 }}
+          className="text-sm sm:text-base text-text-muted font-light italic tracking-wide mb-14"
+        >
+          The World Responds Only to Motion
         </motion.p>
 
         {/* CTA */}
         <motion.button
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2.5, duration: 0.8 }}
+          transition={{ delay: 2.2, duration: 0.8 }}
           onClick={scrollToWork}
           className="group inline-flex flex-col items-center gap-2 text-text-muted hover:text-primary transition-colors cursor-pointer"
           aria-label="Scroll to view my work"
