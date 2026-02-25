@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin,
   GraduationCap,
@@ -9,7 +9,6 @@ import {
   Dumbbell,
   Mountain,
   CookingPot,
-  Code2,
   ImageIcon,
   Sparkles,
 } from "lucide-react";
@@ -195,6 +194,84 @@ const hobbies = [
   },
 ];
 
+/* ── Auto-rotating Hobbies Carousel ── */
+function HobbiesCarousel() {
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent((p) => (p + 1) % hobbies.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <motion.div
+      custom={5}
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      className="md:col-span-4 pt-2"
+    >
+      <p className="text-[#999] text-xs uppercase tracking-wider font-medium mb-4">
+        When I&apos;m not coding
+      </p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {hobbies.map((hobby, idx) => (
+          <motion.div
+            key={hobby.title}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: idx * 0.1 }}
+            className="relative"
+          >
+            {/* Active highlight ring */}
+            <motion.div
+              className="absolute -inset-1 rounded-xl z-0"
+              animate={{
+                boxShadow:
+                  idx === current
+                    ? `0 0 25px ${hobby.color}30, 0 0 50px ${hobby.color}15`
+                    : "0 0 0px transparent",
+                borderColor: idx === current ? `${hobby.color}40` : "transparent",
+              }}
+              transition={{ duration: 0.6 }}
+              style={{ border: "2px solid transparent", borderRadius: "14px" }}
+            />
+            <motion.div
+              animate={{
+                scale: idx === current ? 1.03 : 0.97,
+                opacity: idx === current ? 1 : 0.6,
+              }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            >
+              <PokemonCard hobby={hobby} isActive={idx === current} />
+            </motion.div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Carousel dots */}
+      <div className="flex items-center justify-center gap-2 mt-4">
+        {hobbies.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrent(i)}
+            className={`rounded-full transition-all duration-300 cursor-pointer ${
+              i === current
+                ? "w-6 h-1.5 bg-[#E50914]"
+                : "w-1.5 h-1.5 bg-white/15 hover:bg-white/25"
+            }`}
+          />
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 /* ── Main About Section — no profile pic, full-width tiles ── */
 export default function About() {
   const stack = [
@@ -246,65 +323,63 @@ export default function About() {
 
           {/* Full-width tile grid — 4 cols on desktop */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {/* Location + Map — 2 cols */}
+            {/* Location + Real Map — 2 cols */}
             <motion.div
               custom={1}
               variants={fadeUp}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="md:col-span-2 bg-[#141414] rounded-xl p-5 md:p-6 border border-white/[0.06] relative overflow-hidden min-h-[180px]"
+              className="md:col-span-2 bg-[#141414] rounded-xl border border-white/[0.06] relative overflow-hidden min-h-[220px]"
             >
-              <div className="absolute inset-0 opacity-20">
-                <svg
-                  viewBox="0 0 300 200"
-                  className="w-full h-full"
-                  preserveAspectRatio="xMidYMid slice"
-                >
-                  <path d="M0,130 Q50,115 100,130 Q150,145 200,125 Q250,110 300,120" fill="none" stroke="rgba(100,160,255,0.4)" strokeWidth="10" />
-                  <path d="M0,145 Q60,130 120,145 Q180,160 240,135 Q270,122 300,130" fill="none" stroke="rgba(100,160,255,0.2)" strokeWidth="6" />
-                  {[40, 65, 90, 115].map((y) => (
-                    <line key={`h${y}`} x1="20" y1={y} x2="280" y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-                  ))}
-                  {[60, 100, 140, 180, 220].map((x) => (
-                    <line key={`v${x}`} x1={x} y1="20" x2={x} y2="125" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-                  ))}
-                  <path d="M80,45 Q120,20 170,30 Q200,38 220,55" fill="rgba(80,160,80,0.06)" stroke="rgba(80,160,80,0.12)" strokeWidth="1" />
-                  <rect x="90" y="55" width="25" height="15" rx="2" fill="rgba(255,255,255,0.04)" />
-                  <rect x="130" y="70" width="20" height="18" rx="2" fill="rgba(255,255,255,0.05)" />
-                  <rect x="165" y="55" width="22" height="20" rx="2" fill="rgba(255,255,255,0.04)" />
-                </svg>
+              {/* Actual OpenStreetMap embed — dark filtered */}
+              <div className="absolute inset-0">
+                <iframe
+                  title="Montreal Map"
+                  src="https://www.openstreetmap.org/export/embed.html?bbox=-73.63,45.47,-73.52,45.53&layer=mapnik&marker=45.5017,-73.5673"
+                  className="w-full h-full border-0"
+                  style={{
+                    filter: "invert(1) hue-rotate(180deg) brightness(0.7) contrast(1.3) saturate(0.3)",
+                  }}
+                  loading="lazy"
+                />
               </div>
+
+              {/* Dark overlay for readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/40 to-transparent" />
 
               {/* Scanner line */}
               <motion.div
-                className="absolute top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#E50914]/40 to-transparent"
+                className="absolute top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#E50914]/40 to-transparent z-10"
                 animate={{ left: ["10%", "90%", "10%"] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
               <motion.div
-                className="absolute top-0 bottom-0 w-6 bg-gradient-to-r from-[#E50914]/5 to-transparent"
+                className="absolute top-0 bottom-0 w-6 bg-gradient-to-r from-[#E50914]/5 to-transparent z-10"
                 animate={{ left: ["10%", "90%", "10%"] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
 
               {/* Pulsing marker */}
-              <motion.div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[40%]">
+              <motion.div className="absolute top-[40%] left-1/2 -translate-x-1/2 z-10">
                 <div className="relative">
                   <motion.div
-                    className="absolute -inset-3 rounded-full bg-[#E50914]/15"
-                    animate={{ scale: [1, 2.5], opacity: [0.3, 0] }}
+                    className="absolute -inset-3 rounded-full bg-[#E50914]/20"
+                    animate={{ scale: [1, 2.5], opacity: [0.4, 0] }}
                     transition={{ duration: 2.5, repeat: Infinity }}
                   />
-                  <div className="w-3 h-3 rounded-full bg-[#E50914] border-2 border-[#E50914]/50" />
+                  <div className="w-3.5 h-3.5 rounded-full bg-[#E50914] border-2 border-white/30 shadow-lg shadow-red-500/30" />
                 </div>
               </motion.div>
 
-              <div className="relative z-10 flex flex-col justify-end h-full">
-                <MapPin size={18} className="text-[#E50914] mb-2" />
-                <p className="text-white font-bold text-lg">Montr&eacute;al, QC</p>
-                <p className="text-[#999] text-sm">Canada</p>
-                <div className="flex gap-4 mt-2">
+              {/* Info overlay at bottom */}
+              <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
+                <div className="flex items-center gap-2 mb-1">
+                  <MapPin size={16} className="text-[#E50914]" />
+                  <p className="text-white font-bold text-lg">Montr&eacute;al, QC</p>
+                </div>
+                <p className="text-[#999] text-sm mb-1">Canada</p>
+                <div className="flex gap-4">
                   <span className="text-[11px] font-mono text-[#E50914]/70">45.5017&deg; N</span>
                   <span className="text-[11px] font-mono text-[#E50914]/70">73.5673&deg; W</span>
                 </div>
@@ -364,69 +439,86 @@ export default function About() {
               </div>
             </motion.div>
 
-            {/* Tech Stack — full width */}
+            {/* Programming Languages — orbiting tags */}
             <motion.div
               custom={4}
               variants={fadeUp}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="md:col-span-4 bg-[#141414] rounded-xl p-5 md:p-6 border border-white/[0.06] min-h-[120px]"
+              className="md:col-span-4 bg-[#141414] rounded-xl p-5 md:p-6 border border-white/[0.06] min-h-[260px] relative overflow-hidden"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <Code2 size={22} className="text-[#E50914]" />
-                <p className="text-[#999] text-xs uppercase tracking-wider font-medium">
-                  Core Stack
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {stack.map((s, i) => (
-                  <motion.span
-                    key={s.name}
-                    className="px-3 py-1.5 text-xs rounded-lg font-mono border"
-                    style={{
-                      color: s.color,
-                      backgroundColor: `${s.color}12`,
-                      borderColor: `${s.color}20`,
-                    }}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.3 + i * 0.06 }}
-                  >
-                    {s.name}
-                  </motion.span>
-                ))}
+              <p className="text-[#999] text-xs uppercase tracking-wider font-medium mb-2 relative z-10">
+                Programming Languages
+              </p>
+
+              {/* Orbit container */}
+              <div className="relative w-full h-[200px] flex items-center justify-center">
+                {/* Center icon */}
+                <div className="absolute z-10 w-12 h-12 rounded-full bg-[#E50914]/10 border border-[#E50914]/20 flex items-center justify-center">
+                  <span className="text-[#E50914] text-lg font-bold">&lt;/&gt;</span>
+                </div>
+
+                {/* Orbit ring visual */}
+                <div className="absolute w-[280px] h-[280px] md:w-[360px] md:h-[360px] rounded-full border border-white/[0.04]" />
+                <div className="absolute w-[180px] h-[180px] md:w-[240px] md:h-[240px] rounded-full border border-white/[0.03]" />
+
+                {/* Orbiting tags */}
+                {stack.map((s, i) => {
+                  const total = stack.length;
+                  const angle = (i / total) * 360;
+                  const radius = i % 2 === 0 ? 130 : 100;
+                  const mdRadius = i % 2 === 0 ? 170 : 120;
+                  const duration = 20 + i * 3;
+
+                  return (
+                    <motion.div
+                      key={s.name}
+                      className="absolute"
+                      style={{
+                        width: 0,
+                        height: 0,
+                      }}
+                      animate={{
+                        rotate: [angle, angle + 360],
+                      }}
+                      transition={{
+                        duration,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    >
+                      <motion.span
+                        className="absolute px-3 py-1.5 text-xs rounded-full font-mono border whitespace-nowrap shadow-lg"
+                        style={{
+                          color: s.color,
+                          backgroundColor: `${s.color}15`,
+                          borderColor: `${s.color}30`,
+                          boxShadow: `0 0 20px ${s.color}10`,
+                          top: `-${radius}px`,
+                          left: "-30px",
+                          transform: "rotate(0deg)",
+                        }}
+                        animate={{
+                          rotate: [-(angle), -(angle + 360)],
+                        }}
+                        transition={{
+                          duration,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                        whileHover={{ scale: 1.2, zIndex: 20 }}
+                      >
+                        {s.name}
+                      </motion.span>
+                    </motion.div>
+                  );
+                })}
               </div>
             </motion.div>
 
-            {/* "When I'm Not Coding" — Pokemon hobby tiles in own row */}
-            <div className="md:col-span-4 pt-2">
-              <motion.p
-                custom={5}
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="text-[#999] text-xs uppercase tracking-wider font-medium mb-4"
-              >
-                When I&apos;m not coding
-              </motion.p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {hobbies.map((hobby, idx) => (
-                  <motion.div
-                    key={hobby.title}
-                    custom={6 + idx}
-                    variants={fadeUp}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                  >
-                    <PokemonCard hobby={hobby} isActive={true} />
-                  </motion.div>
-                ))}
-              </div>
-            </div>
+            {/* "When I'm Not Coding" — auto-rotating Pokemon carousel */}
+            <HobbiesCarousel />
           </div>
         </div>
       </div>
