@@ -9,11 +9,10 @@ export default function Hero() {
       id="home"
       className="relative min-h-[90vh] flex items-end pb-[12%] overflow-hidden"
     >
-      {/* Background with subtle animated gradient */}
+      {/* Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[#141414]" />
 
-        {/* Subtle color accents */}
         <motion.div
           className="absolute top-[10%] right-[20%] w-[500px] h-[500px] rounded-full opacity-[0.03]"
           style={{ background: "radial-gradient(circle, #E50914, transparent)" }}
@@ -27,7 +26,6 @@ export default function Hero() {
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
 
-        {/* Grid pattern overlay */}
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -39,15 +37,12 @@ export default function Hero() {
           }}
         />
 
-        {/* Bottom gradient fade into content */}
         <div className="absolute bottom-0 left-0 right-0 h-[40%] netflix-gradient-bottom" />
-        {/* Left gradient for text readability */}
         <div className="absolute inset-0 netflix-gradient-left" />
       </div>
 
       {/* Content */}
       <div className="relative z-10 px-[4%] max-w-3xl">
-        {/* Category tag */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -60,31 +55,40 @@ export default function Hero() {
           </span>
         </motion.div>
 
-        {/* Name */}
+        {/* Name — single line */}
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
-          className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight leading-[0.9] mb-5"
+          className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight leading-none mb-5 whitespace-nowrap"
         >
-          Ping Chun
-          <br />
-          Lui
+          Ping Chun Lui
         </motion.h1>
 
-        {/* Description */}
+        {/* Role tag */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.45, duration: 0.6 }}
+          className="flex items-center gap-3 mb-4"
+        >
+          <span className="text-[#E50914] text-sm font-semibold tracking-wide uppercase">
+            Software Developer
+          </span>
+          <span className="w-1 h-1 rounded-full bg-[#666]" />
+          <span className="text-[#666] text-sm">Montr&eacute;al, QC</span>
+        </motion.div>
+
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.6 }}
           className="text-[#ddd] text-base md:text-lg leading-relaxed mb-8 max-w-xl"
         >
-          Software Developer specializing in AI agents, cloud architecture,
-          and full-stack development. Building products that move fast
-          and solve real problems.
+          Specializing in AI agents, cloud architecture, and full-stack
+          development. Building products that move fast and solve real problems.
         </motion.p>
 
-        {/* CTA Buttons */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
