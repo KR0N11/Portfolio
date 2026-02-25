@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Plus, ChevronDown, X, ExternalLink } from "lucide-react";
+import { Play, Plus, X, ExternalLink } from "lucide-react";
 import { projects } from "@/data/portfolio";
 
 const PROJECT_COLORS: Record<string, string> = {
@@ -27,7 +27,7 @@ const PROJECT_FRAME: Record<string, "phone" | "browser"> = {
   TutorVerse: "phone",
 };
 
-/* ── Phone Frame ── */
+/* ── Phone Frame — zoomed in ── */
 function PhoneFrame({
   image,
   alt,
@@ -40,29 +40,31 @@ function PhoneFrame({
   size?: "sm" | "md" | "lg";
 }) {
   const dims = {
-    sm: "w-[70px] h-[140px] rounded-[12px] border-[2px]",
-    md: "w-[100px] h-[200px] rounded-[16px] border-[2.5px]",
-    lg: "w-[140px] h-[280px] rounded-[22px] border-[3px]",
+    sm: "w-[90px] h-[180px] rounded-[14px] border-[2px]",
+    md: "w-[130px] h-[260px] rounded-[20px] border-[2.5px]",
+    lg: "w-[180px] h-[360px] rounded-[28px] border-[3px]",
   };
   return (
-    <div
+    <motion.div
+      animate={{ rotateY: [0, 3, 0, -3, 0], rotateX: [0, -2, 0, 2, 0] }}
+      transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
       className={`relative ${dims[size]} overflow-hidden shadow-2xl`}
       style={{
         borderColor: `${color}40`,
-        boxShadow: `0 15px 50px ${color}20`,
+        boxShadow: `0 20px 60px ${color}25, 0 0 0 1px ${color}10`,
       }}
     >
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-3 bg-[#0a0a0a] rounded-b-xl z-10"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[35%] h-3 bg-[#0a0a0a] rounded-b-xl z-10"
         style={{ borderBottom: `1px solid ${color}15` }}
       />
-      <Image src={image} alt={alt} fill className="object-cover object-top" sizes="200px" />
-      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-white/20 z-10" />
-    </div>
+      <Image src={image} alt={alt} fill className="object-cover object-top" sizes="250px" />
+      <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-white/20 z-10" />
+    </motion.div>
   );
 }
 
-/* ── Browser Frame ── */
+/* ── Browser Frame — zoomed in ── */
 function BrowserFrame({
   image,
   alt,
@@ -74,34 +76,36 @@ function BrowserFrame({
   color: string;
   size?: "sm" | "md" | "lg";
 }) {
-  const widths = { sm: "max-w-[180px]", md: "max-w-[280px]", lg: "max-w-[380px]" };
+  const widths = { sm: "max-w-[220px]", md: "max-w-[340px]", lg: "max-w-[480px]" };
   return (
-    <div
-      className={`relative w-full ${widths[size]} rounded-lg border overflow-hidden shadow-2xl`}
+    <motion.div
+      animate={{ rotateY: [0, 2, 0, -2, 0], rotateX: [0, -1.5, 0, 1.5, 0] }}
+      transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+      className={`relative w-full ${widths[size]} rounded-xl border overflow-hidden shadow-2xl`}
       style={{
         borderColor: `${color}25`,
-        boxShadow: `0 15px 50px ${color}15`,
+        boxShadow: `0 20px 60px ${color}20, 0 0 0 1px ${color}08`,
       }}
     >
       <div
-        className="flex items-center gap-1.5 px-2.5 py-1.5 border-b"
+        className="flex items-center gap-1.5 px-3 py-2 border-b"
         style={{ backgroundColor: `${color}08`, borderColor: `${color}15` }}
       >
-        <div className="flex gap-1">
-          <div className="w-2 h-2 rounded-full bg-[#ff5f57]/60" />
-          <div className="w-2 h-2 rounded-full bg-[#febc2e]/60" />
-          <div className="w-2 h-2 rounded-full bg-[#28c840]/60" />
+        <div className="flex gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]/60" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]/60" />
+          <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]/60" />
         </div>
-        <div className="flex-1 h-3.5 rounded-md mx-2 bg-white/[0.04]" />
+        <div className="flex-1 h-4 rounded-md mx-2 bg-white/[0.04]" />
       </div>
       <div className="relative aspect-[16/10]">
-        <Image src={image} alt={alt} fill className="object-cover object-top" sizes="400px" />
+        <Image src={image} alt={alt} fill className="object-cover object-top" sizes="500px" />
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-/* ── Featured (Big) Card — left side ── */
+/* ── Featured (Big) Card ── */
 function FeaturedCard({
   project,
   onClick,
@@ -123,10 +127,10 @@ function FeaturedCard({
       className="relative rounded-xl overflow-hidden bg-[#181818] border border-white/[0.04] group cursor-pointer"
       onClick={onClick}
     >
-      {/* Large visual */}
       <div
-        className="relative h-[340px] md:h-[420px] flex items-center justify-center overflow-hidden"
+        className="relative h-[380px] md:h-[480px] flex items-center justify-center overflow-hidden"
         style={{
+          perspective: "1000px",
           background: `radial-gradient(ellipse at 50% 60%, ${color}12 0%, #141414 70%)`,
         }}
       >
@@ -137,17 +141,14 @@ function FeaturedCard({
             <BrowserFrame image={image} alt={project.title} color={color} size="lg" />
           ))}
 
-        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#181818] via-transparent to-transparent" />
 
-        {/* NEW badge */}
         {isNew && (
-          <span className="absolute top-4 left-4 bg-[#E50914] text-white text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider">
+          <span className="absolute top-4 left-4 bg-[#E50914] text-white text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider z-10">
             New
           </span>
         )}
 
-        {/* Number */}
         <span
           className="absolute bottom-16 left-5 text-[80px] font-black leading-none opacity-[0.06]"
           style={{ color }}
@@ -156,7 +157,6 @@ function FeaturedCard({
         </span>
       </div>
 
-      {/* Info */}
       <div className="p-5 md:p-6">
         <div className="flex items-center gap-3 mb-2">
           <h3 className="text-xl md:text-2xl font-bold text-white">
@@ -169,7 +169,6 @@ function FeaturedCard({
           {project.description}
         </p>
 
-        {/* Action row */}
         <div className="flex items-center gap-3 mb-4">
           <button className="flex items-center gap-2 px-5 py-2 bg-white text-black rounded-md font-semibold text-sm hover:bg-white/80 transition-colors">
             <Play size={16} fill="black" />
@@ -180,7 +179,6 @@ function FeaturedCard({
           </button>
         </div>
 
-        {/* Tech */}
         <div className="flex flex-wrap gap-2">
           {project.tech.map((t) => (
             <span
@@ -201,7 +199,7 @@ function FeaturedCard({
   );
 }
 
-/* ── Small Card — right side stack ── */
+/* ── Small Card ── */
 function SmallCard({
   project,
   index,
@@ -225,10 +223,10 @@ function SmallCard({
       className="netflix-card rounded-lg overflow-hidden bg-[#181818] border border-white/[0.04] group cursor-pointer flex"
       onClick={onClick}
     >
-      {/* Left — Device frame */}
       <div
-        className="relative w-[130px] md:w-[150px] flex-shrink-0 flex items-center justify-center overflow-hidden"
+        className="relative w-[170px] md:w-[200px] flex-shrink-0 flex items-center justify-center overflow-hidden py-3"
         style={{
+          perspective: "600px",
           background: `radial-gradient(ellipse at center, ${color}10 0%, #141414 80%)`,
         }}
       >
@@ -239,7 +237,6 @@ function SmallCard({
             <BrowserFrame image={image} alt={project.title} color={color} size="sm" />
           ))}
 
-        {/* Number watermark */}
         <span
           className="absolute bottom-1 left-2 text-[40px] font-black leading-none opacity-[0.06]"
           style={{ color }}
@@ -248,7 +245,6 @@ function SmallCard({
         </span>
       </div>
 
-      {/* Right — Info */}
       <div className="flex-1 p-4 flex flex-col justify-center min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <h3 className="text-sm font-bold text-white truncate">
@@ -267,14 +263,14 @@ function SmallCard({
           {project.description}
         </p>
         <div className="flex flex-wrap gap-1">
-          {project.tech.map((t) => (
+          {project.tech.map((t, i) => (
             <span
               key={t}
               className="text-[10px] font-mono"
               style={{ color: `${color}99` }}
             >
               {t}
-              {project.tech.indexOf(t) < project.tech.length - 1 ? " ·" : ""}
+              {i < project.tech.length - 1 ? " ·" : ""}
             </span>
           ))}
         </div>
@@ -283,7 +279,7 @@ function SmallCard({
   );
 }
 
-/* ── Expanded Detail Modal ── */
+/* ── Detail Modal ── */
 function DetailModal({
   project,
   onClose,
@@ -312,10 +308,10 @@ function DetailModal({
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-2xl bg-[#181818] rounded-xl overflow-hidden shadow-2xl border border-white/[0.06]"
       >
-        {/* Header with visual */}
         <div
-          className="relative h-[200px] md:h-[260px] flex items-center justify-center"
+          className="relative h-[220px] md:h-[300px] flex items-center justify-center"
           style={{
+            perspective: "800px",
             background: `radial-gradient(ellipse at 50% 60%, ${color}15 0%, #181818 70%)`,
           }}
         >
@@ -335,15 +331,12 @@ function DetailModal({
           </button>
         </div>
 
-        {/* Content */}
         <div className="p-6 md:p-8 -mt-8 relative z-10">
           <div className="flex items-center gap-3 mb-1">
             <span className="text-[#46d369] font-bold text-sm">Featured</span>
             <span className="text-[#999] text-sm">{project.period}</span>
           </div>
-          <h3 className="text-2xl font-bold text-white mb-3">
-            {project.title}
-          </h3>
+          <h3 className="text-2xl font-bold text-white mb-3">{project.title}</h3>
           <p className="text-[#ddd] text-sm leading-relaxed mb-3">
             {project.description}
           </p>
@@ -358,17 +351,12 @@ function DetailModal({
               <span
                 key={t}
                 className="px-3 py-1.5 text-xs rounded-md font-mono border"
-                style={{
-                  borderColor: `${color}30`,
-                  color,
-                  backgroundColor: `${color}10`,
-                }}
+                style={{ borderColor: `${color}30`, color, backgroundColor: `${color}10` }}
               >
                 {t}
               </span>
             ))}
           </div>
-
           <div className="flex gap-3">
             <button className="flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-md font-semibold text-sm hover:bg-white/80 transition-colors">
               <ExternalLink size={15} />
@@ -393,46 +381,27 @@ export default function Projects() {
 
   return (
     <section id="projects" aria-label="Projects" className="py-8 md:py-12">
-      {/* Section header */}
       <div className="px-[4%] mb-6">
-        <h2 className="text-xl md:text-2xl font-bold text-white">
-          Featured Projects
-        </h2>
+        <h2 className="text-xl md:text-2xl font-bold text-white">Featured Projects</h2>
         <p className="text-[#999] text-xs mt-1">My latest work</p>
       </div>
 
-      {/* Netflix featured layout: big left, stacked right */}
       <div className="px-[4%]">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
-          {/* Featured (big) — takes 3 cols */}
           <div className="lg:col-span-3">
-            <FeaturedCard
-              project={featured}
-              onClick={() => setSelectedIdx(0)}
-            />
+            <FeaturedCard project={featured} onClick={() => setSelectedIdx(0)} />
           </div>
-
-          {/* Stacked smaller cards — takes 2 cols */}
           <div className="lg:col-span-2 flex flex-col gap-3">
             {rest.map((project, i) => (
-              <SmallCard
-                key={project.title}
-                project={project}
-                index={i}
-                onClick={() => setSelectedIdx(i + 1)}
-              />
+              <SmallCard key={project.title} project={project} index={i} onClick={() => setSelectedIdx(i + 1)} />
             ))}
           </div>
         </div>
       </div>
 
-      {/* Detail Modal */}
       <AnimatePresence>
         {selectedIdx !== null && (
-          <DetailModal
-            project={projects[selectedIdx]}
-            onClose={() => setSelectedIdx(null)}
-          />
+          <DetailModal project={projects[selectedIdx]} onClose={() => setSelectedIdx(null)} />
         )}
       </AnimatePresence>
     </section>
