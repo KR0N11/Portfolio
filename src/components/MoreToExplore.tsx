@@ -36,7 +36,7 @@ const cards: ExploreCard[] = [
     description: "Leave a message or say hello",
     icon: MessageSquare,
     color: "#a78bfa",
-    href: "#contact",
+    href: "#guestbook",
   },
   {
     title: "Achievements",
@@ -111,10 +111,10 @@ export default function MoreToExplore() {
 
                 <div className="relative z-10">
                   <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center mb-4"
+                    className="w-16 h-16 rounded-xl flex items-center justify-center mb-4"
                     style={{ backgroundColor: `${card.color}15` }}
                   >
-                    <Icon size={20} style={{ color: card.color }} />
+                    <Icon size={32} style={{ color: card.color }} />
                   </div>
 
                   <h3 className="text-base font-bold text-white mb-1">
