@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Plus, X, ExternalLink } from "lucide-react";
 import { projects } from "@/data/portfolio";
@@ -372,29 +372,78 @@ function DetailModal({
   );
 }
 
-/* ── Main Projects Section ── */
+/* ── Main Projects Section — auto-rotating featured ── */
 export default function Projects() {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  const [featuredIdx, setFeaturedIdx] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
-  const featured = projects[0];
-  const rest = projects.slice(1);
+  const nextFeatured = useCallback(() => {
+    setFeaturedIdx((p) => (p + 1) % projects.length);
+  }, []);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const timer = setInterval(nextFeatured, 6000);
+    return () => clearInterval(timer);
+  }, [isPaused, nextFeatured]);
+
+  const featured = projects[featuredIdx];
+  const rest = projects.filter((_, i) => i !== featuredIdx);
 
   return (
-    <section id="projects" aria-label="Projects" className="py-8 md:py-12">
+    <section
+      id="projects"
+      aria-label="Projects"
+      className="py-8 md:py-12"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       <div className="px-[4%] mb-6">
-        <h2 className="text-xl md:text-2xl font-bold text-white">Featured Projects</h2>
-        <p className="text-[#999] text-xs mt-1">My latest work</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-white">Featured Projects</h2>
+            <p className="text-[#999] text-xs mt-1">My latest work</p>
+          </div>
+          {/* Project dots */}
+          <div className="flex items-center gap-2">
+            {projects.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setFeaturedIdx(i)}
+                className={`rounded-full transition-all duration-300 cursor-pointer ${
+                  i === featuredIdx
+                    ? "w-6 h-1.5 bg-[#E50914]"
+                    : "w-1.5 h-1.5 bg-white/15 hover:bg-white/25"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="px-[4%]">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
           <div className="lg:col-span-3">
-            <FeaturedCard project={featured} onClick={() => setSelectedIdx(0)} />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={featuredIdx}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.4 }}
+              >
+                <FeaturedCard project={featured} onClick={() => setSelectedIdx(featuredIdx)} />
+              </motion.div>
+            </AnimatePresence>
           </div>
           <div className="lg:col-span-2 flex flex-col gap-3">
-            {rest.map((project, i) => (
-              <SmallCard key={project.title} project={project} index={i} onClick={() => setSelectedIdx(i + 1)} />
-            ))}
+            {rest.map((project, i) => {
+              const realIdx = projects.indexOf(project);
+              return (
+                <SmallCard key={project.title} project={project} index={i} onClick={() => setSelectedIdx(realIdx)} />
+              );
+            })}
           </div>
         </div>
       </div>
