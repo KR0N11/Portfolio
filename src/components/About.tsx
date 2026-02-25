@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin,
   GraduationCap,
@@ -10,6 +11,9 @@ import {
   Mountain,
   CookingPot,
   Code2,
+  ChevronLeft,
+  ChevronRight,
+  ImageIcon,
 } from "lucide-react";
 
 const fadeUp = {
@@ -21,6 +25,184 @@ const fadeUp = {
   }),
 };
 
+/* ── Hobbies Image Carousel ── */
+function HobbiesCarousel() {
+  const hobbies = [
+    {
+      icon: Dumbbell,
+      title: "Gym",
+      subtitle: "Strength training & discipline",
+      color: "#ef4444",
+      // Replace these with actual images later
+      image: null as string | null,
+    },
+    {
+      icon: Mountain,
+      title: "Bouldering",
+      subtitle: "Problem solving on walls",
+      color: "#22c55e",
+      image: "/image/Bouldering.png",
+    },
+    {
+      icon: CookingPot,
+      title: "Cooking",
+      subtitle: "Creating from scratch",
+      color: "#fbbf24",
+      image: null as string | null,
+    },
+  ];
+
+  const [current, setCurrent] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startAuto = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setCurrent((p) => (p + 1) % hobbies.length);
+    }, 5000);
+  };
+
+  useEffect(() => {
+    startAuto();
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const goTo = (idx: number) => {
+    setCurrent(idx);
+    startAuto();
+  };
+
+  const prev = () => goTo((current - 1 + hobbies.length) % hobbies.length);
+  const next = () => goTo((current + 1) % hobbies.length);
+
+  const hobby = hobbies[current];
+  const Icon = hobby.icon;
+
+  return (
+    <motion.div
+      custom={7}
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      className="sm:col-span-2 bg-[#141414] rounded-lg border border-white/[0.06] overflow-hidden"
+    >
+      <div className="p-4 pb-2">
+        <p className="text-[#999] text-xs uppercase tracking-wider mb-3">
+          When I&apos;m not coding
+        </p>
+      </div>
+
+      {/* Carousel */}
+      <div className="relative h-[220px] md:h-[260px] overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current}
+            initial={{ opacity: 0, x: 60 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -60 }}
+            transition={{ duration: 0.35 }}
+            className="absolute inset-0"
+          >
+            {hobby.image ? (
+              /* Has image */
+              <div className="relative w-full h-full">
+                <Image
+                  src={hobby.image}
+                  alt={hobby.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#141414]/60 to-transparent" />
+
+                {/* Info overlay */}
+                <div className="absolute bottom-4 left-4 right-4 z-10">
+                  <div className="flex items-center gap-3 mb-1">
+                    <div
+                      className="p-2 rounded-lg"
+                      style={{ backgroundColor: `${hobby.color}20` }}
+                    >
+                      <Icon size={20} style={{ color: hobby.color }} />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-bold text-white">
+                        {hobby.title}
+                      </h4>
+                      <p className="text-[#bbb] text-xs">{hobby.subtitle}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Placeholder — add images later */
+              <div
+                className="w-full h-full flex flex-col items-center justify-center gap-4"
+                style={{
+                  background: `radial-gradient(ellipse at center, ${hobby.color}08 0%, #141414 70%)`,
+                }}
+              >
+                <div
+                  className="p-4 rounded-2xl"
+                  style={{ backgroundColor: `${hobby.color}12` }}
+                >
+                  <Icon size={40} style={{ color: hobby.color }} />
+                </div>
+                <div className="text-center">
+                  <h4 className="text-xl font-bold text-white mb-1">
+                    {hobby.title}
+                  </h4>
+                  <p className="text-[#888] text-xs">{hobby.subtitle}</p>
+                </div>
+                <div className="flex items-center gap-2 mt-2 text-[#444]">
+                  <ImageIcon size={12} />
+                  <span className="text-[10px] font-mono">
+                    Image coming soon
+                  </span>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Nav arrows */}
+        <button
+          onClick={prev}
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-20 p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/[0.08] text-white/50 hover:text-white hover:bg-black/70 transition-all cursor-pointer"
+        >
+          <ChevronLeft size={16} />
+        </button>
+        <button
+          onClick={next}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 p-1.5 rounded-full bg-black/50 backdrop-blur-sm border border-white/[0.08] text-white/50 hover:text-white hover:bg-black/70 transition-all cursor-pointer"
+        >
+          <ChevronRight size={16} />
+        </button>
+      </div>
+
+      {/* Dots */}
+      <div className="flex items-center justify-center gap-2 py-3">
+        {hobbies.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i)}
+            className={`rounded-full transition-all duration-300 cursor-pointer ${
+              i === current
+                ? "w-6 h-1.5 bg-[#E50914]"
+                : "w-1.5 h-1.5 bg-white/15 hover:bg-white/25"
+            }`}
+          />
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+/* ── Main About Section ── */
 export default function About() {
   const stack = [
     { name: "React", color: "#61dafb" },
@@ -31,12 +213,6 @@ export default function About() {
     { name: "Firebase", color: "#ffca28" },
   ];
 
-  const hobbies = [
-    { icon: Dumbbell, name: "Gym", color: "#ef4444" },
-    { icon: Mountain, name: "Bouldering", color: "#22c55e" },
-    { icon: CookingPot, name: "Cooking", color: "#fbbf24" },
-  ];
-
   const languages = [
     { lang: "EN", level: 100 },
     { lang: "FR", level: 90 },
@@ -45,11 +221,10 @@ export default function About() {
 
   return (
     <section id="about" className="relative" aria-label="About me">
-      {/* Netflix-style detail panel */}
       <div className="bg-[#181818] border-t border-b border-white/[0.06]">
         <div className="max-w-6xl mx-auto px-[4%] py-10 md:py-14">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            {/* Left column - Photo */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+            {/* Left column — Photo */}
             <motion.div
               custom={0}
               variants={fadeUp}
@@ -58,7 +233,7 @@ export default function About() {
               viewport={{ once: true }}
               className="md:col-span-1"
             >
-              <div className="relative aspect-[3/4] rounded-lg overflow-hidden max-w-[280px] mx-auto md:mx-0">
+              <div className="relative aspect-[3/4] rounded-lg overflow-hidden max-w-[280px] mx-auto md:mx-0 shadow-2xl">
                 <Image
                   src="/image/me.jpg"
                   alt="Ping Chun Lui"
@@ -67,11 +242,13 @@ export default function About() {
                   sizes="(max-width: 768px) 70vw, 280px"
                   priority
                 />
+                {/* Subtle gradient at bottom */}
+                <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-[#181818] to-transparent" />
               </div>
             </motion.div>
 
-            {/* Right column - Info */}
-            <div className="md:col-span-2 flex flex-col gap-6">
+            {/* Right column — Info */}
+            <div className="md:col-span-2 flex flex-col gap-5">
               {/* Header */}
               <motion.div
                 custom={1}
@@ -99,8 +276,8 @@ export default function About() {
                 </p>
               </motion.div>
 
-              {/* Info grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {/* Info grid — 2 cols */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Location + Map */}
                 <motion.div
                   custom={2}
@@ -110,7 +287,6 @@ export default function About() {
                   viewport={{ once: true }}
                   className="bg-[#141414] rounded-lg p-4 border border-white/[0.06] relative overflow-hidden"
                 >
-                  {/* Mini map SVG */}
                   <div className="absolute inset-0 opacity-20">
                     <svg
                       viewBox="0 0 200 200"
@@ -175,9 +351,7 @@ export default function About() {
                   <p className="text-white font-semibold text-sm">
                     Coll&egrave;ge LaSalle
                   </p>
-                  <p className="text-[#999] text-xs">
-                    DEC in Computer Science
-                  </p>
+                  <p className="text-[#999] text-xs">DEC in Computer Science</p>
                   <p className="text-[#666] text-[11px] font-mono mt-2">
                     Graduating 2026
                   </p>
@@ -244,34 +418,10 @@ export default function About() {
                     ))}
                   </div>
                 </motion.div>
-              </div>
 
-              {/* Hobbies row */}
-              <motion.div
-                custom={6}
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-              >
-                <p className="text-[#999] text-xs mb-2 uppercase tracking-wider">
-                  When I&apos;m not coding
-                </p>
-                <div className="flex gap-3">
-                  {hobbies.map((h) => {
-                    const Icon = h.icon;
-                    return (
-                      <div
-                        key={h.name}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#141414] border border-white/[0.06]"
-                      >
-                        <Icon size={14} style={{ color: h.color }} />
-                        <span className="text-[#ccc] text-xs">{h.name}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
+                {/* Hobbies Carousel — spans 2 cols */}
+                <HobbiesCarousel />
+              </div>
             </div>
           </div>
         </div>
