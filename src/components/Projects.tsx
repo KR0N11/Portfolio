@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Plus, X, ExternalLink } from "lucide-react";
+import { Play, X, ExternalLink } from "lucide-react";
 import { projects } from "@/data/portfolio";
 
 const PROJECT_COLORS: Record<string, string> = {
@@ -165,34 +165,26 @@ function FeaturedCard({
           <span className="text-[11px] font-mono text-[#666]">{project.period}</span>
         </div>
 
-        <p className="text-[#bbb] text-sm leading-relaxed mb-4 max-w-md">
+        <p className="text-[#bbb] text-sm leading-relaxed mb-3 max-w-md">
           {project.description}
         </p>
 
-        <div className="flex items-center gap-3 mb-4">
-          <button className="flex items-center gap-2 px-5 py-2 bg-white text-black rounded-md font-semibold text-sm hover:bg-white/80 transition-colors">
-            <Play size={16} fill="black" />
+        <div className="flex items-center gap-3">
+          <div className="flex flex-wrap gap-1.5 flex-1">
+            {project.tech.map((t) => (
+              <span
+                key={t}
+                className="px-2 py-0.5 text-[10px] rounded font-mono"
+                style={{ color, backgroundColor: `${color}10` }}
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+          <button className="flex items-center gap-1.5 px-4 py-1.5 bg-white text-black rounded-md font-semibold text-xs hover:bg-white/80 transition-colors flex-shrink-0">
+            <Play size={12} fill="black" />
             Details
           </button>
-          <button className="p-2 rounded-full border border-[#999]/30 text-[#999] hover:text-white hover:border-white transition-all">
-            <Plus size={16} />
-          </button>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          {project.tech.map((t) => (
-            <span
-              key={t}
-              className="px-2.5 py-1 text-[11px] rounded-md font-mono border"
-              style={{
-                borderColor: `${color}25`,
-                color,
-                backgroundColor: `${color}08`,
-              }}
-            >
-              {t}
-            </span>
-          ))}
         </div>
       </div>
     </motion.div>
@@ -250,27 +242,19 @@ function SmallCard({
           <h3 className="text-sm font-bold text-white truncate">
             {project.title}
           </h3>
-          {(project.period.includes("2025") || project.period.includes("2026")) && (
-            <span className="bg-[#E50914] text-white text-[8px] font-bold px-1.5 py-0.5 rounded uppercase flex-shrink-0">
-              New
-            </span>
-          )}
+          <span className="text-[10px] font-mono text-[#555]">{project.period}</span>
         </div>
-        <p className="text-[10px] font-mono text-[#666] mb-2">
-          {project.period}
-        </p>
         <p className="text-[#999] text-xs leading-relaxed line-clamp-2 mb-2">
           {project.description}
         </p>
         <div className="flex flex-wrap gap-1">
-          {project.tech.map((t, i) => (
+          {project.tech.map((t) => (
             <span
               key={t}
-              className="text-[10px] font-mono"
-              style={{ color: `${color}99` }}
+              className="px-1.5 py-0.5 text-[9px] rounded font-mono"
+              style={{ color: `${color}99`, backgroundColor: `${color}08` }}
             >
               {t}
-              {i < project.tech.length - 1 ? " ·" : ""}
             </span>
           ))}
         </div>
@@ -332,26 +316,17 @@ function DetailModal({
         </div>
 
         <div className="p-6 md:p-8 -mt-8 relative z-10">
-          <div className="flex items-center gap-3 mb-1">
-            <span className="text-[#46d369] font-bold text-sm">Featured</span>
-            <span className="text-[#999] text-sm">{project.period}</span>
-          </div>
-          <h3 className="text-2xl font-bold text-white mb-3">{project.title}</h3>
-          <p className="text-[#ddd] text-sm leading-relaxed mb-3">
+          <span className="text-[#999] text-xs font-mono">{project.period}</span>
+          <h3 className="text-2xl font-bold text-white mb-2 mt-1">{project.title}</h3>
+          <p className="text-[#ccc] text-sm leading-relaxed mb-4">
             {project.description}
           </p>
-          {project.highlight && (
-            <p className="text-[#888] text-xs leading-relaxed mb-4">
-              <span className="text-[#666]">Highlight: </span>
-              {project.highlight}
-            </p>
-          )}
           <div className="flex flex-wrap gap-2 mb-5">
             {project.tech.map((t) => (
               <span
                 key={t}
-                className="px-3 py-1.5 text-xs rounded-md font-mono border"
-                style={{ borderColor: `${color}30`, color, backgroundColor: `${color}10` }}
+                className="px-2.5 py-1 text-xs rounded-md font-mono"
+                style={{ color, backgroundColor: `${color}10` }}
               >
                 {t}
               </span>
