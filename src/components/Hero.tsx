@@ -120,32 +120,32 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* Right — Profile picture */}
+        {/* Right — Profile picture (faded into background) */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
+          transition={{ delay: 0.4, duration: 1 }}
           className="order-1 md:order-2 flex justify-center md:justify-end"
         >
           <div className="relative">
-            {/* Glow behind photo */}
-            <div className="absolute -inset-6 bg-[#E50914]/[0.06] rounded-full blur-3xl" />
-            <div className="absolute -inset-10 bg-white/[0.02] rounded-full blur-3xl" />
+            {/* Soft atmospheric glow behind photo */}
+            <div className="absolute -inset-16 bg-[#E50914]/[0.04] rounded-full blur-[80px]" />
+            <div className="absolute -inset-20 bg-white/[0.015] rounded-full blur-[100px]" />
 
-            {/* Photo */}
-            <div className="relative w-[260px] h-[340px] sm:w-[300px] sm:h-[390px] md:w-[340px] md:h-[440px] rounded-2xl overflow-hidden border-2 border-white/[0.08] shadow-2xl">
+            {/* Photo with fade-out edges */}
+            <div className="relative w-[280px] h-[380px] sm:w-[320px] sm:h-[430px] md:w-[380px] md:h-[500px]">
               <Image
                 src="/image/me.jpg"
                 alt="Ping Chun Lui"
                 fill
                 className="object-cover object-top"
-                sizes="(max-width: 768px) 260px, 340px"
+                sizes="(max-width: 768px) 280px, 380px"
                 priority
+                style={{
+                  maskImage: "radial-gradient(ellipse 70% 65% at 50% 35%, black 30%, transparent 72%)",
+                  WebkitMaskImage: "radial-gradient(ellipse 70% 65% at 50% 35%, black 30%, transparent 72%)",
+                }}
               />
-              {/* Bottom gradient */}
-              <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-[#141414] to-transparent" />
-              {/* Subtle vignette */}
-              <div className="absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.3)]" />
             </div>
           </div>
         </motion.div>

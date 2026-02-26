@@ -36,7 +36,8 @@ const cards: ExploreCard[] = [
     description: "Leave a message or say hello",
     icon: MessageSquare,
     color: "#a78bfa",
-    href: "#guestbook",
+    href: "/guestbook",
+    external: true,
   },
   {
     title: "Achievements",
