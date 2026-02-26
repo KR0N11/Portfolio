@@ -44,7 +44,8 @@ const cards: ExploreCard[] = [
     description: "Awards, certifications & milestones",
     icon: Trophy,
     color: "#f59e0b",
-    href: "#achievements",
+    href: "/achievements",
+    external: true,
   },
   {
     title: "My Links",

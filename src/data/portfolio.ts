@@ -24,7 +24,6 @@ export const skillCategories: SkillCategory[] = [
       { name: "C#", icon: `${DI}/csharp/csharp-original.svg`, abbr: "C#" },
       { name: "SQL", icon: `${SI}/mysql/4479A1`, abbr: "SQL" },
       { name: "Swift", icon: `${DI}/swift/swift-original.svg`, abbr: "Sw" },
-      { name: "JSON", icon: `${DI}/json/json-original.svg`, abbr: "{}" },
     ],
   },
   {
