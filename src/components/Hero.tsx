@@ -125,25 +125,25 @@ export default function Hero() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4, duration: 1 }}
-          className="order-1 md:order-2 flex justify-center md:justify-end"
+          className="order-1 md:order-2 flex justify-center md:justify-end overflow-hidden"
         >
           <div className="relative">
             {/* Soft atmospheric glow behind photo */}
-            <div className="absolute -inset-16 bg-[#E50914]/[0.04] rounded-full blur-[80px]" />
-            <div className="absolute -inset-20 bg-white/[0.015] rounded-full blur-[100px]" />
+            <div className="absolute -inset-8 bg-[#E50914]/[0.03] rounded-full blur-[60px]" />
+            <div className="absolute -inset-10 bg-white/[0.01] rounded-full blur-[60px]" />
 
             {/* Photo with fade-out edges */}
-            <div className="relative w-[280px] h-[380px] sm:w-[320px] sm:h-[430px] md:w-[380px] md:h-[500px]">
+            <div className="relative w-[220px] h-[300px] sm:w-[250px] sm:h-[340px] md:w-[280px] md:h-[380px]">
               <Image
                 src="/image/me.jpg"
                 alt="Ping Chun Lui"
                 fill
                 className="object-cover object-top"
-                sizes="(max-width: 768px) 280px, 380px"
+                sizes="(max-width: 768px) 220px, 280px"
                 priority
                 style={{
-                  maskImage: "radial-gradient(ellipse 70% 65% at 50% 35%, black 30%, transparent 72%)",
-                  WebkitMaskImage: "radial-gradient(ellipse 70% 65% at 50% 35%, black 30%, transparent 72%)",
+                  maskImage: "radial-gradient(ellipse 65% 60% at 50% 35%, black 35%, transparent 70%)",
+                  WebkitMaskImage: "radial-gradient(ellipse 65% 60% at 50% 35%, black 35%, transparent 70%)",
                 }}
               />
             </div>
