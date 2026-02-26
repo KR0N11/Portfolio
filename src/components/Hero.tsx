@@ -125,25 +125,27 @@ export default function Hero() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4, duration: 1 }}
-          className="order-1 md:order-2 flex justify-center md:justify-end overflow-hidden"
+          className="order-1 md:order-2 flex justify-center md:justify-end"
         >
           <div className="relative">
             {/* Soft atmospheric glow behind photo */}
-            <div className="absolute -inset-8 bg-[#E50914]/[0.03] rounded-full blur-[60px]" />
-            <div className="absolute -inset-10 bg-white/[0.01] rounded-full blur-[60px]" />
+            <div className="absolute -inset-10 bg-[#E50914]/[0.03] rounded-full blur-[60px]" />
+            <div className="absolute -inset-14 bg-white/[0.01] rounded-full blur-[80px]" />
 
-            {/* Photo with fade-out edges */}
-            <div className="relative w-[220px] h-[300px] sm:w-[250px] sm:h-[340px] md:w-[280px] md:h-[380px]">
+            {/* Photo — fade sides + bottom, top stays sharp */}
+            <div className="relative w-[260px] h-[360px] sm:w-[300px] sm:h-[410px] md:w-[340px] md:h-[460px]">
               <Image
                 src="/image/me.jpg"
                 alt="Ping Chun Lui"
                 fill
                 className="object-cover object-top"
-                sizes="(max-width: 768px) 220px, 280px"
+                sizes="(max-width: 768px) 260px, 340px"
                 priority
                 style={{
-                  maskImage: "radial-gradient(ellipse 65% 60% at 50% 35%, black 35%, transparent 70%)",
-                  WebkitMaskImage: "radial-gradient(ellipse 65% 60% at 50% 35%, black 35%, transparent 70%)",
+                  maskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent), linear-gradient(to bottom, black 55%, transparent 100%)",
+                  WebkitMaskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent), linear-gradient(to bottom, black 55%, transparent 100%)",
+                  maskComposite: "intersect",
+                  WebkitMaskComposite: "source-in",
                 }}
               />
             </div>
