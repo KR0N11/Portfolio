@@ -132,18 +132,18 @@ export default function Hero() {
             <div className="absolute -inset-10 bg-[#E50914]/[0.03] rounded-full blur-[60px]" />
             <div className="absolute -inset-14 bg-white/[0.01] rounded-full blur-[80px]" />
 
-            {/* Photo — fade sides + bottom, top stays sharp */}
-            <div className="relative w-[260px] h-[360px] sm:w-[300px] sm:h-[410px] md:w-[340px] md:h-[460px]">
+            {/* Photo — full width, fade sides + bottom, top sharp */}
+            <div className="relative w-[320px] h-[240px] sm:w-[380px] sm:h-[285px] md:w-[440px] md:h-[330px]">
               <Image
                 src="/image/me.jpg"
                 alt="Ping Chun Lui"
                 fill
                 className="object-cover object-top"
-                sizes="(max-width: 768px) 260px, 340px"
+                sizes="(max-width: 768px) 320px, 440px"
                 priority
                 style={{
-                  maskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent), linear-gradient(to bottom, black 55%, transparent 100%)",
-                  WebkitMaskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent), linear-gradient(to bottom, black 55%, transparent 100%)",
+                  maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent), linear-gradient(to bottom, black 55%, transparent 100%)",
+                  WebkitMaskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent), linear-gradient(to bottom, black 55%, transparent 100%)",
                   maskComposite: "intersect",
                   WebkitMaskComposite: "source-in",
                 }}
