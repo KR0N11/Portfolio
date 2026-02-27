@@ -104,7 +104,7 @@ function PokemonCard({
         {/* Image area */}
         <div className="mx-3 mt-1 mb-2 relative z-10">
           <div
-            className="relative h-[150px] md:h-[180px] rounded-lg overflow-hidden border"
+            className="relative h-[180px] md:h-[220px] rounded-lg overflow-hidden border"
             style={{ borderColor: `${hobby.color}30` }}
           >
             {hobby.image ? (
@@ -258,7 +258,7 @@ function HobbiesCarousel() {
 
       {/* 3D Coverflow container */}
       <div
-        className="relative w-full h-[460px] md:h-[520px]"
+        className="relative w-full h-[520px] md:h-[600px]"
         style={{ perspective: "1200px" }}
       >
         {/* Subtle background glow */}
@@ -281,7 +281,7 @@ function HobbiesCarousel() {
               return (
                 <motion.div
                   key={hobby.title}
-                  className="absolute w-[260px] md:w-[300px]"
+                  className="absolute w-[300px] md:w-[360px]"
                   animate={{
                     x: xShift,
                     z: zShift,

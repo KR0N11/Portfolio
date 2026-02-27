@@ -370,7 +370,7 @@ export default function Projects() {
     <section
       id="projects"
       aria-label="Projects"
-      className="py-8 md:py-12"
+      className="py-8 md:py-12 bg-[#141414]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >

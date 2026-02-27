@@ -138,7 +138,7 @@ export default function Experience() {
     <section
       id="experience"
       aria-label="Work experience"
-      className="py-16 md:py-24"
+      className="py-16 md:py-24 bg-[#141414]"
     >
       <div className="max-w-4xl mx-auto px-[4%]">
         {/* Header */}
