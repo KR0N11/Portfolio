@@ -11,6 +11,8 @@ import {
   CookingPot,
   ImageIcon,
   Sparkles,
+  Layers,
+  Disc,
 } from "lucide-react";
 
 const fadeUp = {
@@ -102,7 +104,7 @@ function PokemonCard({
         {/* Image area */}
         <div className="mx-3 mt-1 mb-2 relative z-10">
           <div
-            className="relative h-[140px] md:h-[160px] rounded-lg overflow-hidden border"
+            className="relative h-[150px] md:h-[180px] rounded-lg overflow-hidden border"
             style={{ borderColor: `${hobby.color}30` }}
           >
             {hobby.image ? (
@@ -192,18 +194,48 @@ const hobbies = [
     attack: "Flavor Blast",
     image: null as string | null,
   },
+  {
+    icon: Layers,
+    title: "Pokemon Cards",
+    subtitle: "Collecting & trading rare cards",
+    color: "#a78bfa",
+    type: "PSYCHIC",
+    hp: 110,
+    attack: "Rare Pull",
+    image: null as string | null,
+  },
+  {
+    icon: Disc,
+    title: "Ping Pong",
+    subtitle: "Fast reflexes & strategy",
+    color: "#38bdf8",
+    type: "WATER",
+    hp: 95,
+    attack: "Spin Serve",
+    image: null as string | null,
+  },
 ];
 
-/* ── Auto-rotating Hobbies Carousel ── */
+/* ── 3D Coverflow Carousel ── */
 function HobbiesCarousel() {
   const [current, setCurrent] = useState(0);
+  const total = hobbies.length;
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrent((p) => (p + 1) % hobbies.length);
-    }, 4000);
+      setCurrent((p) => (p + 1) % total);
+    }, 3500);
     return () => clearInterval(timer);
-  }, []);
+  }, [total]);
+
+  // For each card, calculate its offset from the current
+  const getOffset = (idx: number) => {
+    let diff = idx - current;
+    // Wrap around for circular effect
+    if (diff > total / 2) diff -= total;
+    if (diff < -total / 2) diff += total;
+    return diff;
+  };
 
   return (
     <motion.div
@@ -212,58 +244,75 @@ function HobbiesCarousel() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
-      className="md:col-span-4 pt-2"
+      className="md:col-span-4 pt-8"
     >
-      <p className="text-[#999] text-xs uppercase tracking-wider font-medium mb-4">
-        When I&apos;m not coding
-      </p>
+      {/* Section header */}
+      <div className="text-center mb-10">
+        <p className="text-[#E50914] text-xs font-semibold tracking-[0.3em] uppercase mb-2">
+          Off the clock
+        </p>
+        <h3 className="text-xl md:text-2xl font-bold text-white">
+          When I&apos;m Not Coding
+        </h3>
+      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {hobbies.map((hobby, idx) => (
-          <motion.div
-            key={hobby.title}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: idx * 0.1 }}
-            className="relative"
-          >
-            {/* Active highlight ring */}
-            <motion.div
-              className="absolute -inset-1 rounded-xl z-0"
-              animate={{
-                boxShadow:
-                  idx === current
-                    ? `0 0 25px ${hobby.color}30, 0 0 50px ${hobby.color}15`
-                    : "0 0 0px transparent",
-                borderColor: idx === current ? `${hobby.color}40` : "transparent",
-              }}
-              transition={{ duration: 0.6 }}
-              style={{ border: "2px solid transparent", borderRadius: "14px" }}
-            />
-            <motion.div
-              animate={{
-                scale: idx === current ? 1.03 : 0.97,
-                opacity: idx === current ? 1 : 0.6,
-              }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-            >
-              <PokemonCard hobby={hobby} isActive={idx === current} />
-            </motion.div>
-          </motion.div>
-        ))}
+      {/* 3D Coverflow container */}
+      <div
+        className="relative w-full h-[460px] md:h-[520px]"
+        style={{ perspective: "1200px" }}
+      >
+        {/* Subtle background glow */}
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[300px] bg-[#E50914]/[0.02] blur-[100px] rounded-full pointer-events-none" />
+
+        <div className="relative w-full h-full flex items-center justify-center">
+          <AnimatePresence>
+            {hobbies.map((hobby, idx) => {
+              const offset = getOffset(idx);
+              const absOffset = Math.abs(offset);
+
+              if (absOffset > 2) return null;
+
+              const xShift = offset * 280;
+              const zShift = -absOffset * 160;
+              const rotateY = offset * -35;
+              const scale = 1 - absOffset * 0.1;
+              const opacity = 1 - absOffset * 0.3;
+
+              return (
+                <motion.div
+                  key={hobby.title}
+                  className="absolute w-[260px] md:w-[300px]"
+                  animate={{
+                    x: xShift,
+                    z: zShift,
+                    rotateY,
+                    scale,
+                    opacity,
+                  }}
+                  transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
+                  style={{
+                    zIndex: 10 - absOffset,
+                    transformStyle: "preserve-3d",
+                  }}
+                >
+                  <PokemonCard hobby={hobby} isActive={offset === 0} />
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Carousel dots */}
-      <div className="flex items-center justify-center gap-2 mt-4">
+      <div className="flex items-center justify-center gap-2.5 mt-8">
         {hobbies.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrent(i)}
             className={`rounded-full transition-all duration-300 cursor-pointer ${
               i === current
-                ? "w-6 h-1.5 bg-[#E50914]"
-                : "w-1.5 h-1.5 bg-white/15 hover:bg-white/25"
+                ? "w-7 h-2 bg-[#E50914]"
+                : "w-2 h-2 bg-white/15 hover:bg-white/25"
             }`}
           />
         ))}
@@ -272,15 +321,15 @@ function HobbiesCarousel() {
   );
 }
 
-/* ── Main About Section — no profile pic, full-width tiles ── */
+/* ── Main About Section ── */
 export default function About() {
   const stack = [
-    { name: "React", color: "#61dafb" },
+    { name: "AI Agents", color: "#E50914" },
+    { name: "Cloud", color: "#0078d4" },
+    { name: "Full-Stack", color: "#61dafb" },
     { name: "Java", color: "#f89820" },
-    { name: "Swift", color: "#fa7343" },
-    { name: "Azure", color: "#0078d4" },
     { name: "Python", color: "#3776ab" },
-    { name: "Firebase", color: "#ffca28" },
+    { name: "Azure", color: "#0078d4" },
   ];
 
   const languages = [
@@ -292,7 +341,7 @@ export default function About() {
   return (
     <section id="about" className="relative" aria-label="About me">
       <div className="bg-[#181818] border-t border-b border-white/[0.06]">
-        <div className="max-w-6xl mx-auto px-[4%] py-10 md:py-14">
+        <div className="max-w-6xl mx-auto px-[4%] py-14 md:py-20">
           {/* Header */}
           <motion.div
             custom={0}
@@ -300,7 +349,7 @@ export default function About() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="mb-8"
+            className="mb-10"
           >
             <div className="flex items-center gap-3 mb-2">
               <span className="text-[#46d369] font-bold text-sm">
@@ -322,8 +371,8 @@ export default function About() {
           </motion.div>
 
           {/* Full-width tile grid — 4 cols on desktop */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {/* Location + Real Map — 2 cols */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 md:gap-6">
+            {/* Location + Real Map — 2 cols (all black/grey, no waypoint, keep dot) */}
             <motion.div
               custom={1}
               variants={fadeUp}
@@ -332,14 +381,14 @@ export default function About() {
               viewport={{ once: true }}
               className="md:col-span-2 bg-[#141414] rounded-xl border border-white/[0.06] relative overflow-hidden min-h-[220px]"
             >
-              {/* Actual OpenStreetMap embed — dark filtered */}
+              {/* OpenStreetMap — black & grey, no marker in URL */}
               <div className="absolute inset-0">
                 <iframe
                   title="Montreal Map"
-                  src="https://www.openstreetmap.org/export/embed.html?bbox=-73.63,45.47,-73.52,45.53&layer=mapnik&marker=45.5017,-73.5673"
+                  src="https://www.openstreetmap.org/export/embed.html?bbox=-73.63,45.47,-73.52,45.53&layer=mapnik"
                   className="w-full h-full border-0"
                   style={{
-                    filter: "invert(1) hue-rotate(180deg) brightness(0.7) contrast(1.3) saturate(0.3)",
+                    filter: "grayscale(1) invert(1) brightness(0.55) contrast(1.4)",
                   }}
                   loading="lazy"
                 />
@@ -360,7 +409,7 @@ export default function About() {
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
 
-              {/* Pulsing marker */}
+              {/* Pulsing dot only (no waypoint marker icon) */}
               <motion.div className="absolute top-[40%] left-1/2 -translate-x-1/2 z-10">
                 <div className="relative">
                   <motion.div
@@ -368,7 +417,7 @@ export default function About() {
                     animate={{ scale: [1, 2.5], opacity: [0.4, 0] }}
                     transition={{ duration: 2.5, repeat: Infinity }}
                   />
-                  <div className="w-3.5 h-3.5 rounded-full bg-[#E50914] border-2 border-white/30 shadow-lg shadow-red-500/30" />
+                  <div className="w-3 h-3 rounded-full bg-[#E50914] border-2 border-white/20 shadow-lg shadow-red-500/30" />
                 </div>
               </motion.div>
 
@@ -439,85 +488,67 @@ export default function About() {
               </div>
             </motion.div>
 
-            {/* Programming Languages — orbiting tags */}
+            {/* What I Build With — floating animated tags */}
             <motion.div
               custom={4}
               variants={fadeUp}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="md:col-span-4 bg-[#141414] rounded-xl p-5 md:p-6 border border-white/[0.06] min-h-[260px] relative overflow-hidden"
+              className="md:col-span-4 bg-[#141414] rounded-xl p-6 md:p-8 border border-white/[0.06] relative overflow-hidden"
             >
-              <p className="text-[#999] text-xs uppercase tracking-wider font-medium mb-2 relative z-10">
-                Programming Languages
+              <p className="text-[#999] text-xs uppercase tracking-wider font-medium mb-6 relative z-10">
+                What I Build With
               </p>
 
-              {/* Orbit container */}
-              <div className="relative w-full h-[200px] flex items-center justify-center">
-                {/* Center icon */}
-                <div className="absolute z-10 w-12 h-12 rounded-full bg-[#E50914]/10 border border-[#E50914]/20 flex items-center justify-center">
-                  <span className="text-[#E50914] text-lg font-bold">&lt;/&gt;</span>
-                </div>
-
-                {/* Orbit ring visual */}
-                <div className="absolute w-[280px] h-[280px] md:w-[360px] md:h-[360px] rounded-full border border-white/[0.04]" />
-                <div className="absolute w-[180px] h-[180px] md:w-[240px] md:h-[240px] rounded-full border border-white/[0.03]" />
-
-                {/* Orbiting tags */}
-                {stack.map((s, i) => {
-                  const total = stack.length;
-                  const angle = (i / total) * 360;
-                  const radius = i % 2 === 0 ? 130 : 100;
-                  const mdRadius = i % 2 === 0 ? 170 : 120;
-                  const duration = 20 + i * 3;
-
-                  return (
+              {/* Floating tags */}
+              <div className="flex flex-wrap items-center justify-center gap-4 py-4">
+                {stack.map((s, i) => (
+                  <motion.div
+                    key={s.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.08 }}
+                    animate={{ y: [0, -8, 0] }}
+                    whileHover={{ scale: 1.15, y: -4 }}
+                    className="group relative cursor-default"
+                    style={{
+                      animationDelay: `${i * 0.4}s`,
+                    }}
+                  >
+                    {/* Glow behind on hover */}
+                    <div
+                      className="absolute -inset-3 rounded-2xl blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-300"
+                      style={{ background: s.color }}
+                    />
                     <motion.div
-                      key={s.name}
-                      className="absolute"
-                      style={{
-                        width: 0,
-                        height: 0,
-                      }}
-                      animate={{
-                        rotate: [angle, angle + 360],
-                      }}
+                      animate={{ y: [0, -8, 0] }}
                       transition={{
-                        duration,
+                        duration: 3 + i * 0.5,
                         repeat: Infinity,
-                        ease: "linear",
+                        ease: "easeInOut",
+                        delay: i * 0.3,
                       }}
                     >
-                      <motion.span
-                        className="absolute px-3 py-1.5 text-xs rounded-full font-mono border whitespace-nowrap shadow-lg"
+                      <div
+                        className="relative px-5 py-3 rounded-xl border text-sm font-mono font-medium shadow-lg"
                         style={{
                           color: s.color,
-                          backgroundColor: `${s.color}15`,
-                          borderColor: `${s.color}30`,
-                          boxShadow: `0 0 20px ${s.color}10`,
-                          top: `-${radius}px`,
-                          left: "-30px",
-                          transform: "rotate(0deg)",
+                          backgroundColor: `${s.color}10`,
+                          borderColor: `${s.color}25`,
+                          boxShadow: `0 4px 20px ${s.color}15`,
                         }}
-                        animate={{
-                          rotate: [-(angle), -(angle + 360)],
-                        }}
-                        transition={{
-                          duration,
-                          repeat: Infinity,
-                          ease: "linear",
-                        }}
-                        whileHover={{ scale: 1.2, zIndex: 20 }}
                       >
                         {s.name}
-                      </motion.span>
+                      </div>
                     </motion.div>
-                  );
-                })}
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
 
-            {/* "When I'm Not Coding" — auto-rotating Pokemon carousel */}
+            {/* "When I'm Not Coding" — 3D Cylinder carousel */}
             <HobbiesCarousel />
           </div>
         </div>

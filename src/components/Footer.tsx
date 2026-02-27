@@ -112,7 +112,7 @@ export default function Footer() {
             <div>
               <p className="text-[#999] text-xs mb-3 font-medium">More</p>
               <ul className="space-y-2">
-                {["Achievements", "Contact"].map((item) => (
+                {["Contact"].map((item) => (
                   <li key={item}>
                     <button
                       onClick={() => {

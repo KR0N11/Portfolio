@@ -41,10 +41,53 @@ export default function Hero() {
         <div className="absolute bottom-0 left-0 right-0 h-[40%] netflix-gradient-bottom" />
       </div>
 
-      {/* Two-column content */}
-      <div className="relative z-10 w-full px-[4%] grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center pt-[68px]">
-        {/* Left — Text */}
-        <div className="order-2 md:order-1">
+      {/* Profile pic — absolute, covers entire right half on desktop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3, duration: 1.2 }}
+        className="hidden md:block absolute top-0 right-0 w-[55%] h-full z-[1]"
+      >
+        <Image
+          src="/image/me.jpg"
+          alt="Ping Chun Lui"
+          fill
+          className="object-cover object-top"
+          sizes="55vw"
+          priority
+          style={{
+            maskImage: "linear-gradient(to right, transparent 0%, black 25%, black 85%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 15%, black 60%, transparent 95%)",
+            WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 25%, black 85%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 15%, black 60%, transparent 95%)",
+            maskComposite: "intersect",
+            WebkitMaskComposite: "source-in",
+          }}
+        />
+      </motion.div>
+
+      {/* Mobile profile pic */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3, duration: 1 }}
+        className="md:hidden absolute top-0 left-0 right-0 h-[60%] z-[1]"
+      >
+        <Image
+          src="/image/me.jpg"
+          alt="Ping Chun Lui"
+          fill
+          className="object-cover object-top"
+          sizes="100vw"
+          priority
+          style={{
+            maskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 50%, transparent 85%)",
+            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 50%, transparent 85%)",
+          }}
+        />
+      </motion.div>
+
+      {/* Text content — left side, on top of photo */}
+      <div className="relative z-10 w-full px-[4%] pt-[68px]">
+        <div className="max-w-xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -83,7 +126,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.6 }}
-            className="text-[#ddd] text-base md:text-lg leading-relaxed mb-8 max-w-xl"
+            className="text-[#ddd] text-base md:text-lg leading-relaxed mb-8 max-w-lg"
           >
             Specializing in AI agents, cloud architecture, and full-stack
             development. Building products that move fast and solve real problems.
@@ -119,36 +162,6 @@ export default function Hero() {
             </button>
           </motion.div>
         </div>
-
-        {/* Right — Profile picture */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-          className="order-1 md:order-2 flex justify-center md:justify-end"
-        >
-          <div className="relative">
-            {/* Glow behind photo */}
-            <div className="absolute -inset-6 bg-[#E50914]/[0.06] rounded-full blur-3xl" />
-            <div className="absolute -inset-10 bg-white/[0.02] rounded-full blur-3xl" />
-
-            {/* Photo */}
-            <div className="relative w-[260px] h-[340px] sm:w-[300px] sm:h-[390px] md:w-[340px] md:h-[440px] rounded-2xl overflow-hidden border-2 border-white/[0.08] shadow-2xl">
-              <Image
-                src="/image/me.jpg"
-                alt="Ping Chun Lui"
-                fill
-                className="object-cover object-top"
-                sizes="(max-width: 768px) 260px, 340px"
-                priority
-              />
-              {/* Bottom gradient */}
-              <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-[#141414] to-transparent" />
-              {/* Subtle vignette */}
-              <div className="absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.3)]" />
-            </div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );
