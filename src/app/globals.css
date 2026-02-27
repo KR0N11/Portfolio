@@ -4,126 +4,95 @@
   --font-sans: var(--font-inter);
   --font-mono: ui-monospace, "SFMono-Regular", "Menlo", monospace;
 
-  /* Light mode colors */
-  --color-primary: #0ea5e9;
-  --color-primary-hover: #0284c7;
-  --color-accent: #38bdf8;
-  --color-bg: #ffffff;
-  --color-bg-secondary: #f8fafc;
-  --color-bg-card: #ffffff;
-  --color-bg-card-hover: #f1f5f9;
-  --color-text: #0f172a;
-  --color-text-secondary: #475569;
-  --color-text-muted: #94a3b8;
-  --color-border: #e2e8f0;
-  --color-glow: rgba(14, 165, 233, 0.15);
+  --color-netflix-red: #E50914;
+  --color-netflix-red-hover: #f6121d;
+  --color-netflix-bg: #141414;
+  --color-netflix-card: #181818;
+  --color-netflix-card-hover: #252525;
+  --color-netflix-text: #ffffff;
+  --color-netflix-muted: #999999;
+  --color-netflix-dim: #666666;
+  --color-netflix-border: rgba(255, 255, 255, 0.08);
 }
 
-.dark {
-  --color-primary: #38bdf8;
-  --color-primary-hover: #7dd3fc;
-  --color-accent: #0ea5e9;
-  --color-bg: #060c1a;
-  --color-bg-secondary: #0a1228;
-  --color-bg-card: rgba(15, 25, 50, 0.6);
-  --color-bg-card-hover: rgba(25, 40, 70, 0.7);
-  --color-text: #e8edf5;
-  --color-text-secondary: #8b9dc3;
-  --color-text-muted: #4a5f85;
-  --color-border: rgba(56, 189, 248, 0.08);
-  --color-glow: rgba(56, 189, 248, 0.15);
-}
-
-/* Smooth global transitions for theme switching */
 html {
   scroll-behavior: smooth;
 }
 
-* {
-  transition-property: background-color, border-color, color, box-shadow;
-  transition-duration: 0.3s;
-  transition-timing-function: ease;
-}
-
-/* Override for animations that should not be affected by theme transition */
-.no-theme-transition * {
-  transition-property: none !important;
-}
-
 body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  background-color: #141414;
+  color: #ffffff;
+  font-family: var(--font-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
   overflow-x: hidden;
 }
 
-/* Atmospheric gradient backdrop for dark mode */
-.dark body {
-  background: radial-gradient(
-      ellipse 80% 60% at 50% 0%,
-      rgba(10, 30, 70, 0.5) 0%,
-      transparent 70%
-    ),
-    radial-gradient(
-      ellipse 60% 50% at 80% 100%,
-      rgba(6, 20, 55, 0.4) 0%,
-      transparent 70%
-    ),
-    var(--color-bg);
+/* Hide scrollbars for Netflix rows */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* Custom scrollbar */
+/* Custom thin scrollbar for page */
 ::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-text-muted);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-secondary);
-}
-
-/* Glass card effect */
-.glass-card {
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: 1rem;
-  backdrop-filter: blur(16px);
-}
-
-/* Text gradient */
-.text-gradient {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Glow effect */
-.glow {
-  box-shadow: 0 0 30px var(--color-glow);
+  width: 0px;
 }
 
 /* Section padding */
 .section-padding {
-  padding: 6rem 1.5rem;
+  padding: 2rem 0;
 }
 
 @media (min-width: 768px) {
   .section-padding {
-    padding: 8rem 2rem;
+    padding: 1rem 0;
   }
 }
 
-@media (min-width: 1024px) {
-  .section-padding {
-    padding: 8rem 4rem;
-  }
+/* Selection */
+::selection {
+  background: rgba(229, 9, 20, 0.3);
+  color: #ffffff;
+}
+
+/* Netflix card hover system */
+.netflix-card {
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.netflix-card:hover {
+  transform: scale(1.08);
+  z-index: 10;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+}
+
+/* Netflix gradient overlays */
+.netflix-gradient-bottom {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(20, 20, 20, 0.6) 50%,
+    #141414 100%
+  );
+}
+
+.netflix-gradient-left {
+  background: linear-gradient(
+    to right,
+    #141414 0%,
+    rgba(20, 20, 20, 0.8) 30%,
+    transparent 60%
+  );
+}
+
+.netflix-gradient-top {
+  background: linear-gradient(
+    to top,
+    transparent 0%,
+    rgba(20, 20, 20, 0.9) 100%
+  );
 }
