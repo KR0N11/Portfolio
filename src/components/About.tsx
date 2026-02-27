@@ -228,10 +228,8 @@ function HobbiesCarousel() {
     return () => clearInterval(timer);
   }, [total]);
 
-  // Calculate the angle per item for the cylinder
   const anglePerItem = 360 / total;
-  // Radius based on card width (~200px) and circumference
-  const radius = 300;
+  const radius = 380;
 
   return (
     <motion.div
@@ -240,36 +238,32 @@ function HobbiesCarousel() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
-      className="md:col-span-4 pt-2"
+      className="md:col-span-4 pt-6"
     >
-      <p className="text-[#999] text-xs uppercase tracking-wider font-medium mb-6">
+      <p className="text-[#999] text-xs uppercase tracking-wider font-medium mb-8">
         When I&apos;m not coding
       </p>
 
       {/* 3D Cylinder container */}
-      <div className="relative w-full h-[340px] md:h-[380px]" style={{ perspective: "1200px" }}>
+      <div
+        className="relative w-full h-[360px] md:h-[400px] overflow-hidden"
+        style={{ perspective: "1000px" }}
+      >
         <motion.div
-          className="relative w-full h-full"
-          style={{
-            transformStyle: "preserve-3d",
-          }}
-          animate={{
-            rotateY: -(current * anglePerItem),
-          }}
-          transition={{
-            duration: 0.8,
-            ease: [0.32, 0.72, 0, 1],
-          }}
+          className="absolute inset-0 flex items-center justify-center"
+          style={{ transformStyle: "preserve-3d" }}
+          animate={{ rotateY: -(current * anglePerItem) }}
+          transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
         >
           {hobbies.map((hobby, idx) => {
             const angle = idx * anglePerItem;
             return (
               <div
                 key={hobby.title}
-                className="absolute top-0 left-1/2 w-[200px] md:w-[220px]"
+                className="absolute w-[200px] md:w-[220px]"
                 style={{
-                  transformStyle: "preserve-3d",
-                  transform: `translateX(-50%) rotateY(${angle}deg) translateZ(${radius}px)`,
+                  transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
+                  backfaceVisibility: "hidden",
                 }}
               >
                 <PokemonCard hobby={hobby} isActive={idx === current} />
@@ -280,7 +274,7 @@ function HobbiesCarousel() {
       </div>
 
       {/* Carousel dots */}
-      <div className="flex items-center justify-center gap-2 mt-4">
+      <div className="flex items-center justify-center gap-2 mt-6">
         {hobbies.map((_, i) => (
           <button
             key={i}
@@ -317,7 +311,7 @@ export default function About() {
   return (
     <section id="about" className="relative" aria-label="About me">
       <div className="bg-[#181818] border-t border-b border-white/[0.06]">
-        <div className="max-w-6xl mx-auto px-[4%] py-10 md:py-14">
+        <div className="max-w-6xl mx-auto px-[4%] py-14 md:py-20">
           {/* Header */}
           <motion.div
             custom={0}
@@ -325,7 +319,7 @@ export default function About() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="mb-8"
+            className="mb-10"
           >
             <div className="flex items-center gap-3 mb-2">
               <span className="text-[#46d369] font-bold text-sm">
@@ -347,7 +341,7 @@ export default function About() {
           </motion.div>
 
           {/* Full-width tile grid — 4 cols on desktop */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 md:gap-6">
             {/* Location + Real Map — 2 cols (all black/grey, no waypoint, keep dot) */}
             <motion.div
               custom={1}
@@ -464,73 +458,74 @@ export default function About() {
               </div>
             </motion.div>
 
-            {/* My Specialty — orbiting tags */}
+            {/* What I Build With — orbiting tags */}
             <motion.div
               custom={4}
               variants={fadeUp}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="md:col-span-4 bg-[#141414] rounded-xl p-5 md:p-6 border border-white/[0.06] min-h-[260px] relative overflow-hidden"
+              className="md:col-span-4 bg-[#141414] rounded-xl p-6 md:p-8 border border-white/[0.06] min-h-[300px] relative overflow-hidden"
             >
               <p className="text-[#999] text-xs uppercase tracking-wider font-medium mb-2 relative z-10">
-                My Specialty
+                What I Build With
               </p>
 
               {/* Orbit container */}
-              <div className="relative w-full h-[200px] flex items-center justify-center">
+              <div className="relative w-full h-[240px] flex items-center justify-center">
                 {/* Center icon */}
-                <div className="absolute z-10 w-12 h-12 rounded-full bg-[#E50914]/10 border border-[#E50914]/20 flex items-center justify-center">
-                  <span className="text-[#E50914] text-lg font-bold">&lt;/&gt;</span>
+                <div className="absolute z-10 w-14 h-14 rounded-full bg-[#E50914]/10 border border-[#E50914]/20 flex items-center justify-center">
+                  <span className="text-[#E50914] text-xl font-bold">&lt;/&gt;</span>
                 </div>
 
                 {/* Orbit ring visual */}
-                <div className="absolute w-[280px] h-[280px] md:w-[360px] md:h-[360px] rounded-full border border-white/[0.04]" />
-                <div className="absolute w-[180px] h-[180px] md:w-[240px] md:h-[240px] rounded-full border border-white/[0.03]" />
+                <div className="absolute w-[320px] h-[320px] md:w-[420px] md:h-[420px] rounded-full border border-white/[0.04]" />
+                <div className="absolute w-[200px] h-[200px] md:w-[270px] md:h-[270px] rounded-full border border-white/[0.03]" />
 
-                {/* Orbiting tags */}
+                {/* Orbiting tags — spread out more */}
                 {stack.map((s, i) => {
                   const total = stack.length;
                   const angle = (i / total) * 360;
-                  const radius = i % 2 === 0 ? 130 : 100;
-                  const duration = 20 + i * 3;
+                  const orbitRadius = i % 2 === 0 ? 160 : 120;
+                  const mdOrbitRadius = i % 2 === 0 ? 200 : 140;
+                  const duration = 25 + i * 4;
 
                   return (
                     <motion.div
                       key={s.name}
                       className="absolute"
-                      style={{
-                        width: 0,
-                        height: 0,
-                      }}
-                      animate={{
-                        rotate: [angle, angle + 360],
-                      }}
-                      transition={{
-                        duration,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
+                      style={{ width: 0, height: 0 }}
+                      animate={{ rotate: [angle, angle + 360] }}
+                      transition={{ duration, repeat: Infinity, ease: "linear" }}
                     >
                       <motion.span
-                        className="absolute px-3 py-1.5 text-xs rounded-full font-mono border whitespace-nowrap shadow-lg"
+                        className="absolute px-3 py-1.5 text-xs rounded-full font-mono border whitespace-nowrap shadow-lg hidden md:block"
                         style={{
                           color: s.color,
                           backgroundColor: `${s.color}15`,
                           borderColor: `${s.color}30`,
                           boxShadow: `0 0 20px ${s.color}10`,
-                          top: `-${radius}px`,
-                          left: "-30px",
-                          transform: "rotate(0deg)",
+                          top: `-${mdOrbitRadius}px`,
+                          left: "-35px",
                         }}
-                        animate={{
-                          rotate: [-(angle), -(angle + 360)],
+                        animate={{ rotate: [-(angle), -(angle + 360)] }}
+                        transition={{ duration, repeat: Infinity, ease: "linear" }}
+                        whileHover={{ scale: 1.2, zIndex: 20 }}
+                      >
+                        {s.name}
+                      </motion.span>
+                      <motion.span
+                        className="absolute px-3 py-1.5 text-xs rounded-full font-mono border whitespace-nowrap shadow-lg md:hidden"
+                        style={{
+                          color: s.color,
+                          backgroundColor: `${s.color}15`,
+                          borderColor: `${s.color}30`,
+                          boxShadow: `0 0 20px ${s.color}10`,
+                          top: `-${orbitRadius}px`,
+                          left: "-35px",
                         }}
-                        transition={{
-                          duration,
-                          repeat: Infinity,
-                          ease: "linear",
-                        }}
+                        animate={{ rotate: [-(angle), -(angle + 360)] }}
+                        transition={{ duration, repeat: Infinity, ease: "linear" }}
                         whileHover={{ scale: 1.2, zIndex: 20 }}
                       >
                         {s.name}
