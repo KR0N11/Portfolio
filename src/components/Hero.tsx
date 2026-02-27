@@ -41,10 +41,53 @@ export default function Hero() {
         <div className="absolute bottom-0 left-0 right-0 h-[40%] netflix-gradient-bottom" />
       </div>
 
-      {/* Two-column content — text left, BIG photo right */}
-      <div className="relative z-10 w-full px-[4%] grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-4 md:gap-0 items-center pt-[68px]">
-        {/* Left — Text */}
-        <div className="order-2 md:order-1 relative z-10">
+      {/* Profile pic — absolute, covers entire right half on desktop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3, duration: 1.2 }}
+        className="hidden md:block absolute top-0 right-0 w-[55%] h-full z-[1]"
+      >
+        <Image
+          src="/image/me.jpg"
+          alt="Ping Chun Lui"
+          fill
+          className="object-cover object-top"
+          sizes="55vw"
+          priority
+          style={{
+            maskImage: "linear-gradient(to right, transparent 0%, black 25%, black 85%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 15%, black 60%, transparent 95%)",
+            WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 25%, black 85%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 15%, black 60%, transparent 95%)",
+            maskComposite: "intersect",
+            WebkitMaskComposite: "source-in",
+          }}
+        />
+      </motion.div>
+
+      {/* Mobile profile pic */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3, duration: 1 }}
+        className="md:hidden absolute top-0 left-0 right-0 h-[60%] z-[1]"
+      >
+        <Image
+          src="/image/me.jpg"
+          alt="Ping Chun Lui"
+          fill
+          className="object-cover object-top"
+          sizes="100vw"
+          priority
+          style={{
+            maskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 50%, transparent 85%)",
+            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 50%, transparent 85%)",
+          }}
+        />
+      </motion.div>
+
+      {/* Text content — left side, on top of photo */}
+      <div className="relative z-10 w-full px-[4%] pt-[68px]">
+        <div className="max-w-xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -83,7 +126,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.6 }}
-            className="text-[#ddd] text-base md:text-lg leading-relaxed mb-8 max-w-xl"
+            className="text-[#ddd] text-base md:text-lg leading-relaxed mb-8 max-w-lg"
           >
             Specializing in AI agents, cloud architecture, and full-stack
             development. Building products that move fast and solve real problems.
@@ -119,37 +162,6 @@ export default function Hero() {
             </button>
           </motion.div>
         </div>
-
-        {/* Right — BIG profile pic, fades top + bottom + sides */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4, duration: 1 }}
-          className="order-1 md:order-2 flex justify-center md:justify-end"
-        >
-          <div className="relative w-full max-w-[560px]">
-            {/* Soft atmospheric glow */}
-            <div className="absolute -inset-12 bg-[#E50914]/[0.03] rounded-full blur-[80px]" />
-
-            {/* Photo — takes ~half the page, fades all edges */}
-            <div className="relative w-full aspect-[4/3]">
-              <Image
-                src="/image/me.jpg"
-                alt="Ping Chun Lui"
-                fill
-                className="object-cover object-top"
-                sizes="(max-width: 768px) 90vw, 50vw"
-                priority
-                style={{
-                  maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent), linear-gradient(to bottom, transparent, black 12%, black 65%, transparent 100%)",
-                  WebkitMaskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent), linear-gradient(to bottom, transparent, black 12%, black 65%, transparent 100%)",
-                  maskComposite: "intersect",
-                  WebkitMaskComposite: "source-in",
-                }}
-              />
-            </div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );
