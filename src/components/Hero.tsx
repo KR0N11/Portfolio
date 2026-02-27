@@ -41,10 +41,10 @@ export default function Hero() {
         <div className="absolute bottom-0 left-0 right-0 h-[40%] netflix-gradient-bottom" />
       </div>
 
-      {/* Two-column content */}
-      <div className="relative z-10 w-full px-[4%] grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center pt-[68px]">
+      {/* Two-column content — text left, BIG photo right */}
+      <div className="relative z-10 w-full px-[4%] grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-4 md:gap-0 items-center pt-[68px]">
         {/* Left — Text */}
-        <div className="order-2 md:order-1">
+        <div className="order-2 md:order-1 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -120,30 +120,29 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* Right — Profile picture (faded into background) */}
+        {/* Right — BIG profile pic, fades top + bottom + sides */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4, duration: 1 }}
           className="order-1 md:order-2 flex justify-center md:justify-end"
         >
-          <div className="relative">
-            {/* Soft atmospheric glow behind photo */}
-            <div className="absolute -inset-10 bg-[#E50914]/[0.03] rounded-full blur-[60px]" />
-            <div className="absolute -inset-14 bg-white/[0.01] rounded-full blur-[80px]" />
+          <div className="relative w-full max-w-[560px]">
+            {/* Soft atmospheric glow */}
+            <div className="absolute -inset-12 bg-[#E50914]/[0.03] rounded-full blur-[80px]" />
 
-            {/* Photo — full width, fade sides + bottom, top sharp */}
-            <div className="relative w-[320px] h-[240px] sm:w-[380px] sm:h-[285px] md:w-[440px] md:h-[330px]">
+            {/* Photo — takes ~half the page, fades all edges */}
+            <div className="relative w-full aspect-[4/3]">
               <Image
                 src="/image/me.jpg"
                 alt="Ping Chun Lui"
                 fill
                 className="object-cover object-top"
-                sizes="(max-width: 768px) 320px, 440px"
+                sizes="(max-width: 768px) 90vw, 50vw"
                 priority
                 style={{
-                  maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent), linear-gradient(to bottom, black 55%, transparent 100%)",
-                  WebkitMaskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent), linear-gradient(to bottom, black 55%, transparent 100%)",
+                  maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent), linear-gradient(to bottom, transparent, black 12%, black 65%, transparent 100%)",
+                  WebkitMaskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent), linear-gradient(to bottom, transparent, black 12%, black 65%, transparent 100%)",
                   maskComposite: "intersect",
                   WebkitMaskComposite: "source-in",
                 }}
