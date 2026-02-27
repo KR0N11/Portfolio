@@ -264,24 +264,28 @@ function HobbiesCarousel() {
         {/* Subtle background glow */}
         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[300px] bg-[#E50914]/[0.02] blur-[100px] rounded-full pointer-events-none" />
 
-        <div className="relative w-full h-full flex items-center justify-center">
-          <AnimatePresence>
+        <div
+          className="relative w-full h-full flex items-center justify-center"
+          style={{ transformStyle: "preserve-3d" }}
+        >
+          <AnimatePresence initial={false}>
             {hobbies.map((hobby, idx) => {
               const offset = getOffset(idx);
               const absOffset = Math.abs(offset);
 
               if (absOffset > 2) return null;
 
-              const xShift = offset * 280;
-              const zShift = -absOffset * 160;
-              const rotateY = offset * -35;
-              const scale = 1 - absOffset * 0.1;
-              const opacity = 1 - absOffset * 0.3;
+              const xShift = offset * 340;
+              const zShift = -absOffset * 200;
+              const rotateY = offset * -30;
+              const scale = 1 - absOffset * 0.15;
+              const opacity = absOffset === 0 ? 1 : absOffset === 1 ? 0.6 : 0.3;
 
               return (
                 <motion.div
                   key={hobby.title}
-                  className="absolute w-[300px] md:w-[360px]"
+                  className="absolute w-[260px] sm:w-[300px] md:w-[360px]"
+                  initial={{ x: xShift, z: zShift, rotateY, scale, opacity }}
                   animate={{
                     x: xShift,
                     z: zShift,
@@ -289,6 +293,7 @@ function HobbiesCarousel() {
                     scale,
                     opacity,
                   }}
+                  exit={{ opacity: 0 }}
                   transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
                   style={{
                     zIndex: 10 - absOffset,
