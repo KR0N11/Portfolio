@@ -4,9 +4,10 @@ import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
+import Projects from "@/components/Projects";
 import Skills from "@/components/Skills";
 import Experience from "@/components/Experience";
-import Projects from "@/components/Projects";
+import MoreToExplore from "@/components/MoreToExplore";
 import Footer from "@/components/Footer";
 
 const CursorGlow = dynamic(() => import("@/components/CursorGlow"), {
@@ -21,9 +22,10 @@ export default function Home() {
       <main>
         <Hero />
         <About />
+        <Projects />
         <Skills />
         <Experience />
-        <Projects />
+        <MoreToExplore />
         <Footer />
       </main>
     </>
