@@ -104,7 +104,7 @@ function PokemonCard({
         {/* Image area */}
         <div className="mx-3 mt-1 mb-2 relative z-10">
           <div
-            className="relative h-[120px] md:h-[140px] rounded-lg overflow-hidden border"
+            className="relative h-[150px] md:h-[180px] rounded-lg overflow-hidden border"
             style={{ borderColor: `${hobby.color}30` }}
           >
             {hobby.image ? (
@@ -244,28 +244,36 @@ function HobbiesCarousel() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
-      className="md:col-span-4 pt-6"
+      className="md:col-span-4 pt-8"
     >
-      <p className="text-[#999] text-xs uppercase tracking-wider font-medium mb-8">
-        When I&apos;m not coding
-      </p>
+      {/* Section header */}
+      <div className="text-center mb-10">
+        <p className="text-[#E50914] text-xs font-semibold tracking-[0.3em] uppercase mb-2">
+          Off the clock
+        </p>
+        <h3 className="text-xl md:text-2xl font-bold text-white">
+          When I&apos;m Not Coding
+        </h3>
+      </div>
 
       {/* 3D Coverflow container */}
       <div
-        className="relative w-full h-[420px] md:h-[460px]"
+        className="relative w-full h-[460px] md:h-[520px]"
         style={{ perspective: "1200px" }}
       >
+        {/* Subtle background glow */}
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[300px] bg-[#E50914]/[0.02] blur-[100px] rounded-full pointer-events-none" />
+
         <div className="relative w-full h-full flex items-center justify-center">
           <AnimatePresence>
             {hobbies.map((hobby, idx) => {
               const offset = getOffset(idx);
               const absOffset = Math.abs(offset);
 
-              // Only render cards within range (-2 to 2)
               if (absOffset > 2) return null;
 
-              const xShift = offset * 260;
-              const zShift = -absOffset * 140;
+              const xShift = offset * 280;
+              const zShift = -absOffset * 160;
               const rotateY = offset * -35;
               const scale = 1 - absOffset * 0.1;
               const opacity = 1 - absOffset * 0.3;
@@ -273,7 +281,7 @@ function HobbiesCarousel() {
               return (
                 <motion.div
                   key={hobby.title}
-                  className="absolute w-[240px] md:w-[270px]"
+                  className="absolute w-[260px] md:w-[300px]"
                   animate={{
                     x: xShift,
                     z: zShift,
@@ -296,15 +304,15 @@ function HobbiesCarousel() {
       </div>
 
       {/* Carousel dots */}
-      <div className="flex items-center justify-center gap-2 mt-6">
+      <div className="flex items-center justify-center gap-2.5 mt-8">
         {hobbies.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrent(i)}
             className={`rounded-full transition-all duration-300 cursor-pointer ${
               i === current
-                ? "w-6 h-1.5 bg-[#E50914]"
-                : "w-1.5 h-1.5 bg-white/15 hover:bg-white/25"
+                ? "w-7 h-2 bg-[#E50914]"
+                : "w-2 h-2 bg-white/15 hover:bg-white/25"
             }`}
           />
         ))}
@@ -480,88 +488,63 @@ export default function About() {
               </div>
             </motion.div>
 
-            {/* What I Build With — 3D rotating globe */}
+            {/* What I Build With — floating animated tags */}
             <motion.div
               custom={4}
               variants={fadeUp}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="md:col-span-4 bg-[#141414] rounded-xl p-6 md:p-8 border border-white/[0.06] min-h-[340px] relative overflow-hidden"
+              className="md:col-span-4 bg-[#141414] rounded-xl p-6 md:p-8 border border-white/[0.06] relative overflow-hidden"
             >
-              <p className="text-[#999] text-xs uppercase tracking-wider font-medium mb-2 relative z-10">
+              <p className="text-[#999] text-xs uppercase tracking-wider font-medium mb-6 relative z-10">
                 What I Build With
               </p>
 
-              {/* 3D Globe container */}
-              <div
-                className="relative w-full h-[280px] flex items-center justify-center"
-                style={{ perspective: "800px" }}
-              >
-                {/* Center icon */}
-                <div className="absolute z-20 w-14 h-14 rounded-full bg-[#E50914]/10 border border-[#E50914]/20 flex items-center justify-center">
-                  <span className="text-[#E50914] text-xl font-bold">&lt;/&gt;</span>
-                </div>
-
-                {/* Wireframe sphere rings */}
-                <motion.div
-                  className="absolute w-[240px] h-[240px] md:w-[320px] md:h-[320px] rounded-full border border-white/[0.04]"
-                  animate={{ rotateX: 75 }}
-                  style={{ transformStyle: "preserve-3d" }}
-                />
-                <motion.div
-                  className="absolute w-[240px] h-[240px] md:w-[320px] md:h-[320px] rounded-full border border-white/[0.03]"
-                  animate={{ rotateX: 75, rotateZ: 90 }}
-                  style={{ transformStyle: "preserve-3d" }}
-                />
-                <div className="absolute w-[240px] h-[240px] md:w-[320px] md:h-[320px] rounded-full border border-white/[0.04]" />
-
-                {/* 3D Rotating globe with tags on sphere surface */}
-                <motion.div
-                  className="absolute"
-                  style={{
-                    transformStyle: "preserve-3d",
-                    width: 0,
-                    height: 0,
-                  }}
-                  animate={{ rotateY: [0, 360] }}
-                  transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                >
-                  {stack.map((s, i) => {
-                    // Distribute points on sphere using golden angle
-                    const total = stack.length;
-                    const phi = Math.acos(1 - (2 * (i + 0.5)) / total);
-                    const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-                    const r = 140; // sphere radius
-
-                    const x = r * Math.sin(phi) * Math.cos(theta);
-                    const y = r * Math.cos(phi);
-                    const z = r * Math.sin(phi) * Math.sin(theta);
-
-                    return (
-                      <motion.span
-                        key={s.name}
-                        className="absolute px-3 py-1.5 text-xs rounded-full font-mono border whitespace-nowrap shadow-lg"
+              {/* Floating tags */}
+              <div className="flex flex-wrap items-center justify-center gap-4 py-4">
+                {stack.map((s, i) => (
+                  <motion.div
+                    key={s.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.08 }}
+                    animate={{ y: [0, -8, 0] }}
+                    whileHover={{ scale: 1.15, y: -4 }}
+                    className="group relative cursor-default"
+                    style={{
+                      animationDelay: `${i * 0.4}s`,
+                    }}
+                  >
+                    {/* Glow behind on hover */}
+                    <div
+                      className="absolute -inset-3 rounded-2xl blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-300"
+                      style={{ background: s.color }}
+                    />
+                    <motion.div
+                      animate={{ y: [0, -8, 0] }}
+                      transition={{
+                        duration: 3 + i * 0.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: i * 0.3,
+                      }}
+                    >
+                      <div
+                        className="relative px-5 py-3 rounded-xl border text-sm font-mono font-medium shadow-lg"
                         style={{
                           color: s.color,
-                          backgroundColor: `${s.color}15`,
-                          borderColor: `${s.color}30`,
-                          boxShadow: `0 0 20px ${s.color}10`,
-                          transform: `translate3d(${x}px, ${y}px, ${z}px)`,
-                          transformStyle: "preserve-3d",
-                          left: "-35px",
-                          top: "-12px",
+                          backgroundColor: `${s.color}10`,
+                          borderColor: `${s.color}25`,
+                          boxShadow: `0 4px 20px ${s.color}15`,
                         }}
-                        // Counter-rotate to keep text readable
-                        animate={{ rotateY: [0, -360] }}
-                        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                        whileHover={{ scale: 1.3, zIndex: 30 }}
                       >
                         {s.name}
-                      </motion.span>
-                    );
-                  })}
-                </motion.div>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
 
