@@ -5,7 +5,7 @@ import { skillCategories } from "@/data/portfolio";
 
 export default function Skills() {
   return (
-    <section id="skills" aria-label="Skills" className="py-16 md:py-24">
+    <section id="skills" aria-label="Skills" className="py-16 md:py-24 bg-[#141414]">
       <div className="max-w-5xl mx-auto px-[4%]">
         {/* Header */}
         <motion.div
@@ -58,7 +58,7 @@ export default function Skills() {
                 </div>
 
                 {/* Tech items — big icons */}
-                <div className="grid grid-cols-3 gap-3">
+                <div className="flex flex-wrap justify-center gap-3">
                   {cat.items.map((item, i) => (
                     <motion.div
                       key={item.name}
@@ -67,7 +67,7 @@ export default function Skills() {
                       viewport={{ once: true }}
                       transition={{ delay: catIdx * 0.05 + i * 0.03 }}
                       whileHover={{ scale: 1.08, y: -3 }}
-                      className="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-transparent hover:border-white/[0.06] transition-all duration-200 cursor-default"
+                      className="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-transparent hover:border-white/[0.06] transition-all duration-200 cursor-default w-[calc(33.333%-0.5rem)]"
                     >
                       <div
                         className="w-10 h-10 rounded-xl flex items-center justify-center"

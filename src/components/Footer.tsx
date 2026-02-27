@@ -6,7 +6,7 @@ import { contactInfo } from "@/data/portfolio";
 
 export default function Footer() {
   return (
-    <section id="contact" aria-label="Contact">
+    <section id="contact" aria-label="Contact" className="bg-[#141414]">
       {/* Contact Section */}
       <div className="px-[4%] py-14 md:py-20">
         <div className="max-w-5xl mx-auto">

@@ -58,7 +58,7 @@ const cards: ExploreCard[] = [
 
 export default function MoreToExplore() {
   return (
-    <section className="py-16 md:py-24">
+    <section className="py-16 md:py-24 bg-[#141414]">
       <div className="max-w-3xl mx-auto px-[4%] text-center">
         {/* Header */}
         <motion.div
