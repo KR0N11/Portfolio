@@ -216,7 +216,7 @@ const hobbies = [
   },
 ];
 
-/* ── 3D Cylinder Carousel ── */
+/* ── 3D Coverflow Carousel ── */
 function HobbiesCarousel() {
   const [current, setCurrent] = useState(0);
   const total = hobbies.length;
@@ -228,8 +228,14 @@ function HobbiesCarousel() {
     return () => clearInterval(timer);
   }, [total]);
 
-  const anglePerItem = 360 / total;
-  const radius = 380;
+  // For each card, calculate its offset from the current
+  const getOffset = (idx: number) => {
+    let diff = idx - current;
+    // Wrap around for circular effect
+    if (diff > total / 2) diff -= total;
+    if (diff < -total / 2) diff += total;
+    return diff;
+  };
 
   return (
     <motion.div
@@ -244,33 +250,49 @@ function HobbiesCarousel() {
         When I&apos;m not coding
       </p>
 
-      {/* 3D Cylinder container */}
+      {/* 3D Coverflow container */}
       <div
-        className="relative w-full h-[360px] md:h-[400px] overflow-hidden"
-        style={{ perspective: "1000px" }}
+        className="relative w-full h-[380px] md:h-[420px]"
+        style={{ perspective: "1200px" }}
       >
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center"
-          style={{ transformStyle: "preserve-3d" }}
-          animate={{ rotateY: -(current * anglePerItem) }}
-          transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
-        >
-          {hobbies.map((hobby, idx) => {
-            const angle = idx * anglePerItem;
-            return (
-              <div
-                key={hobby.title}
-                className="absolute w-[200px] md:w-[220px]"
-                style={{
-                  transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
-                  backfaceVisibility: "hidden",
-                }}
-              >
-                <PokemonCard hobby={hobby} isActive={idx === current} />
-              </div>
-            );
-          })}
-        </motion.div>
+        <div className="relative w-full h-full flex items-center justify-center">
+          <AnimatePresence>
+            {hobbies.map((hobby, idx) => {
+              const offset = getOffset(idx);
+              const absOffset = Math.abs(offset);
+
+              // Only render cards within range (-2 to 2)
+              if (absOffset > 2) return null;
+
+              const xShift = offset * 220;
+              const zShift = -absOffset * 120;
+              const rotateY = offset * -35;
+              const scale = 1 - absOffset * 0.12;
+              const opacity = 1 - absOffset * 0.3;
+
+              return (
+                <motion.div
+                  key={hobby.title}
+                  className="absolute w-[200px] md:w-[220px]"
+                  animate={{
+                    x: xShift,
+                    z: zShift,
+                    rotateY,
+                    scale,
+                    opacity,
+                  }}
+                  transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
+                  style={{
+                    zIndex: 10 - absOffset,
+                    transformStyle: "preserve-3d",
+                  }}
+                >
+                  <PokemonCard hobby={hobby} isActive={offset === 0} />
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Carousel dots */}
