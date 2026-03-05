@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Trash2 } from "lucide-react";
 
@@ -34,7 +34,6 @@ function getRandomRotation() {
 }
 
 function getRandomPosition(index: number) {
-  // Distribute notes across the board
   const cols = 4;
   const col = index % cols;
   const row = Math.floor(index / cols);
@@ -43,54 +42,32 @@ function getRandomPosition(index: number) {
   return { x: baseX, y: baseY };
 }
 
-const STORAGE_KEY = "portfolio-guestbook";
-
 export default function Guestbook() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
 
-  // Load notes from localStorage
-  useEffect(() => {
+  const fetchNotes = useCallback(async () => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setNotes(JSON.parse(stored));
-      } else {
-        // Default seed notes
-        setNotes([
-          {
-            id: "seed-1",
-            name: "Ping",
-            message: "Welcome to my portfolio! Leave a note :)",
-            color: "#FFE066",
-            rotation: -2,
-            x: 10,
-            y: 8,
-          },
-        ]);
+      const res = await fetch("/api/notes");
+      if (res.ok) {
+        const data = await res.json();
+        setNotes(data);
       }
     } catch {
-      // If localStorage fails, use empty
+      // Fallback: if API is unavailable, keep current state
     }
   }, []);
 
-  // Save to localStorage whenever notes change
+  // Load notes from database on mount
   useEffect(() => {
-    if (notes.length > 0) {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
-      } catch {
-        // Silently fail if storage is full
-      }
-    }
-  }, [notes]);
+    fetchNotes();
+  }, [fetchNotes]);
 
-  const addNote = () => {
+  const addNote = async () => {
     if (!name.trim() || !message.trim()) return;
     const pos = getRandomPosition(notes.length);
-    const newNote: Note = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    const noteData = {
       name: name.trim(),
       message: message.trim(),
       color: getRandomColor(),
@@ -98,13 +75,33 @@ export default function Guestbook() {
       x: pos.x,
       y: pos.y,
     };
-    setNotes((prev) => [...prev, newNote]);
+
+    try {
+      const res = await fetch("/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(noteData),
+      });
+      if (res.ok) {
+        const newNote = await res.json();
+        setNotes((prev) => [...prev, newNote]);
+      }
+    } catch {
+      // Silently fail
+    }
     setName("");
     setMessage("");
   };
 
-  const removeNote = (id: string) => {
-    setNotes((prev) => prev.filter((n) => n.id !== id));
+  const removeNote = async (id: string) => {
+    try {
+      await fetch(`/api/notes?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      setNotes((prev) => prev.filter((n) => n.id !== id));
+    } catch {
+      // Silently fail
+    }
   };
 
   return (
