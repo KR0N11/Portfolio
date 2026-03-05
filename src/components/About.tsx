@@ -6,13 +6,12 @@ import {
   MapPin,
   GraduationCap,
   Globe,
-  Dumbbell,
   Mountain,
-  CookingPot,
   ImageIcon,
   Sparkles,
   Layers,
   Disc,
+  Music,
 } from "lucide-react";
 
 const fadeUp = {
@@ -165,14 +164,14 @@ function PokemonCard({
 /* ── Hobbies data ── */
 const hobbies = [
   {
-    icon: Dumbbell,
-    title: "Gym",
-    subtitle: "Strength training & discipline",
+    icon: Disc,
+    title: "Marley Supreme Wannabe",
+    subtitle: "Ping pong legend in the making",
     color: "#ef4444",
     type: "FIRE",
     hp: 120,
-    attack: "Power Lift",
-    image: null as string | null,
+    attack: "Smash Rally",
+    image: "/image/PingPong.jpeg",
   },
   {
     icon: Mountain,
@@ -185,14 +184,14 @@ const hobbies = [
     image: "/image/Bouldering.png",
   },
   {
-    icon: CookingPot,
-    title: "Cooking",
-    subtitle: "Creating from scratch",
+    icon: Music,
+    title: "Music Vibe",
+    subtitle: "Beats, rhythm & good vibes",
     color: "#fbbf24",
     type: "ELECTRIC",
     hp: 90,
-    attack: "Flavor Blast",
-    image: null as string | null,
+    attack: "Bass Drop",
+    image: "/image/Music.JPG",
   },
   {
     icon: Layers,
@@ -202,7 +201,7 @@ const hobbies = [
     type: "PSYCHIC",
     hp: 110,
     attack: "Rare Pull",
-    image: null as string | null,
+    image: "/image/Pokemon.JPG",
   },
   {
     icon: Disc,
@@ -212,7 +211,7 @@ const hobbies = [
     type: "WATER",
     hp: 95,
     attack: "Spin Serve",
-    image: null as string | null,
+    image: "/image/PingPong.jpeg",
   },
 ];
 
@@ -270,13 +269,13 @@ function HobbiesCarousel() {
               const offset = getOffset(idx);
               const absOffset = Math.abs(offset);
 
-              if (absOffset > 2) return null;
+              if (absOffset > 1) return null;
 
-              const xShift = offset * 280;
-              const zShift = -absOffset * 160;
-              const rotateY = offset * -35;
-              const scale = 1 - absOffset * 0.1;
-              const opacity = 1 - absOffset * 0.3;
+              const xShift = offset * 300;
+              const zShift = -absOffset * 180;
+              const rotateY = offset * -40;
+              const scale = 1 - absOffset * 0.15;
+              const opacity = 1 - absOffset * 0.4;
 
               return (
                 <motion.div
