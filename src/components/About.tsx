@@ -164,16 +164,6 @@ function PokemonCard({
 /* ── Hobbies data ── */
 const hobbies = [
   {
-    icon: Disc,
-    title: "Marley Supreme Wannabe",
-    subtitle: "Ping pong legend in the making",
-    color: "#ef4444",
-    type: "FIRE",
-    hp: 120,
-    attack: "Smash Rally",
-    image: "/image/PingPong.jpeg",
-  },
-  {
     icon: Mountain,
     title: "Bouldering",
     subtitle: "Problem solving on walls",
