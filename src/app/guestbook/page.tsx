@@ -1,19 +1,13 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import Guestbook from "@/components/Guestbook";
 
-const CursorGlow = dynamic(() => import("@/components/CursorGlow"), {
-  ssr: false,
-});
-
 export default function GuestbookPage() {
   return (
     <>
-      <CursorGlow />
       <div className="min-h-screen bg-[#141414]">
         {/* Top bar */}
         <nav className="fixed top-0 left-0 right-0 z-50 bg-[#141414]/95 backdrop-blur-sm border-b border-white/[0.04]">
