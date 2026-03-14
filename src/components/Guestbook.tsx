@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Trash2 } from "lucide-react";
 
@@ -25,12 +25,26 @@ const PASTEL_COLORS = [
   "#A2D2FF", // sky blue
 ];
 
+const STORAGE_KEY = "guestbook-notes";
+
+const SEED_NOTES: Note[] = [
+  {
+    id: "seed-1",
+    name: "Ping",
+    message: "Welcome to my portfolio! Leave a note :)",
+    color: "#FFE066",
+    rotation: -2,
+    x: 10,
+    y: 8,
+  },
+];
+
 function getRandomColor() {
   return PASTEL_COLORS[Math.floor(Math.random() * PASTEL_COLORS.length)];
 }
 
 function getRandomRotation() {
-  return Math.random() * 10 - 5; // -5 to 5 degrees
+  return Math.random() * 10 - 5;
 }
 
 function getRandomPosition(index: number) {
@@ -42,32 +56,36 @@ function getRandomPosition(index: number) {
   return { x: baseX, y: baseY };
 }
 
+function loadNotes(): Note[] {
+  if (typeof window === "undefined") return SEED_NOTES;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {
+    // ignore
+  }
+  return SEED_NOTES;
+}
+
+function saveNotes(notes: Note[]) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+}
+
 export default function Guestbook() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
 
-  const fetchNotes = useCallback(async () => {
-    try {
-      const res = await fetch("/api/notes");
-      if (res.ok) {
-        const data = await res.json();
-        setNotes(data);
-      }
-    } catch {
-      // Fallback: if API is unavailable, keep current state
-    }
+  useEffect(() => {
+    setNotes(loadNotes());
   }, []);
 
-  // Load notes from database on mount
-  useEffect(() => {
-    fetchNotes();
-  }, [fetchNotes]);
-
-  const addNote = async () => {
+  const addNote = () => {
     if (!name.trim() || !message.trim()) return;
     const pos = getRandomPosition(notes.length);
-    const noteData = {
+    const newNote: Note = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
       name: name.trim(),
       message: message.trim(),
       color: getRandomColor(),
@@ -75,33 +93,17 @@ export default function Guestbook() {
       x: pos.x,
       y: pos.y,
     };
-
-    try {
-      const res = await fetch("/api/notes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(noteData),
-      });
-      if (res.ok) {
-        const newNote = await res.json();
-        setNotes((prev) => [...prev, newNote]);
-      }
-    } catch {
-      // Silently fail
-    }
+    const updated = [...notes, newNote];
+    setNotes(updated);
+    saveNotes(updated);
     setName("");
     setMessage("");
   };
 
-  const removeNote = async (id: string) => {
-    try {
-      await fetch(`/api/notes?id=${encodeURIComponent(id)}`, {
-        method: "DELETE",
-      });
-      setNotes((prev) => prev.filter((n) => n.id !== id));
-    } catch {
-      // Silently fail
-    }
+  const removeNote = (id: string) => {
+    const updated = notes.filter((n) => n.id !== id);
+    setNotes(updated);
+    saveNotes(updated);
   };
 
   return (
