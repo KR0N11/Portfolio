@@ -101,23 +101,31 @@ function TagList({
 function Card({
   variants,
   lift,
+  href,
+  title,
   className = "",
   children,
 }: {
   variants: Variants;
   lift: boolean;
+  href: string;
+  title: string;
   className?: string;
   children: ReactNode;
 }) {
   return (
-    <motion.article
+    <motion.a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`${title} on GitHub`}
       variants={variants}
       whileHover={lift ? { y: -4 } : undefined}
       transition={{ duration: DUR.fast, ease: EASE_METAL }}
-      className={`metal-panel brushed glint group relative flex flex-col justify-between gap-6 overflow-hidden rounded-2xl p-7 md:p-9 ${className}`}
+      className={`metal-panel brushed glint group relative flex cursor-pointer flex-col justify-between gap-6 overflow-hidden rounded-2xl p-7 md:p-9 ${className}`}
     >
       {children}
-    </motion.article>
+    </motion.a>
   );
 }
 
@@ -142,6 +150,8 @@ export default function Projects() {
         <Card
           variants={cardVariants}
           lift={!reduced}
+          href={flagship.href}
+          title={flagship.title}
           className="lg:col-span-7 lg:row-span-2 lg:min-h-[420px]"
         >
           <div
@@ -166,7 +176,13 @@ export default function Projects() {
         </Card>
 
         {/* Medium - right column, top */}
-        <Card variants={cardVariants} lift={!reduced} className="lg:col-span-5">
+        <Card
+          variants={cardVariants}
+          lift={!reduced}
+          href={second.href}
+          title={second.title}
+          className="lg:col-span-5"
+        >
           <CardHeader index="P.02" />
           <div className="relative z-10 flex flex-col gap-6">
             <div className="flex flex-col gap-3">
@@ -178,7 +194,13 @@ export default function Projects() {
         </Card>
 
         {/* Medium - right column, bottom */}
-        <Card variants={cardVariants} lift={!reduced} className="lg:col-span-5">
+        <Card
+          variants={cardVariants}
+          lift={!reduced}
+          href={third.href}
+          title={third.title}
+          className="lg:col-span-5"
+        >
           <CardHeader index="P.03" />
           <div className="relative z-10 flex flex-col gap-6">
             <div className="flex flex-col gap-3">
@@ -189,8 +211,14 @@ export default function Projects() {
           </div>
         </Card>
 
-        {/* [INVENTED] placeholder project - swap in lib/content.ts */}
-        <Card variants={cardVariants} lift={!reduced} className="lg:col-span-12">
+        {/* Wide bar card - bottom of the grid */}
+        <Card
+          variants={cardVariants}
+          lift={!reduced}
+          href={fourth.href}
+          title={fourth.title}
+          className="lg:col-span-12"
+        >
           <CardHeader index="P.04" />
           <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-col gap-3">

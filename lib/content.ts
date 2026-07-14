@@ -68,33 +68,38 @@ export const experience = [
   },
 ];
 
+/* All four are public repos on my GitHub; cards link straight to them. */
 export const projects = [
   {
-    title: "Digital Twin Monitoring App",
+    title: "Moodify",
     description:
-      "Full observability stack for an enterprise CRM platform, built from scratch at Genetec: synthetic availability tests, 30+ alert rules as Bicep IaC, auto-remediation runbooks, and a Grafana SLA dashboard tracking uptime against 99.5% bands.",
-    tags: ["Azure Monitor", "Bicep", "Grafana", "KQL"],
+      "A business video chat app with live transcription, emotion detection, and an integrated assistant that handles on-call notes and follow-ups, so teams can focus on the conversation instead of the paperwork.",
+    tags: ["React", "GPT-4", "AWS Rekognition", "Firebase"],
+    href: "https://github.com/KR0N11/Moodify_",
     size: "large" as const,
   },
   {
-    title: "AI Triage Agent",
+    title: "Blitz",
     description:
-      "A Java service that reads incident tickets, reasons over 10K+ records to classify component and severity, and routes each ticket to the right engineer. Cut manual triage time 40%.",
-    tags: ["Java", "AI agents", "Azure DevOps"],
+      "A secure document management system with Face ID authentication and encrypted file sharing, built for teams that handle sensitive data.",
+    tags: ["React", "Firebase", "Face ID"],
+    href: "https://github.com/KR0N11/Blitz-app",
     size: "medium" as const,
   },
   {
-    title: "RELAY",
+    title: "Campus Library",
     description:
-      "Real-time iOS recruiting app for live interview scheduling. Firestore data model, security rules, and listener architecture, load-tested with 1,000+ simulated concurrent users.",
-    tags: ["SwiftUI", "Firebase", "iOS"],
+      "An iOS resource management app built for Collège LaSalle: book inventory, loan tracking, member records, and local data persistence.",
+    tags: ["Swift", "iOS", "Persistence"],
+    href: "https://github.com/KR0N11/Campus_Library",
     size: "medium" as const,
   },
   {
-    title: "Intern Monitor",
+    title: "Inventory Manager",
     description:
-      "A job-alert bot that watches Montréal and Toronto internship postings and pings me on Discord every 30 minutes.",
-    tags: ["Python", "Discord API", "Automation"],
+      "A web-based Java inventory system covering products, suppliers, order workflows, and downloadable stock reports.",
+    tags: ["Java", "JSP", "Web"],
+    href: "https://github.com/KR0N11/inventory-manager",
     size: "small" as const,
   },
 ];
@@ -137,19 +142,57 @@ export const beyond = [
     note: "A precision hobby. Same energy as debugging.",
   },
   {
-    // [INVENTED] swap any of these three if they're not you
+    // [INVENTED] swap this one if it's not you
     title: "Coffee",
     note: "Yes, the grind size matters.",
   },
   {
-    // [INVENTED]
-    title: "Keyboards",
-    note: "Mechanical, obviously. Currently chasing the perfect switch.",
+    title: "Gaming",
+    note: "Emerald in R6. Destiny. The occasional Roblox. Never League.",
   },
   {
-    // [INVENTED]
-    title: "F1",
-    note: "Weekends are for race strategy and armchair engineering.",
+    title: "Travel",
+    note: "Camera always packed. Every trip gets photographed and vlogged.",
+  },
+];
+
+/* Rotates daily on the site; add or cut freely. */
+export const quotes = [
+  {
+    text: "Give a man a fish and you feed him for a day. Teach a man to fish and you feed him for a lifetime.",
+    by: "Proverb",
+  },
+  {
+    text: "Throughout heaven and earth, I alone am the honored one.",
+    by: "Satoru Gojo, Jujutsu Kaisen",
+  },
+  {
+    text: "Stand proud. You are strong.",
+    by: "Sukuna, Jujutsu Kaisen",
+  },
+  {
+    text: "From here on, it's overtime.",
+    by: "Kento Nanami, Jujutsu Kaisen",
+  },
+  {
+    text: "Don't worry. I'm the strongest.",
+    by: "Satoru Gojo, Jujutsu Kaisen",
+  },
+  {
+    text: "Job's not finished.",
+    by: "Kobe Bryant",
+  },
+  {
+    text: "Slow is smooth. Smooth is fast.",
+    by: "Unknown",
+  },
+  {
+    text: "The best time to plant a tree was twenty years ago. The second best time is now.",
+    by: "Proverb",
+  },
+  {
+    text: "Amateurs talk strategy. Professionals talk logistics.",
+    by: "Omar Bradley",
   },
 ];
 

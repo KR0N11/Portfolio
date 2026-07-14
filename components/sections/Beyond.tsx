@@ -10,6 +10,7 @@
 
 import Section from "@/components/Section";
 import Reveal from "@/components/Reveal";
+import QuoteOfTheDay from "@/components/QuoteOfTheDay";
 import { beyond } from "@/lib/content";
 
 export default function Beyond() {
@@ -78,6 +79,11 @@ export default function Beyond() {
           </li>
         ))}
       </ul>
+
+      {/* daily-rotating quote plate closes the section */}
+      <Reveal delay={0.1} className="mt-14 md:mt-20">
+        <QuoteOfTheDay />
+      </Reveal>
     </Section>
   );
 }
