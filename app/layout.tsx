@@ -1,39 +1,45 @@
-import type { Metadata } from "next";
-import { Archivo, Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Cormorant_Garamond, Cormorant_SC, IM_Fell_English } from "next/font/google";
+import Veil from "@/components/Veil";
 import "./globals.css";
 
-const archivo = Archivo({
-  variable: "--font-archivo",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  style: ["normal", "italic"],
 });
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const cormorantSC = Cormorant_SC({
+  variable: "--font-cormorant-sc",
   subsets: ["latin"],
+  weight: ["500"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const fell = IM_Fell_English({
+  variable: "--font-fell",
   subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
-  title: "Ping Chun Lui | Software Developer",
+  title: "Ping Chun Lui",
   description:
-    "Software developer building AI agents and enterprise tools. Software developer intern @ Genetec, Montréal.",
+    "Ping Chun Lui, software developer in Montréal. Draw the blade, walk the road, and watch the projects run.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export const viewport: Viewport = {
+  themeColor: "#05090c",
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`${archivo.variable} ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full bg-carbon text-silver">{children}</body>
+    <html lang="en" className={`${cormorant.variable} ${cormorantSC.variable} ${fell.variable}`}>
+      <body>
+        {children}
+        <Veil />
+      </body>
     </html>
   );
 }
