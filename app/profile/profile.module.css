@@ -1,0 +1,242 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  background: var(--abyss);
+}
+
+/* The road, out of focus: you've stepped close to the wanderer. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/art/road.jpg") 46% 70% / cover no-repeat;
+  transform-origin: 46% 72%;
+  filter: blur(5px) brightness(0.6) saturate(1.15);
+  animation: drift 50s ease-in-out infinite alternate;
+}
+@keyframes drift {
+  from {
+    transform: scale(1.4);
+  }
+  to {
+    transform: scale(1.55) translate(-1%, -1%);
+  }
+}
+.backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(5, 9, 12, 0.88) 0%, rgba(5, 9, 12, 0.6) 45%, rgba(5, 9, 12, 0.78) 100%),
+    linear-gradient(to bottom, rgba(5, 9, 12, 0.2), rgba(5, 9, 12, 0.7));
+}
+
+.sheet {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.9fr) minmax(0, 0.9fr);
+  gap: clamp(28px, 4vw, 64px);
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: clamp(96px, 14vh, 140px) var(--gutter) 80px;
+}
+
+.eyebrow {
+  font-family: var(--caps);
+  font-size: 15px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--label);
+}
+.name {
+  margin: 4px 0 0;
+  font-size: clamp(44px, 4.8vw, 70px);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--pale);
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
+}
+
+.stats {
+  margin: 26px 0 8px;
+  border-top: 1px solid rgba(232, 182, 76, 0.35);
+}
+.stat {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 2px;
+  border-bottom: 1px solid rgba(232, 182, 76, 0.16);
+  font-size: 20px;
+}
+.stat dt {
+  font-family: var(--caps);
+  font-size: 15px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--muted);
+  align-self: center;
+}
+.stat dd {
+  margin: 0;
+  color: var(--bone);
+}
+
+.head {
+  margin: 34px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--caps);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--grace);
+}
+.head::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(232, 182, 76, 0.45), rgba(232, 182, 76, 0));
+}
+
+.body {
+  margin: 0;
+  max-width: 34em;
+  font-size: 21px;
+  line-height: 1.55;
+  color: var(--bone);
+}
+.rule {
+  margin: 22px 0 0;
+  max-width: 30em;
+  font-family: var(--fell);
+  font-style: italic;
+  font-size: 20px;
+  line-height: 1.45;
+  color: var(--pale);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 28px;
+  margin-top: 30px;
+  font-family: var(--caps);
+  font-size: 15px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.links a {
+  text-decoration: none;
+  border-bottom: 1px solid rgba(232, 182, 76, 0.5);
+  padding-bottom: 3px;
+}
+
+.col {
+  padding-top: clamp(0px, 7vw, 92px);
+}
+.col > .head:first-child {
+  margin-top: 0;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.place {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 4px;
+  border-bottom: 1px solid rgba(232, 182, 76, 0.14);
+  font-size: 30px;
+  font-weight: 300;
+  color: var(--pale);
+}
+.place :global(.diamond) {
+  width: 8px;
+  height: 8px;
+}
+
+.school,
+.pastime {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 11px 4px;
+  border-bottom: 1px solid rgba(232, 182, 76, 0.14);
+}
+.itemName {
+  font-size: 23px;
+  color: var(--bone);
+}
+.itemNote {
+  font-family: var(--fell);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.interest {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 7px 4px;
+  font-size: 20px;
+  color: var(--bone-dim);
+}
+.interest :global(.diamond) {
+  width: 7px;
+  height: 7px;
+  border-color: rgba(232, 182, 76, 0.7);
+}
+
+.tags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tags li {
+  padding: 4px 12px;
+  border: 1px solid rgba(232, 182, 76, 0.3);
+  background: rgba(5, 9, 12, 0.5);
+  font-size: 17px;
+  color: var(--bone-dim);
+}
+
+@media (max-width: 1080px) {
+  .sheet {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .who {
+    grid-column: 1 / -1;
+  }
+  .col {
+    padding-top: 0;
+  }
+}
+@media (max-width: 640px) {
+  .sheet {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 84px;
+  }
+  .place {
+    font-size: 26px;
+  }
+}

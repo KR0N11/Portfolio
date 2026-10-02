@@ -1,180 +1,159 @@
-@import "tailwindcss";
-
 /*
-  Liquid-metal design tokens - chrome / silver / black.
-  Never use pure #000: deep neutrals keep OLED smear away and let
-  the metallic gradients read as "light on metal".
+  Design language (from the Claude Design boards, "Dim, then gold"):
+  almost everything is dark and still; gold only appears where something
+  can be done.
 */
-@theme {
-  --color-void: #050506; /* page edges, deepest layer */
-  --color-carbon: #0a0a0b; /* base background */
-  --color-graphite: #131316; /* elevated panels */
-  --color-gunmetal: #1b1b1f; /* hover surfaces */
-  --color-silver: #e8e8ec; /* primary text - brushed silver */
-  --color-chrome: #f7f7f9; /* brightest highlights */
-  --color-steel: #98989f; /* secondary text (6.9:1 on carbon) */
-  --color-iron: #55555c; /* decorative only, not for copy */
+:root {
+  --abyss: #05090c;
+  --night: #0f1f25;
+  --mist: #8fa79d;
+  --ash: #8a8473;
+  --bone: #d8cfb8;
+  --bone-dim: #cfc6ae;
+  --label: #c7bea6;
+  --muted: #a89f88;
+  --grace: #e8b64c;
+  --pale: #f3dc9a;
+  --ember: #c9772a;
 
-  --font-display: var(--font-archivo);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --serif: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --caps: var(--font-cormorant-sc), "Cormorant SC", Georgia, serif;
+  --fell: var(--font-fell), "IM Fell English", Georgia, serif;
 
-  --ease-metal: cubic-bezier(0.16, 1, 0.3, 1);
-
-  --animate-shimmer: chrome-shimmer 7s linear infinite;
-  --animate-float: float-slow 14s ease-in-out infinite alternate;
-
-  @keyframes chrome-shimmer {
-    0% {
-      background-position: 200% center;
-    }
-    100% {
-      background-position: -200% center;
-    }
-  }
-
-  @keyframes float-slow {
-    0% {
-      transform: translate3d(0, 0, 0) scale(1);
-    }
-    100% {
-      transform: translate3d(4%, -6%, 0) scale(1.08);
-    }
-  }
+  --gutter: clamp(16px, 4vw, 56px);
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-html {
-  scroll-behavior: smooth;
-  color-scheme: dark;
+* {
+  box-sizing: border-box;
 }
 
+html,
 body {
-  background-color: var(--color-carbon);
-  color: var(--color-silver);
-  font-family: var(--font-sans);
-  overflow-x: hidden;
+  margin: 0;
+  background: var(--abyss);
+  color: var(--bone);
+  font-family: var(--serif);
+  font-size: 20px;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--grace);
+}
+a:hover {
+  color: var(--pale);
 }
 
 ::selection {
-  background: var(--color-silver);
-  color: var(--color-carbon);
-}
-
-/* Slim metallic scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-void);
-}
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #3a3a40, #232327);
-  border-radius: 5px;
-  border: 2px solid var(--color-void);
+  background: rgba(232, 182, 76, 0.35);
+  color: var(--pale);
 }
 
 :focus-visible {
-  outline: 2px solid rgb(255 255 255 / 0.55);
-  outline-offset: 3px;
-  border-radius: 2px;
+  outline: 1px solid var(--pale);
+  outline-offset: 4px;
 }
 
-/*
-  Chrome text - a metal gradient clipped to glyphs.
-  .chrome-text is static; add .chrome-shimmer for the moving light.
-*/
-.chrome-text {
-  background-image: linear-gradient(
-    110deg,
-    #62626a 0%,
-    #c8c8d0 18%,
-    #f8f8fa 32%,
-    #8f8f98 48%,
-    #e4e4e9 62%,
-    #6a6a72 78%,
-    #d6d6dc 100%
-  );
-  background-size: 200% auto;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
+.caps {
+  font-family: var(--caps);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
 }
 
-.chrome-shimmer {
-  animation: var(--animate-shimmer);
+.fell {
+  font-family: var(--fell);
+  font-style: italic;
 }
 
-/* Oversized outlined type for section markers (01, 02, …) */
-.text-stroke {
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgb(255 255 255 / 0.09);
-}
-
-/* Outlined type that carries content (timeline years): stays legible */
-.text-stroke-strong {
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgb(255 255 255 / 0.45);
-}
-
-/* Elevated metal panel: dark gradient + hairline + top-edge catchlight */
-.metal-panel {
-  background:
-    linear-gradient(160deg, #17171b 0%, #0d0d0f 60%, #0a0a0b 100%);
-  border: 1px solid rgb(255 255 255 / 0.08);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.06),
-    0 20px 50px -30px rgb(0 0 0 / 0.9);
-}
-
-/* Fine brushed-metal striations - layer over .metal-panel when wanted */
-.brushed {
-  background-image: repeating-linear-gradient(
-    100deg,
-    rgb(255 255 255 / 0.014) 0px,
-    rgb(255 255 255 / 0.014) 1px,
-    transparent 1px,
-    transparent 4px
-  );
-}
-
-/*
-  Glint - a band of light sweeps across on hover, like tilting metal.
-  Apply to a relative + overflow-hidden element.
-*/
-.glint {
-  position: relative;
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
   overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
-.glint::after {
+
+/* The diamond marker: rest, chosen, empty. */
+.diamond {
+  position: relative;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  flex: none;
+  transform: rotate(45deg);
+  border: 1px solid var(--grace);
+}
+.diamond[data-on="true"] {
+  background: var(--grace);
+}
+.diamond[data-pulse="true"]::after {
   content: "";
   position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 35%,
-    rgb(255 255 255 / 0.07) 48%,
-    rgb(255 255 255 / 0.16) 50%,
-    rgb(255 255 255 / 0.07) 52%,
-    transparent 65%
-  );
-  transform: translateX(-120%);
-  transition: transform 0.9s var(--ease-metal);
-  pointer-events: none;
+  inset: -1px;
+  border: 1px solid var(--pale);
+  animation: diamond-pulse 2.2s ease-out infinite;
 }
-.glint:hover::after,
-.glint:focus-visible::after {
-  transform: translateX(120%);
+@keyframes diamond-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+/* Top bar shared by inner pages. */
+.crumbs {
+  position: absolute;
+  left: var(--gutter);
+  top: clamp(20px, 4vh, 40px);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  z-index: 5;
+  font-family: var(--caps);
+  font-size: 15px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+}
+.crumbs a {
+  color: var(--label);
+  text-decoration: none;
+}
+.crumbs a:hover {
+  color: var(--pale);
+}
+.crumbs .here {
+  color: var(--pale);
+}
+.crumbs .sep {
+  color: var(--muted);
+}
+@media (max-width: 640px) {
+  .crumbs {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    gap: 10px;
+    white-space: nowrap;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
+    animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: 0.001ms !important;
   }
 }

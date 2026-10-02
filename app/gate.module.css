@@ -1,0 +1,169 @@
+.gate {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--abyss);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+/* A slow push toward the figure, 30 s each way. */
+.push {
+  position: absolute;
+  inset: 0;
+  transform-origin: 45% 62%;
+  animation: push 30s ease-in-out infinite alternate;
+}
+@keyframes push {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 47% 48%, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.62) 100%),
+    linear-gradient(to bottom, rgba(5, 9, 12, 0) 68%, rgba(5, 9, 12, 0.85) 100%);
+}
+
+/* The sword sits at 46% / 75-90% of the frame. */
+.sword {
+  position: absolute;
+  left: 44.4%;
+  top: 70%;
+  width: 4%;
+  min-width: 56px;
+  height: 22%;
+  transform: translateX(-12%);
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: grab;
+  touch-action: none;
+}
+.sword:active {
+  cursor: grabbing;
+}
+.sword :global(.diamond) {
+  position: absolute;
+  left: 50%;
+  top: 18%;
+  margin-left: -5px;
+  background: rgba(243, 220, 154, 0.35);
+}
+
+.top {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  top: clamp(20px, 4.5vh, 44px);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--caps);
+  font-size: clamp(12px, 1.2vw, 16px);
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--label);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+.bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(16px, 2.6vh, 28px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0 var(--gutter);
+}
+
+.prompt {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 6px 10px;
+  background: none;
+  border: 0;
+  cursor: grab;
+  touch-action: none;
+  font-family: var(--serif);
+  font-size: clamp(24px, 2.4vw, 34px);
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: var(--pale);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+}
+.ring {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--grace);
+  border-radius: 50%;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ring span {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--grace);
+  transition: transform 500ms var(--ease-out);
+}
+
+.hint {
+  font-family: var(--fell);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--muted);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+}
+
+.pips {
+  display: flex;
+  gap: 16px;
+  height: 14px;
+  align-items: center;
+}
+.pips :global(.diamond) {
+  width: 9px;
+  height: 9px;
+  transition: background 500ms;
+}
+
+.skip {
+  position: absolute;
+  right: var(--gutter);
+  bottom: clamp(18px, 4vh, 40px);
+  font-family: var(--caps);
+  font-size: 14px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+}
+.skip:hover {
+  color: var(--pale);
+}
+
+@media (max-width: 640px) {
+  .bottom {
+    bottom: 64px;
+  }
+  .skip {
+    right: 50%;
+    transform: translateX(50%);
+  }
+}
