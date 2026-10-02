@@ -1,39 +1,41 @@
-import type { Metadata } from "next";
-import { Archivo, Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Cinzel, EB_Garamond } from "next/font/google";
+import SoundToggle from "@/components/SoundToggle";
+import Veil from "@/components/Veil";
 import "./globals.css";
 
-const archivo = Archivo({
-  variable: "--font-archivo",
+/* Cinzel carries titles and labels (carved capitals, like the game's menus);
+   EB Garamond carries everything you actually read. */
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const garamond = EB_Garamond({
+  variable: "--font-garamond",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "500"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
-  title: "Ping Chun Lui | Software Developer",
-  description:
-    "Software developer building AI agents and enterprise tools. Software developer intern @ Genetec, Montréal.",
+  title: "Ping Chun Lui",
+  description: "Ping Chun Lui, software developer in Montréal. Walk the road and watch the projects run.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export const viewport: Viewport = {
+  themeColor: "#05090c",
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`${archivo.variable} ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full bg-carbon text-silver">{children}</body>
+    <html lang="en" className={`${cinzel.variable} ${garamond.variable}`}>
+      <body>
+        {children}
+        <SoundToggle />
+        <Veil />
+      </body>
     </html>
   );
 }
