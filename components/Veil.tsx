@@ -66,10 +66,7 @@ export default function Veil() {
         pointerEvents: s.up ? "auto" : "none",
         opacity: s.up ? 1 : 0,
         transition: `opacity ${s.up ? RISE_MS : 1100}ms ease`,
-        background:
-          s.tone === "gold"
-            ? "radial-gradient(circle at 50% 45%, #fff3cf 0%, #f3dc9a 30%, #c9922f 75%, #6b4512 100%)"
-            : "radial-gradient(circle at 50% 50%, #2a1f0c 0%, #05090c 70%)",
+        background: s.tone === "gold" ? "#f1ead8" : "#05090c",
       }}
     />
   );

@@ -17,8 +17,8 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: url("/art/road.jpg") 46% 70% / cover no-repeat;
-  transform-origin: 46% 72%;
+  background: url("/art/road.jpg") 22% 62% / cover no-repeat;
+  transform-origin: 22% 62%;
   filter: blur(5px) brightness(0.6) saturate(1.15);
   animation: drift 50s ease-in-out infinite alternate;
 }
