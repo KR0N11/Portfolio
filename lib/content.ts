@@ -71,7 +71,7 @@ export const works: Work[] = [
     ],
     stack: ["C#", ".NET 10", "ASP.NET Core", "React", "TypeScript", "Canvas"],
     repo: "https://github.com/KR0N11/pixelring",
-    recording: "Live run · real time · node-b killed, revived, partitioned, healed",
+    recording: "Live run · painting, then node-b killed and revived",
     hasVideo: true,
   },
   {
@@ -86,7 +86,7 @@ export const works: Work[] = [
     ],
     stack: ["C#", ".NET 10", "Roslyn", "ASP.NET Core", "React", "React Flow"],
     repo: "https://github.com/KR0N11/archlens",
-    recording: "Live run · analyzing dotnet/eShop · 7 s of waiting cut",
+    recording: "Live run · the SampleShop sample repo, overview to call flow",
     hasVideo: true,
   },
   {
@@ -101,7 +101,7 @@ export const works: Work[] = [
     ],
     stack: ["TypeScript", "React", "Canvas 2D", "Vite", "OpenStreetMap"],
     repo: "https://github.com/KR0N11/waypoint",
-    recording: "Live run · real time · pan, route, Dijkstra vs A*",
+    recording: "Live run · route, Dijkstra vs A*, isochrone",
     hasVideo: true,
   },
   {
@@ -116,7 +116,7 @@ export const works: Work[] = [
     ],
     stack: ["Python", "LangGraph", "FastAPI", "HTMX", "LlamaIndex", "Terraform"],
     repo: "https://github.com/KR0N11/sentinel",
-    recording: "Live run · offline replay of incident inc-001 · stops at approval",
+    recording: "Live run · CLI triage of incident inc-001, offline replay mode",
     hasVideo: true,
   },
   {
@@ -146,7 +146,7 @@ export const works: Work[] = [
     ],
     stack: ["Python", "LangGraph", "Pydantic", "DuckDB", "Streamlit", "FastAPI"],
     repo: "https://github.com/KR0N11/loom",
-    recording: "Saved runs opened in Loom's UI · the TTC memo's prose came from the test provider",
+    recording: "Ingest, semantic retrieval and the DuckDB query · no LLM step",
     hasVideo: true,
   },
   {
@@ -176,7 +176,7 @@ export const works: Work[] = [
     ],
     stack: ["JavaScript", "HTML", "CSS", "localStorage", "Vitest"],
     repo: "https://github.com/KR0N11/mactype",
-    recording: "Live run · scripted key presses, so the speed isn't a person's",
+    recording: "Live run · a 10-word lesson",
     hasVideo: true,
   },
 ];

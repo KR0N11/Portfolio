@@ -30,7 +30,7 @@ const MARKS: Mark[] = [
   {
     key: "self",
     label: "Profile",
-    at: [0.455, 0.45],
+    at: [0.215, 0.52],
     eyebrow: "The wanderer",
     title: "Who walks this road",
     line: "Where I come from, what I work on, and what I do when the laptop is shut.",
@@ -40,7 +40,7 @@ const MARKS: Mark[] = [
   {
     key: "tree",
     label: "Projects",
-    at: [0.47, 0.1],
+    at: [0.5, 0.2],
     eyebrow: "Ahead",
     title: "Great Works",
     line: "Eight things I built, each recorded while it runs.",
@@ -50,7 +50,7 @@ const MARKS: Mark[] = [
   {
     key: "lantern",
     label: "Contact",
-    at: [0.655, 0.755],
+    at: [0.603, 0.735],
     eyebrow: "Within reach",
     title: "The Lantern",
     line: "Leave word. A reply travels faster than most roads.",
@@ -62,7 +62,7 @@ const MARKS: Mark[] = [
 export default function Road() {
   const [sel, setSel] = useState("self");
   const [walk, setWalk] = useState(0);
-  const [entering, setEntering] = useState<Mark | null>(null);
+  const [entering, setEntering] = useState<{ x: number; y: number } | null>(null);
   const touchY = useRef<number | null>(null);
 
   useEffect(() => {
@@ -107,12 +107,19 @@ export default function Road() {
       window.location.href = m.href;
       return;
     }
-    setEntering(m);
+    // Zoom toward the landmark as it sits on screen right now.
+    const el = document.querySelector<HTMLElement>(`[data-mark="${m.key}"]`);
+    const b = el?.getBoundingClientRect();
+    setEntering(
+      b
+        ? { x: ((b.left + b.width / 2) / window.innerWidth) * 100, y: ((b.top + b.height / 2) / window.innerHeight) * 100 }
+        : { x: 50, y: 50 },
+    );
     passThrough(m.href, "dark");
   };
 
   const cur = MARKS.find((m) => m.key === sel)!;
-  const origin = entering ? `${entering.at[0] * 100}% ${entering.at[1] * 100}%` : "47% 32%";
+  const origin = entering ? `${entering.x}% ${entering.y}%` : "50% 30%";
   const scale = entering ? 2.4 : 1 + walk * 0.32;
 
   return (
@@ -121,9 +128,10 @@ export default function Road() {
       <div className={s.breathe}>
         <LivingImage
           src="/art/road.jpg"
-          aspect={962 / 536}
+          mask="/art/road-mask.png"
+          aspect={3840 / 2160}
           scene="road"
-          focus={[0.46, 0.55]}
+          focus={[0.24, 0.55]}
           stageStyle={{
             transformOrigin: origin,
             transform: `scale(${scale})`,
@@ -132,12 +140,13 @@ export default function Road() {
               : "transform 700ms cubic-bezier(.2,.8,.2,1)",
           }}
         >
-          <Motes source={[0.05, 0.95, 0.55, 0.95]} count={24} drift={0.06} rise={0.22} />
+          <Motes source={[0.05, 0.95, 0.6, 0.98]} count={20} drift={0.06} rise={0.22} />
           {MARKS.map((m) => (
             <button
               key={m.key}
               type="button"
               className={s.mark}
+              data-mark={m.key}
               data-on={m.key === sel}
               style={{ left: `${m.at[0] * 100}%`, top: `${m.at[1] * 100}%` }}
               onMouseEnter={() => setSel(m.key)}
