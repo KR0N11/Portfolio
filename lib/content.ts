@@ -12,35 +12,44 @@ export const person = {
   linkedin: "https://www.linkedin.com/in/ping-chun-lui",
 };
 
+/*
+  Profile photos are picked up from folders at build time, no code changes:
+    public/profile/portrait.jpg        (optional, shown in the opening frame)
+    public/profile/<company slug>/*    (genetec, vffice, paultech)
+    public/profile/<pastime slug>/*    (photography, gym, travel, games)
+*/
 export const profile = {
-  origin:
-    "I started by hacking mobile games, which led to decompiling Android apps to see how they worked. It is still how I like to learn: take it apart, then build one that holds up.",
-  now: "Most of what I build sits underneath the screen: a key-value store that keeps answering while its servers die, a map of Montréal drawn without a maps API, a tool that reads a C# codebase and draws its architecture with the line of code behind every arrow.",
-  rule: "If I can't explain every layer of something I shipped, it isn't done.",
-  stats: [
-    { label: "Class", value: "Software developer" },
-    { label: "Home", value: "Montréal" },
-    { label: "Study", value: "Computer Science" },
+  origin: "I started by hacking mobile games and taking apart Android apps to see how they worked. I still learn that way.",
+  served: [
+    {
+      slug: "genetec",
+      name: "Genetec",
+      logo: "/profile/logos/genetec-white.svg",
+      line: "Monitoring for the digital twin platform.",
+    },
+    {
+      slug: "vffice",
+      name: "Vffice",
+      logo: "/profile/logos/vffice-wordmark-white.png",
+      line: "AI agents on Azure, and automation for a quality management system.",
+    },
+    {
+      slug: "paultech",
+      name: "Paul Tech",
+      logo: "/profile/logos/paultech-wordmark-white.png",
+      line: "Moved nurses' spreadsheets into a Power Pages app.",
+    },
   ],
-  served: ["Genetec", "Vffice", "Paul Tech"],
   schools: [
     { name: "Concordia University", field: "Computer Science" },
     { name: "LaSalle College", field: "Computer Science" },
   ],
   pastimes: [
-    { name: "Photography", line: "The camera is always packed." },
-    { name: "Gym", line: "Consistency over motivation." },
-    { name: "Travel", line: "Every trip gets photographed and vlogged." },
-    { name: "Games", line: "Emerald in R6. Destiny. The occasional Roblox. Never League." },
+    { slug: "photography", name: "Photography", line: "The camera is always packed.", art: "/profile/art/photography.jpg" },
+    { slug: "gym", name: "Gym", line: "Consistency over motivation.", art: "/profile/art/gym.jpg" },
+    { slug: "travel", name: "Travel", line: "Every trip gets photographed and vlogged.", art: "/profile/art/travel.jpg" },
+    { slug: "games", name: "Games", line: "Emerald in R6. Destiny. The occasional Roblox. Never League.", art: "/profile/art/games.jpg" },
   ],
-  interests: [
-    "Distributed systems",
-    "Maps and routing",
-    "AI agents that know when to stop",
-    "Reinforcement learning",
-    "Developer tools",
-  ],
-  tools: ["C# / .NET", "TypeScript / React", "Python", "Java", "C++", "Swift", "Azure"],
 };
 
 export type Work = {

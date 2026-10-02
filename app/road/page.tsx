@@ -1,13 +1,14 @@
 "use client";
 
 /*
-  The Road. The wanderer looks out at the tree; grass and mist move in the
-  wind. Scrolling walks the camera forward. Each landmark is a way in: the
-  wanderer is the profile, the tree holds the projects, the ruin keeps a lantern.
+  The Road. The rider looks out at the tree; grass and veils move in the wind.
+  Each landmark is a way in: the rider is the profile, the tree holds the
+  projects, the ruin keeps a lantern. Menu keys work like the game's.
 */
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import LivingImage from "@/components/LivingImage";
 import Motes from "@/components/Motes";
 import { arrived, passThrough } from "@/components/Veil";
@@ -61,45 +62,12 @@ const MARKS: Mark[] = [
 
 export default function Road() {
   const [sel, setSel] = useState("self");
-  const [walk, setWalk] = useState(0);
   const [entering, setEntering] = useState<{ x: number; y: number } | null>(null);
-  const touchY = useRef<number | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     arrived();
   }, []);
-
-  // Scroll, swipe or arrow keys walk the camera toward the tree.
-  useEffect(() => {
-    const step = (d: number) => setWalk((w) => Math.min(1, Math.max(0, w + d)));
-    const onWheel = (e: WheelEvent) => step(e.deltaY / 2400);
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowUp" || e.key === "PageDown") step(0.08);
-      if (e.key === "ArrowDown" || e.key === "PageUp") step(-0.08);
-    };
-    const onTouchStart = (e: TouchEvent) => (touchY.current = e.touches[0].clientY);
-    const onTouchMove = (e: TouchEvent) => {
-      if (touchY.current == null) return;
-      const y = e.touches[0].clientY;
-      step((touchY.current - y) / 900);
-      touchY.current = y;
-    };
-    window.addEventListener("wheel", onWheel, { passive: true });
-    window.addEventListener("keydown", onKey);
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: true });
-    return () => {
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("keydown", onKey);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (walk > 0.92) setSel("tree");
-  }, [walk]);
-
   const enter = (m: Mark) => {
     if (entering) return;
     setSel(m.key);
@@ -118,9 +86,22 @@ export default function Road() {
     passThrough(m.href, "dark");
   };
 
+  // Menu keys, like the game: arrows choose a landmark, Enter travels, Esc goes back.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const i = MARKS.findIndex((m) => m.key === sel);
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") setSel(MARKS[(i + 1) % MARKS.length].key);
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") setSel(MARKS[(i + MARKS.length - 1) % MARKS.length].key);
+      if (e.key === "Enter" && !(e.target instanceof HTMLButtonElement)) enter(MARKS[i]);
+      if (e.key === "Escape") router.push("/");
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
   const cur = MARKS.find((m) => m.key === sel)!;
   const origin = entering ? `${entering.x}% ${entering.y}%` : "50% 30%";
-  const scale = entering ? 2.4 : 1 + walk * 0.32;
+  const scale = entering ? 2.4 : 1;
 
   return (
     <main className={s.road}>
@@ -163,7 +144,7 @@ export default function Road() {
       <div className={s.shade} aria-hidden="true" />
 
       <nav className="crumbs" aria-label="Back">
-        <Link href="/">&larr; Return to the flame</Link>
+        <Link href="/">&larr; Title screen</Link>
       </nav>
       <nav className={s.quick} aria-label="Quick links">
         <Link href="/profile">Profile</Link>
@@ -180,15 +161,17 @@ export default function Road() {
         </button>
       </section>
 
-      <div className={s.meter} aria-hidden="true">
-        <span>Scroll to walk</span>
-        <div className={s.track}>
-          <span className={s.head} style={{ left: `${walk * 100}%` }} />
-          <span className={s.notch} style={{ left: "33%" }} />
-          <span className={s.notch} style={{ left: "66%" }} />
-          <span className={s.end} />
-        </div>
-        <span>Click a landmark</span>
+      <div className={s.keys} aria-hidden="true">
+        <span>
+          <kbd>&larr;</kbd>
+          <kbd>&rarr;</kbd> Choose
+        </span>
+        <span>
+          <kbd>Enter</kbd> Travel
+        </span>
+        <span>
+          <kbd>Esc</kbd> Title
+        </span>
       </div>
     </main>
   );
