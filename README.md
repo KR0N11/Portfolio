@@ -3,7 +3,7 @@
 My portfolio, built around one idea: draw the blade, walk the road.
 
 1. **The Gate** (`/`). The kneeling Tarnished under the ring. Drag the sword upward: the hilt and the fist on it rise against the pull and the blade comes up out of the ground. Let go early and it sinks back. The first touch also starts the music.
-2. **The Road** (`/road`). A loop from the official Shadow of the Erdtree gameplay trailer (the Tarnished rides the ridge and the Erdtree comes into view) behind a game-style menu: Profile, Projects, Contact. Arrow keys choose, Enter travels, Esc goes back to the sword.
+2. **The Road** (`/road`). A short loop from the official Elden Ring gameplay preview: the Tarnished walks toward the Erdtree. Clickable landmarks sit on the footage: the wanderer (Profile), the tree (Projects), the tower (Contact). Arrow keys choose, Enter travels, Esc goes back to the sword.
 3. **Status** (`/profile`). A long scroll: who I am, the companies I've worked at (with logos), and full-screen scenes for each pastime. No timeline on purpose.
 4. **Great Works** (`/works`). An inventory of projects. Each one plays a recording of the real app running.
 
@@ -15,7 +15,7 @@ The two scenes are still 4K frames. `components/LivingImage.tsx` draws each one 
 
 - All copy is in `lib/content.ts`.
 - Project recordings live in `public/clips/<slug>/` (`demo.mp4`, `poster.jpg`).
-- Profile photos: drop files into `public/profile/<slug>/` (`genetec`, `vffice`, `paultech`, `photography`, `gym`, `travel`, `games`) and they appear on the next build. A `public/profile/portrait.jpg` shows in the opening frame.
+- Profile photos: drop files into `public/profile/<slug>/` (`genetec`, `vffice`, `paultech`, `photography`, `gym`, `travel`, `games`, `anime`; images or .mp4) and they appear on the next build. A `public/profile/portrait.jpg` shows in the opening frame.
 - Music: `public/audio/ambient-1.mp3`, credits in `public/audio/CREDITS.md`.
 - Scene art and masks are in `public/art/` (official Elden Ring / Shadow of the Erdtree art from the Steam store page, FromSoftware / Bandai Namco).
 
