@@ -5,107 +5,131 @@
   background: var(--abyss);
 }
 
+/* Footage, shade and markers move together when you travel. */
+.scene {
+  position: absolute;
+  inset: 0;
+  transition: transform 1200ms cubic-bezier(0.3, 0, 0.2, 1);
+}
+
 .video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 55% 45%;
-  transition:
-    transform 1200ms cubic-bezier(0.3, 0, 0.2, 1),
-    filter 1200ms ease;
-}
-.road[data-leaving="true"] .video {
-  transform: scale(1.15);
-  filter: brightness(0.6);
 }
 
-/* Darker on the left where the menu sits, like the game's own menus. */
 .shade {
   position: absolute;
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(5, 9, 12, 0.82) 0%, rgba(5, 9, 12, 0.45) 32%, rgba(5, 9, 12, 0) 60%),
-    linear-gradient(to bottom, rgba(5, 9, 12, 0.35) 0%, rgba(5, 9, 12, 0) 25%, rgba(5, 9, 12, 0) 70%, rgba(5, 9, 12, 0.7) 100%);
+    radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.5) 100%),
+    linear-gradient(90deg, rgba(5, 9, 12, 0.55) 0%, rgba(5, 9, 12, 0) 35%),
+    linear-gradient(to bottom, rgba(5, 9, 12, 0.3) 0%, rgba(5, 9, 12, 0) 22%, rgba(5, 9, 12, 0) 75%, rgba(5, 9, 12, 0.6) 100%);
 }
 
-.menu {
+.mark {
+  position: absolute;
+  left: -999px;
+  top: -999px;
+  transform: translate(-50%, -100%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 42px;
+  padding: 0 18px 0 14px;
+  background: rgba(5, 9, 12, 0.66);
+  border: 1px solid rgba(232, 182, 76, 0.4);
+  color: var(--bone);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+  font-family: var(--caps);
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  backdrop-filter: blur(2px);
+  transition:
+    background 300ms,
+    border-color 300ms;
+}
+.mark[data-on="true"] {
+  background: rgba(14, 10, 4, 0.82);
+  box-shadow: 0 0 24px rgba(232, 182, 76, 0.25);
+  border-color: var(--grace);
+  color: var(--pale);
+}
+
+.quick {
+  position: absolute;
+  right: var(--gutter);
+  top: clamp(20px, 4vh, 40px);
+  display: flex;
+  gap: 28px;
+  z-index: 5;
+  font-family: var(--caps);
+  font-size: 15px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+}
+.quick a {
+  color: var(--label);
+  text-decoration: none;
+}
+.quick a:hover {
+  color: var(--pale);
+}
+
+.panel {
   position: absolute;
   left: var(--gutter);
-  top: 50%;
-  transform: translateY(-46%);
-  width: min(460px, calc(100% - 2 * var(--gutter)));
+  top: clamp(84px, 12vh, 110px);
+  width: min(400px, calc(100% - 2 * var(--gutter)));
+  padding: 18px 26px 20px 24px;
+  border-left: 1px solid var(--grace);
+  background: linear-gradient(90deg, rgba(5, 9, 12, 0.85), rgba(5, 9, 12, 0));
 }
-.menu ul {
-  list-style: none;
-  margin: 34px 0 0;
-  padding: 0;
-  border-top: 1px solid rgba(232, 182, 76, 0.25);
-}
-
-.name {
-  font-family: var(--display);
-  font-size: clamp(26px, 2.6vw, 38px);
-  letter-spacing: 0.06em;
-  color: #efe3c4;
-  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
-}
-.role {
-  margin-top: 8px;
+.eyebrow {
   font-family: var(--caps);
-  font-size: 13px;
-  letter-spacing: 0.2em;
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.title {
+  margin: 6px 0 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(24px, 2.2vw, 30px);
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+  color: var(--pale);
+}
+.line {
+  margin: 10px 0 0;
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.45;
+  color: var(--bone-dim);
+}
+.cta {
+  margin-top: 16px;
+  padding: 0 0 4px;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--grace);
+  cursor: pointer;
+  font-family: var(--caps);
+  font-size: 15px;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--grace);
 }
-
-.item {
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 16px 18px;
-  background: none;
-  border: 0;
-  border-bottom: 1px solid rgba(232, 182, 76, 0.14);
-  cursor: pointer;
-  text-align: left;
-  font-family: var(--display);
-  font-size: clamp(22px, 2vw, 28px);
-  letter-spacing: 0.08em;
-  color: var(--bone-dim);
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9);
-  transition:
-    color 250ms,
-    background 250ms;
-}
-.item[data-on="true"] {
+.cta:hover {
   color: var(--pale);
-  background: linear-gradient(90deg, rgba(232, 182, 76, 0.2), rgba(232, 182, 76, 0));
-}
-.item :global(.diamond) {
-  width: 9px;
-  height: 9px;
-}
-
-.line {
-  margin: 18px 0 0;
-  min-height: 3em;
-  font-style: italic;
-  font-size: clamp(17px, 1.4vw, 20px);
-  line-height: 1.5;
-  color: var(--bone);
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9);
-  animation: show 500ms ease;
-}
-@keyframes show {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
 }
 
 /* Button prompts, bottom left, like the game's menu footer. */
@@ -141,15 +165,19 @@
 }
 
 @media (max-width: 720px) {
-  .keys {
+  .keys,
+  .panel {
     display: none;
   }
-  .menu {
-    top: auto;
-    bottom: 80px;
-    transform: none;
+  .quick {
+    top: 64px;
+    left: var(--gutter);
+    right: auto;
+    gap: 20px;
+    font-size: 13px;
   }
-  .shade {
-    background: linear-gradient(to bottom, rgba(5, 9, 12, 0.3) 0%, rgba(5, 9, 12, 0) 30%, rgba(5, 9, 12, 0.85) 75%);
+  .mark {
+    font-size: 13px;
+    height: 36px;
   }
 }

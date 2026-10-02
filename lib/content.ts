@@ -49,7 +49,14 @@ export const profile = {
     { slug: "gym", name: "Gym", line: "Consistency over motivation.", art: "/profile/art/gym.jpg" },
     { slug: "travel", name: "Travel", line: "Every trip gets photographed and vlogged.", art: "/profile/art/travel.jpg" },
     { slug: "games", name: "Games", line: "Emerald in R6. Destiny. The occasional Roblox. Never League.", art: "/profile/art/games.jpg" },
-  ],
+    {
+      slug: "anime",
+      name: "Manga & Anime",
+      line: "Top three, in order:",
+      list: ["Frieren: Beyond Journey's End", "KonoSuba", "Jujutsu Kaisen"],
+      also: "Also: the Fate series and Rampart of Ice.",
+    },
+  ] as { slug: string; name: string; line: string; art?: string; list?: string[]; also?: string }[],
 };
 
 export type Work = {

@@ -8,7 +8,7 @@ import path from "node:path";
 import { profile } from "@/lib/content";
 import ProfileView from "./ProfileView";
 
-const IMG = /\.(jpe?g|png|webp|avif)$/i;
+const IMG = /\.(jpe?g|png|webp|avif|mp4)$/i;
 const root = path.join(process.cwd(), "public", "profile");
 
 function photos(dir: string) {
@@ -25,7 +25,7 @@ function photos(dir: string) {
 
 function portrait() {
   try {
-    const f = fs.readdirSync(root).find((n) => /^portrait\./i.test(n) && IMG.test(n));
+    const f = fs.readdirSync(root).find((n) => /^portrait\.(jpe?g|png|webp|avif)$/i.test(n));
     return f ? `/profile/${f}` : null;
   } catch {
     return null;

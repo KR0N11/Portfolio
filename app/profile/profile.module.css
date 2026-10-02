@@ -311,31 +311,66 @@
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.9);
 }
 
-/* ---------- Photo grids (filled from public/profile/<slug>/) ---------- */
+/* ---------- Photo rows (filled from public/profile/<slug>/) ---------- */
 .photos {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 28px;
+  display: flex;
+  gap: 14px;
+  margin-top: 30px;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
-.photos[data-count="1"] {
-  grid-template-columns: minmax(0, 1fr);
-}
-.photos[data-count="2"] {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-.photos[data-count="3"] {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-.photos img {
-  width: 100%;
-  aspect-ratio: 4 / 3;
+.photos img,
+.photos video {
+  flex: none;
+  height: clamp(260px, 52vh, 560px);
+  width: auto;
+  max-width: 100%;
   object-fit: cover;
   display: block;
-  border: 1px solid rgba(232, 182, 76, 0.22);
+  border: 1px solid rgba(232, 182, 76, 0.3);
+  box-shadow:
+    0 0 0 5px rgba(5, 9, 12, 0.55),
+    0 24px 60px rgba(0, 0, 0, 0.6);
 }
-.companyText .photos {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.photos video {
+  aspect-ratio: 16 / 9;
+}
+.companyText .photos img {
+  height: 220px;
+}
+
+.ranked {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: rank;
+}
+.ranked li {
+  counter-increment: rank;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 6px 0;
+  font-family: var(--display);
+  font-size: clamp(22px, 2.2vw, 32px);
+  color: #efe3c4;
+}
+.ranked li::before {
+  content: counter(rank);
+  min-width: 1.2em;
+  font-family: var(--caps);
+  font-size: 0.7em;
+  color: var(--grace);
+}
+.also {
+  margin-top: 12px !important;
+  font-size: clamp(17px, 1.4vw, 20px) !important;
+  color: var(--muted) !important;
+}
+.pastime[data-plain="true"] {
+  min-height: 0;
+  padding-top: clamp(60px, 10vh, 100px);
+  background: radial-gradient(ellipse at 30% 40%, rgba(232, 182, 76, 0.08), rgba(5, 9, 12, 0) 60%);
 }
 
 /* ---------- Footer ---------- */
@@ -372,14 +407,18 @@
   .heroInner[data-portrait="true"] {
     grid-template-columns: minmax(0, 1fr);
   }
+  .portrait {
+    max-width: 260px;
+  }
+  .photos img,
+  .photos video {
+    height: 300px;
+  }
   .company {
     grid-template-columns: minmax(0, 1fr);
     min-height: 0;
   }
   .company[data-side="right"] .plate {
     order: 0;
-  }
-  .photos {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

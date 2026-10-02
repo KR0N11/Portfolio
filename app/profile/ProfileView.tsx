@@ -38,10 +38,14 @@ function Photos({ list, alt }: { list: string[]; alt: string }) {
   if (!list.length) return null;
   return (
     <div className={s.photos} data-count={Math.min(list.length, 4)}>
-      {list.map((src, i) => (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img key={src} src={src} alt={`${alt}, photo ${i + 1}`} loading="lazy" />
-      ))}
+      {list.map((src, i) =>
+        src.endsWith(".mp4") ? (
+          <video key={src} src={src} autoPlay muted loop playsInline preload="metadata" aria-label={`${alt}, clip ${i + 1}`} />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img key={src} src={src} alt={`${alt}, photo ${i + 1}`} loading="lazy" />
+        ),
+      )}
     </div>
   );
 }
@@ -124,11 +128,19 @@ export default function ProfileView({ gallery, portrait }: Props) {
         </h2>
       </section>
       {profile.pastimes.map((p) => (
-        <section key={p.slug} className={s.pastime}>
-          <div className={s.pastimeArt} style={{ backgroundImage: `url(${p.art})` }} aria-hidden="true" />
+        <section key={p.slug} className={s.pastime} data-plain={!p.art}>
+          {p.art && <div className={s.pastimeArt} style={{ backgroundImage: `url(${p.art})` }} aria-hidden="true" />}
           <div className={s.pastimeInner} data-reveal>
             <h3>{p.name}</h3>
             <p>{p.line}</p>
+            {p.list && (
+              <ol className={s.ranked}>
+                {p.list.map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
+              </ol>
+            )}
+            {p.also && <p className={s.also}>{p.also}</p>}
             <Photos list={gallery[p.slug] ?? []} alt={p.name} />
           </div>
         </section>
