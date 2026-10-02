@@ -1,32 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Cormorant_SC, IM_Fell_English } from "next/font/google";
+import { Cinzel, EB_Garamond } from "next/font/google";
+import SoundToggle from "@/components/SoundToggle";
 import Veil from "@/components/Veil";
 import "./globals.css";
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
+/* Cinzel carries titles and labels (carved capitals, like the game's menus);
+   EB Garamond carries everything you actually read. */
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
-  style: ["normal", "italic"],
+  weight: ["400", "500", "600"],
 });
 
-const cormorantSC = Cormorant_SC({
-  variable: "--font-cormorant-sc",
+const garamond = EB_Garamond({
+  variable: "--font-garamond",
   subsets: ["latin"],
-  weight: ["500"],
-});
-
-const fell = IM_Fell_English({
-  variable: "--font-fell",
-  subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "500"],
   style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
   title: "Ping Chun Lui",
-  description:
-    "Ping Chun Lui, software developer in Montréal. Draw the blade, walk the road, and watch the projects run.",
+  description: "Ping Chun Lui, software developer in Montréal. Walk the road and watch the projects run.",
 };
 
 export const viewport: Viewport = {
@@ -35,9 +30,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${cormorantSC.variable} ${fell.variable}`}>
+    <html lang="en" className={`${cinzel.variable} ${garamond.variable}`}>
       <body>
         {children}
+        <SoundToggle />
         <Veil />
       </body>
     </html>

@@ -45,7 +45,7 @@
   cursor: pointer;
   font-family: var(--caps);
   font-size: 18px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   white-space: nowrap;
   backdrop-filter: blur(2px);
@@ -69,7 +69,7 @@
   z-index: 5;
   font-family: var(--caps);
   font-size: 15px;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
 }
@@ -83,26 +83,26 @@
 
 .panel {
   position: absolute;
-  right: var(--gutter);
-  bottom: clamp(70px, 12vh, 110px);
-  width: min(440px, calc(100% - 2 * var(--gutter)));
-  padding: 20px 28px 22px 26px;
-  border-right: 1px solid var(--grace);
-  text-align: right;
-  background: linear-gradient(270deg, rgba(5, 9, 12, 0.88), rgba(5, 9, 12, 0));
+  left: var(--gutter);
+  top: clamp(84px, 12vh, 110px);
+  width: min(400px, calc(100% - 2 * var(--gutter)));
+  padding: 18px 26px 20px 24px;
+  border-left: 1px solid var(--grace);
+  background: linear-gradient(90deg, rgba(5, 9, 12, 0.85), rgba(5, 9, 12, 0));
 }
 .eyebrow {
   font-family: var(--caps);
   font-size: 14px;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--muted);
 }
 .title {
   margin: 6px 0 0;
-  font-size: clamp(32px, 3.2vw, 44px);
-  font-weight: 300;
-  letter-spacing: 0.03em;
+  font-size: clamp(24px, 2.2vw, 30px);
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: 0.015em;
   line-height: 1.1;
   color: var(--pale);
 }
@@ -123,7 +123,7 @@
   cursor: pointer;
   font-family: var(--caps);
   font-size: 17px;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--grace);
 }
@@ -131,54 +131,36 @@
   color: var(--pale);
 }
 
-.meter {
+/* Button prompts, bottom left, like the game's menu footer. */
+.keys {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: clamp(18px, 4vh, 36px);
+  left: var(--gutter);
+  bottom: clamp(16px, 3vh, 28px);
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
+  gap: 22px;
   font-family: var(--caps);
-  font-size: 13px;
-  letter-spacing: 0.3em;
+  font-size: 12px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--label);
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
   pointer-events: none;
 }
-.track {
-  position: relative;
-  width: 240px;
-  height: 1px;
-  background: rgba(232, 182, 76, 0.4);
+.keys span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
-.head,
-.notch,
-.end {
-  position: absolute;
-  top: -4px;
-  width: 8px;
-  height: 8px;
-  margin-left: -4px;
-  transform: rotate(45deg);
-}
-.head {
-  background: var(--grace);
-  z-index: 1;
-  transition: left 500ms var(--ease-out);
-}
-.notch {
-  top: -3px;
-  width: 6px;
-  height: 6px;
-  margin-left: -3px;
-  border: 1px solid rgba(232, 182, 76, 0.6);
-}
-.end {
-  left: 100%;
-  border: 1px solid var(--grace);
+.keys kbd {
+  min-width: 22px;
+  padding: 2px 6px;
+  border: 1px solid rgba(232, 182, 76, 0.5);
+  border-radius: 3px;
+  background: rgba(5, 9, 12, 0.55);
+  font-family: var(--serif);
+  font-size: 13px;
+  text-align: center;
+  color: var(--pale);
 }
 
 @media (max-width: 720px) {
@@ -192,8 +174,7 @@
     gap: 20px;
     font-size: 13px;
   }
-  .meter span:first-child,
-  .meter span:last-child {
+  .keys {
     display: none;
   }
   .mark {

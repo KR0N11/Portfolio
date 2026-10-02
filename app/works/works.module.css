@@ -53,14 +53,15 @@
 .eyebrow {
   font-family: var(--caps);
   font-size: 15px;
-  letter-spacing: 0.34em;
+  letter-spacing: 0.17em;
   text-transform: uppercase;
   color: var(--label);
 }
 .title {
   margin: 4px 0 0;
-  font-size: clamp(48px, 5vw, 72px);
-  font-weight: 300;
+  font-size: clamp(36px, 3.4vw, 50px);
+  font-family: var(--display);
+  font-weight: 400;
   line-height: 1;
   color: var(--pale);
   text-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
@@ -139,7 +140,7 @@
 .itemKind {
   font-family: var(--caps);
   font-size: 12px;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
   color: var(--muted);
   white-space: nowrap;
@@ -210,7 +211,7 @@
   text-align: right;
   font-family: var(--caps);
   font-size: 12px;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -222,14 +223,15 @@
 .kind {
   font-family: var(--caps);
   font-size: 13px;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--grace);
 }
 .name {
   margin: 4px 0 0;
   font-size: clamp(36px, 3.6vw, 52px);
-  font-weight: 300;
+  font-family: var(--display);
+  font-weight: 400;
   line-height: 1.05;
   color: var(--pale);
 }
@@ -290,7 +292,7 @@
 .source {
   font-family: var(--caps);
   font-size: 15px;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   text-decoration: none;
   border-bottom: 1px solid var(--grace);
