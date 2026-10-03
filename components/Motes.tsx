@@ -75,8 +75,8 @@ export default function Motes({ source, count = 28, intensity, drift = 0.02, ris
         const a = fade * (0.35 + 0.65 * k);
         const g = ctx.createRadialGradient(px, py, 0, px, py, r * 5);
         g.addColorStop(0, `rgba(255,236,180,${a})`);
-        g.addColorStop(0.25, `rgba(232,182,76,${a * 0.6})`);
-        g.addColorStop(1, "rgba(232,182,76,0)");
+        g.addColorStop(0.25, `rgba(201,178,124,${a * 0.6})`);
+        g.addColorStop(1, "rgba(201,178,124,0)");
         ctx.fillStyle = g;
         ctx.beginPath();
         ctx.arc(px, py, r * 5, 0, Math.PI * 2);

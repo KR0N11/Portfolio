@@ -6,6 +6,7 @@
 export const person = {
   name: "Ping Chun Lui",
   role: "Software developer",
+  pitch: "Computer Science at Concordia · Software developer intern at Genetec",
   home: "Montréal",
   email: "kevinlui415@gmail.com",
   github: "https://github.com/KR0N11",
@@ -19,29 +20,32 @@ export const person = {
     public/profile/<pastime slug>/*    (photography, gym, travel, games)
 */
 export const profile = {
-  quote: "Until death, all defeats are psychological.",
-  origin: "My commit messages go \"fix\", \"fix again\", \"actually fix\", \"please work\". These days I mostly stop at the first one.",
+  intro:
+    "At Genetec I build Digital Twin, a live map of which systems an outage hits, and the alerts that reach each owning team within two minutes. Before that I built AI agents on Azure at Vffice.",
   served: [
     {
       slug: "genetec",
       name: "Genetec",
+      title: "Software Developer Intern",
       logo: "/profile/logos/genetec-white.svg",
-      line: "Monitoring for the digital twin platform.",
-      body: "I work on observability: the monitoring application for Genetec's digital twin platform. The goal is simple to say and hard to do: problems should show up on a screen before anyone has to go looking for them.",
+      body: "I built Digital Twin, a React map of which systems an outage hits across a hybrid stack, fed by KQL and OData queries, and the outage monitoring behind it: synthetic tests in two Azure regions, API heartbeats and 30+ alert rules. A Java fallback I wrote for tickets our LLM triage agent couldn't classify raised the share solved without bouncing back from 81% to 99%.",
+      stack: ["React", "JavaScript", "KQL", "Java", "Azure", "Bicep", "Grafana"],
     },
     {
       slug: "vffice",
       name: "Vffice",
+      title: "R&D Software Developer Intern",
       logo: "/profile/logos/vffice-wordmark-white.png",
-      line: "AI agents on Azure, and automation for a quality management system.",
-      body: "I built an AI agent on Azure AI Foundry that drafts RFP responses from the company's own documents, and automated a quality management system with Power Automate and Office Scripts. The team demoed the agent proof of concept at a Microsoft partner event.",
+      body: "I owned a Python RAG agent on Azure AI Foundry that drafts sales RFPs from the company's own documents. It cut document review time by 53% and was demoed at a Microsoft partner session in Toronto. I was also tech lead on the QMS project: a custom SharePoint approval workflow that calls REST APIs to trigger the next steps.",
+      stack: ["Python", "Azure AI Foundry", "Azure AI Search", "Copilot Studio", "SharePoint"],
     },
     {
       slug: "paultech",
       name: "Paul Tech",
+      title: "Cloud Developer Intern",
       logo: "/profile/logos/paultech-wordmark-white.png",
-      line: "Moved nurses' spreadsheets into a Power Pages app.",
-      body: "My first internship, and it started with a direct message. Nurses were tracking everything in Excel; I moved it into a Power Pages app on Dataverse so the data lived in one place.",
+      body: "For CHUM hospital I built a proof of concept that moves nurses' separate Excel sheets into one registration system, and demoed it to the client's system designers. It shipped to Azure through pull-request code review.",
+      stack: ["Power Pages", "Dataverse", "Azure"],
     },
   ],
   schools: [
@@ -52,8 +56,7 @@ export const profile = {
     {
       slug: "photography",
       name: "Photography",
-      line: "The camera is always packed.",
-      body: "I love catching a moment the way it actually felt, not just the way it looked. Light at the end of the day, a street that's empty for three seconds, friends who forgot I was holding a camera. A photo is the closest thing I have to a save point.",
+      body: "I carry a small camera almost everywhere and mostly shoot friends, streets and late-afternoon light.",
       companion: {
         src: "/profile/hachiware-camera.png",
         alt: "Hachiware from Chiikawa holding a camera",
@@ -63,20 +66,19 @@ export const profile = {
     {
       slug: "gym",
       name: "Gym",
-      line: "Consistency over motivation.",
-      body: "I like improving myself in a way you can measure. The bar doesn't care how the week went: either the weight went up or it didn't. I train the way Hachiware from Chiikawa lives: work hard, keep smiling when it goes wrong, yell \"make it work!\" and go again. Failing a set isn't losing. Quitting is.",
+      body: "I like that lifting is easy to measure: the weight on the bar either went up this month or it didn't. Hachiware from Chiikawa is the mood. He works hard, fails sometimes, yells \"make it work!\" and goes again.",
+      quote: "Until death, all defeats are psychological.",
     },
     {
       slug: "travel",
       name: "Travel",
-      line: "Every trip gets photographed and vlogged.",
-      body: "Who doesn't love Japan? Fuji over a field of blue flowers, golden hour on a hillside staircase. I travel to see how other places live, eat far too much, and come home with more photos than I'll ever sort.",
+      body: "Who doesn't love Japan? Fuji over a field of nemophila, golden hour on a hillside staircase. Every trip gets photographed and vlogged.",
     },
     {
       slug: "games",
       name: "Games",
       line: "Emerald in R6. Destiny. The occasional Roblox. Never League.",
-      body: "Games are how I got into code in the first place: hacking mobile games led to taking apart Android apps. R6 is the one I keep coming back to, because every round is a small puzzle you solve with four other people and a timer.",
+      body: "Games are how I got into code: hacking mobile games led to taking apart Android apps to see how they worked.",
     },
     {
       slug: "anime",
@@ -84,15 +86,16 @@ export const profile = {
       line: "Top three, in order:",
       list: ["Frieren: Beyond Journey's End", "KonoSuba", "Jujutsu Kaisen"],
       also: "Also: the Fate series and Rampart of Ice.",
-      body: "Frieren for the quiet: a story about what a journey means after it's already over. KonoSuba because nothing else makes me laugh that hard. Jujutsu Kaisen for the fights, and for panels like this one.",
+      body: "Frieren for the quiet, KonoSuba for the laughs, Jujutsu Kaisen for the fights (and panels like this one).",
     },
   ] as {
     slug: string;
     name: string;
-    line: string;
+    line?: string;
     body: string;
     list?: string[];
     also?: string;
+    quote?: string;
     companion?: { src: string; alt: string; caption: string };
   }[],
 };
@@ -101,8 +104,6 @@ export type Work = {
   slug: string;
   name: string;
   kind: string;
-  /** one line in the voice of an item description */
-  flavor: string;
   what: string[];
   stack: string[];
   repo: string;
@@ -116,8 +117,6 @@ export const works: Work[] = [
     slug: "pixelring",
     name: "PixelRing",
     kind: "Distributed systems · C#",
-    flavor:
-      "A canvas shared by strangers, kept on a ring of servers that forgive each other's deaths.",
     what: [
       "Every pixel is a key in a five-node store modeled on Amazon's Dynamo and written from scratch in C#: a hash ring, three copies of each key, and writes that need two replies.",
       "Kill a node or cut the network and writes keep landing. Hinted handoff, read repair and Merkle-tree anti-entropy bring the missing copies back once it returns.",
@@ -132,7 +131,6 @@ export const works: Work[] = [
     slug: "archlens",
     name: "ArchLens",
     kind: "Static analysis · C#",
-    flavor: "Reads the code and draws only what is really there. Every arrow carries the line that proves it.",
     what: [
       "Paste a public C# repo and it draws an ArchiMate-style diagram: projects, services, HTTP entry points, data entities, outside systems, and the calls between them.",
       "Roslyn walks every method body. Each arrow stores the file and line that proves it, and from every HTTP entry point it traces a call flow you can click through.",
@@ -147,7 +145,6 @@ export const works: Work[] = [
     slug: "waypoint",
     name: "Waypoint",
     kind: "Maps and pathfinding · TypeScript",
-    flavor: "A map of Montréal drawn from raw OpenStreetMap data. No tiles borrowed, no routes bought.",
     what: [
       "Draws Montréal's roads, water, parks and about 14k building footprints on a canvas from raw OpenStreetMap data, with its own Web Mercator projection. No maps, tile or routing API.",
       "Click two points: a quadtree snaps each click to the nearest road, and A* finds the path over about 58k intersections, with walk, bike and drive times.",
@@ -162,7 +159,6 @@ export const works: Work[] = [
     slug: "sentinel",
     name: "Sentinel",
     kind: "AI on-call copilot · Python",
-    flavor: "Keeps the first watch of the night. It knows the fix, and waits for a human to say yes.",
     what: [
       "When an alert fires, it folds related alerts into one incident, works out which other services are about to be hit, and builds one timeline of logs, deploys and feature flag changes.",
       "It ranks likely root causes with a fixed scoring formula, so the ranking can be tested, and shows the runbook and evidence behind each one.",
@@ -177,7 +173,6 @@ export const works: Work[] = [
     slug: "sisyphus",
     name: "Sisyphus",
     kind: "Reinforcement learning · Python",
-    flavor: "It dies, restarts, and dies again, a thousand times over, until the flag is reached.",
     what: [
       "A small neural network learns World 1-1 of Super Mario Bros from scratch. It sees only stacked gray frames and picks one of 7 button combos.",
       "It is trained with PPO on many copies of the NES emulator at once.",
@@ -192,7 +187,6 @@ export const works: Work[] = [
     slug: "loom",
     name: "Loom",
     kind: "Multi-agent analysis · Python",
-    flavor: "Asked about messy data, it answers, then checks its own numbers a second way before it speaks.",
     what: [
       "Ask a question about messy tables in plain English. Five agents plan the analysis, find the right tables and columns, run SQL in a sandbox, check the numbers, and write a short memo with charts.",
       "The verifier works out each key number a second way and checks units, sample sizes, nulls, duplicates and truncation. A failed check forces the headline to say UNVERIFIED.",
@@ -207,7 +201,6 @@ export const works: Work[] = [
     slug: "recap",
     name: "Re:Cap",
     kind: "Developer tool · Python",
-    flavor: "Reads what the code changed, not what the commit message claims.",
     what: [
       "Turns a git diff, a ref range, or a GitHub pull request into release notes, a changelog entry, or a PR description.",
       "It reads the actual code changes and flags breaking ones from the diff itself: removed APIs, changed signatures, dropped CLI flags.",
@@ -222,7 +215,6 @@ export const works: Work[] = [
     slug: "mactype",
     name: "mactype",
     kind: "Typing trainer · JavaScript",
-    flavor: "Trains the hands so the eyes can stay on the screen.",
     what: [
       "A touch typing trainer for Mac users that counts how often you look down: a long pause inside a word is scored as a look-down.",
       "There is no text box, so macOS smart quotes, substitutions and the accent popup can't change what you type. It reads key presses straight off the page.",
