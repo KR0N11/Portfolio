@@ -1,16 +1,19 @@
 "use client";
 
 /*
-  The Road. A short, quiet loop of the Tarnished walking toward the Erdtree
-  (from the official Elden Ring gameplay preview). Landmarks sit on the
-  footage: the wanderer is the profile, the tree holds the projects, the tower
-  keeps a lantern for contact. Hover to read, click to travel. Arrow keys
-  choose, Enter travels, Esc goes back to the sword.
+  The Road. A still from the official Elden Ring gameplay trailer, upscaled to
+  4K: the Tarnished at sunset beside a Site of Grace. With its depth map the
+  frame becomes a small 3D scene: move the pointer and the grass slides past
+  him while the sky stays far off. The landmarks ride the same parallax: the
+  Tarnished is the profile, the grace holds the projects, the cliff keeps a
+  lantern for contact. Arrow keys choose, Enter travels, Esc goes back.
 */
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import DepthScene from "@/components/DepthScene";
+import Motes from "@/components/Motes";
 import { arrived, passThrough } from "@/components/Veil";
 import { person } from "@/lib/content";
 import s from "./road.module.css";
@@ -18,8 +21,10 @@ import s from "./road.module.css";
 type Mark = {
   key: string;
   label: string;
-  /** spot in the footage, 0..1 */
+  /** spot in the image, 0..1 */
   at: [number, number];
+  /** depth there (0 far, 1 near), so the marker moves with the scene */
+  depth: number;
   eyebrow: string;
   title: string;
   line: string;
@@ -31,9 +36,10 @@ const MARKS: Mark[] = [
   {
     key: "self",
     label: "Profile",
-    at: [0.5, 0.44],
-    eyebrow: "The wanderer",
-    title: "Who walks this road",
+    at: [0.526, 0.13],
+    depth: 0.35,
+    eyebrow: "The Tarnished",
+    title: "Who rests at this grace",
     line: "Where I come from, where I've worked, and what I do when the laptop is shut.",
     cta: "Look closer",
     href: "/profile/",
@@ -41,8 +47,9 @@ const MARKS: Mark[] = [
   {
     key: "tree",
     label: "Projects",
-    at: [0.56, 0.16],
-    eyebrow: "Ahead, in the light",
+    at: [0.396, 0.22],
+    depth: 0.1,
+    eyebrow: "The Site of Grace",
     title: "Great Works",
     line: "Eight things I built, each recorded while it runs.",
     cta: "Approach the tree",
@@ -51,8 +58,9 @@ const MARKS: Mark[] = [
   {
     key: "lantern",
     label: "Contact",
-    at: [0.72, 0.43],
-    eyebrow: "Within reach",
+    at: [0.83, 0.19],
+    depth: 0.17,
+    eyebrow: "On the cliff",
     title: "The Lantern",
     line: "Leave word. A reply travels faster than most roads.",
     cta: "Send word",
@@ -60,46 +68,14 @@ const MARKS: Mark[] = [
   },
 ];
 
-const VW = 1920;
-const VH = 1080;
 export default function Road() {
   const [sel, setSel] = useState("self");
   const [entering, setEntering] = useState<{ x: number; y: number } | null>(null);
   const router = useRouter();
-  const videoRef = useRef<HTMLVideoElement>(null);
   const markRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   useEffect(() => {
     arrived();
-  }, []);
-
-  // Pin each marker to the footage as it is drawn with object-fit: cover.
-  useEffect(() => {
-    let raf = 0;
-    const place = () => {
-      const v = videoRef.current;
-      if (v) {
-        const W = v.clientWidth;
-        const H = v.clientHeight;
-        const sc = Math.max(W / VW, H / VH);
-        const ox = (W - VW * sc) / 2;
-        const oy = (H - VH * sc) / 2;
-        for (const m of MARKS) {
-          const el = markRefs.current[m.key];
-          if (!el) continue;
-          const [x, y] = m.at;
-          // Keep every marker on screen, even where a narrow phone crops the footage.
-          const half = el.offsetWidth / 2 + 12;
-          const px = Math.min(W - half, Math.max(half, ox + x * VW * sc));
-          const py = Math.min(H - 60, Math.max(el.offsetHeight + 110, oy + y * VH * sc));
-          el.style.left = `${px}px`;
-          el.style.top = `${py}px`;
-        }
-      }
-      raf = requestAnimationFrame(place);
-    };
-    raf = requestAnimationFrame(place);
-    return () => cancelAnimationFrame(raf);
   }, []);
 
   const enter = (m: Mark) => {
@@ -142,38 +118,34 @@ export default function Road() {
           transform: entering ? "scale(2.2)" : "scale(1)",
         }}
       >
-        <video
-          ref={videoRef}
-          className={s.video}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          poster="/art/road-poster.jpg"
-          aria-hidden="true"
+        <DepthScene
+          src="/art/grace.jpg"
+          depth="/art/grace-depth.png"
+          aspect={16 / 9}
+          focus={[0.5, 0.45]}
+          grace={[0.396, 0.29, 0.54]}
         >
-          <source src="/art/road-720.mp4" type="video/mp4" media="(max-width: 900px)" />
-          <source src="/art/road.mp4" type="video/mp4" />
-        </video>
-        <div className={s.shade} aria-hidden="true" />
-        {MARKS.map((m) => (
-          <button
-            key={m.key}
-            ref={(el) => {
-              markRefs.current[m.key] = el;
-            }}
-            type="button"
-            className={s.mark}
-            data-on={m.key === sel}
-            onMouseEnter={() => setSel(m.key)}
-            onFocus={() => setSel(m.key)}
-            onClick={() => enter(m)}
-          >
-            <span className="diamond" data-on={m.key === sel} data-pulse={m.key === sel} />
-            <span>{m.label}</span>
-          </button>
-        ))}
+          <div className={s.shade} aria-hidden="true" />
+          <Motes source={[0.37, 0.42, 0.42, 0.56]} count={16} drift={0.01} rise={0.3} />
+          {MARKS.map((m) => (
+            <button
+              key={m.key}
+              ref={(el) => {
+                markRefs.current[m.key] = el;
+              }}
+              type="button"
+              className={s.mark}
+              data-on={m.key === sel}
+              style={{ left: `${m.at[0] * 100}%`, top: `${m.at[1] * 100}%`, ["--d" as string]: m.depth }}
+              onMouseEnter={() => setSel(m.key)}
+              onFocus={() => setSel(m.key)}
+              onClick={() => enter(m)}
+            >
+              <span className="diamond" data-on={m.key === sel} data-pulse={m.key === sel} />
+              <span>{m.label}</span>
+            </button>
+          ))}
+        </DepthScene>
       </div>
 
       <nav className="crumbs" aria-label="Back">

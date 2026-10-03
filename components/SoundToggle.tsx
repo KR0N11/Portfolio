@@ -30,7 +30,7 @@ export default function SoundToggle() {
       }}
       onPointerDown={(e) => e.stopPropagation()}
       aria-label={muted ? "Turn music on" : "Turn music off"}
-      title="Music: “RPG - Foreboding Ambiance” by HitCtrl, CC BY 3.0"
+      title="Music: “Elden Ring” by Tsukasa Saitoh (FromSoftware)"
       style={{
         position: "fixed",
         right: "var(--gutter)",

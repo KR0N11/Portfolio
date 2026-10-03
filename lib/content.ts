@@ -45,10 +45,10 @@ export const profile = {
     { name: "LaSalle College", field: "Computer Science" },
   ],
   pastimes: [
-    { slug: "photography", name: "Photography", line: "The camera is always packed.", art: "/profile/art/photography.jpg" },
-    { slug: "gym", name: "Gym", line: "Consistency over motivation.", art: "/profile/art/gym.jpg" },
-    { slug: "travel", name: "Travel", line: "Every trip gets photographed and vlogged.", art: "/profile/art/travel.jpg" },
-    { slug: "games", name: "Games", line: "Emerald in R6. Destiny. The occasional Roblox. Never League.", art: "/profile/art/games.jpg" },
+    { slug: "photography", name: "Photography", line: "The camera is always packed." },
+    { slug: "gym", name: "Gym", line: "Consistency over motivation." },
+    { slug: "travel", name: "Travel", line: "Every trip gets photographed and vlogged." },
+    { slug: "games", name: "Games", line: "Emerald in R6. Destiny. The occasional Roblox. Never League." },
     {
       slug: "anime",
       name: "Manga & Anime",
@@ -56,7 +56,7 @@ export const profile = {
       list: ["Frieren: Beyond Journey's End", "KonoSuba", "Jujutsu Kaisen"],
       also: "Also: the Fate series and Rampart of Ice.",
     },
-  ] as { slug: string; name: string; line: string; art?: string; list?: string[]; also?: string }[],
+  ] as { slug: string; name: string; line: string; list?: string[]; also?: string }[],
 };
 
 export type Work = {
