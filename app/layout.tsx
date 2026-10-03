@@ -1,23 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Cinzel, Cormorant_Garamond, EB_Garamond } from "next/font/google";
-import SoundToggle from "@/components/SoundToggle";
+import { Cormorant_Garamond, EB_Garamond } from "next/font/google";
+import SiteBar from "@/components/SiteBar";
 import Veil from "@/components/Veil";
 import "./globals.css";
 
-/* Cinzel carries titles and labels (carved capitals, like the game's menus);
-   EB Garamond carries everything you actually read. */
-const cinzel = Cinzel({
-  variable: "--font-cinzel",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
-
-/* Closest free match to the ELDEN RING wordmark (Agmena-style inscription
-   capitals): used only for the name, set like a title card. */
-const titleCard = Cormorant_Garamond({
+/* Cormorant Garamond is the closest free match to the game's Agmena-style
+   type: mixed case for menus and titles, capitals only for the name. */
+const cormorant = Cormorant_Garamond({
   variable: "--font-title",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
 });
 
 const garamond = EB_Garamond({
@@ -38,10 +31,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${cinzel.variable} ${garamond.variable} ${titleCard.variable}`}>
+    <html lang="en" className={`${cormorant.variable} ${garamond.variable}`}>
       <body>
         {children}
-        <SoundToggle />
+        <SiteBar />
         <Veil />
       </body>
     </html>
