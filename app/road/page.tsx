@@ -99,7 +99,6 @@ export default function Road() {
 
       <nav className={s.menu} aria-label="Site of Grace">
         <div className={s.place}>
-          <span className={s.placeIcon} aria-hidden="true" />
           {person.name}
         </div>
         <ul>
