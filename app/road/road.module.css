@@ -32,7 +32,7 @@
   left: 0;
   top: 0;
   bottom: 0;
-  width: min(420px, 100%);
+  width: min(500px, 100%);
   padding: clamp(70px, 14vh, 140px) 0 0 var(--gutter);
   background: linear-gradient(90deg, rgba(3, 5, 7, 0.86) 0%, rgba(3, 5, 7, 0.7) 60%, rgba(3, 5, 7, 0) 100%);
   animation: menuIn 700ms var(--ease-out);
@@ -44,13 +44,13 @@
   }
 }
 .place {
-  padding: 0 0 14px 22px;
-  margin-right: 60px;
+  padding: 0 0 18px 22px;
+  margin-right: 40px;
   border-bottom: 1px solid rgba(232, 182, 76, 0.35);
-  font-family: var(--display);
-  font-size: clamp(18px, 1.6vw, 22px);
-  letter-spacing: 0.06em;
-  color: #efe3c4;
+  font-size: clamp(26px, 2.3vw, 36px);
+  white-space: nowrap;
+  color: #f1e6c8;
+  text-shadow: 0 0 24px rgba(0, 0, 0, 0.8);
 }
 .menu ul {
   list-style: none;

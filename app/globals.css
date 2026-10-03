@@ -19,6 +19,7 @@
   --serif: var(--font-garamond), "EB Garamond", Georgia, serif;
   --caps: var(--font-cinzel), "Cinzel", Georgia, serif;
   --display: var(--font-cinzel), "Cinzel", Georgia, serif;
+  --title: var(--font-title), "Cormorant Garamond", Georgia, serif;
   --fell: var(--font-garamond), "EB Garamond", Georgia, serif;
 
   --gutter: clamp(16px, 4vw, 56px);
@@ -79,6 +80,15 @@ a:hover {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+/* The name, set like the ELDEN RING title card. */
+.title-card {
+  font-family: var(--title);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  line-height: 1;
 }
 
 /* The diamond marker: rest, chosen, empty. */

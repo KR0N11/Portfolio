@@ -20,7 +20,7 @@ export const person = {
 */
 export const profile = {
   quote: "Until death, all defeats are psychological.",
-  origin: "I write code that works on the first try. The first try is usually the fifth one.",
+  origin: "My commit messages go \"fix\", \"fix again\", \"actually fix\", \"please work\". These days I mostly stop at the first one.",
   served: [
     {
       slug: "genetec",

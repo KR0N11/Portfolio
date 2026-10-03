@@ -98,9 +98,7 @@ export default function Road() {
       </div>
 
       <nav className={s.menu} aria-label="Site of Grace">
-        <div className={s.place}>
-          {person.name}
-        </div>
+        <div className={`${s.place} title-card`}>{person.name}</div>
         <ul>
           {MENU.map((e, i) => (
             <li key={e.key} data-gap={e.key === "leave"}>
