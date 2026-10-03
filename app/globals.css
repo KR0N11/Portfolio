@@ -8,17 +8,17 @@
   --night: #0f1f25;
   --mist: #8fa79d;
   --ash: #8a8473;
-  --bone: #d8cfb8;
+  --bone: #d6d0c2;
   --bone-dim: #cfc6ae;
   --label: #c7bea6;
-  --muted: #a89f88;
-  --grace: #e8b64c;
-  --pale: #f3dc9a;
+  --muted: #a8a294;
+  --grace: #c9b27c;
+  --pale: #e6dcc0;
   --ember: #c9772a;
 
   --serif: var(--font-garamond), "EB Garamond", Georgia, serif;
-  --caps: var(--font-cinzel), "Cinzel", Georgia, serif;
-  --display: var(--font-cinzel), "Cinzel", Georgia, serif;
+  --caps: var(--font-title), "Cormorant Garamond", Georgia, serif;
+  --display: var(--font-title), "Cormorant Garamond", Georgia, serif;
   --title: var(--font-title), "Cormorant Garamond", Georgia, serif;
   --fell: var(--font-garamond), "EB Garamond", Georgia, serif;
 
@@ -53,7 +53,7 @@ a:hover {
 }
 
 ::selection {
-  background: rgba(232, 182, 76, 0.35);
+  background: rgba(201, 178, 124, 0.35);
   color: var(--pale);
 }
 
@@ -64,8 +64,7 @@ a:hover {
 
 .caps {
   font-family: var(--caps);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .fell {
@@ -122,6 +121,69 @@ a:hover {
   }
 }
 
+/* Links + sound, top right on every page. */
+.sitebar {
+  position: fixed;
+  top: clamp(16px, 3.6vh, 34px);
+  right: var(--gutter);
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding: 6px 12px;
+  margin-right: -12px;
+  background: rgba(5, 9, 12, 0.72);
+  backdrop-filter: blur(6px);
+  font-family: var(--display);
+  font-size: 17px;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+}
+.sitebar a,
+.sitebar .sound {
+  color: var(--label);
+  text-decoration: none;
+}
+.sitebar a:hover,
+.sitebar .sound:hover {
+  color: var(--pale);
+}
+.sitebar .sound {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+.sitebar .sound > span {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+.sitebar .sound > span > span {
+  width: 2px;
+  background: var(--grace);
+  transition: height 400ms ease;
+  animation: eq 1.4s ease-in-out infinite alternate;
+}
+.sitebar .sound[data-muted="true"] > span > span {
+  animation: none;
+}
+@media (max-width: 640px) {
+  .sitebar {
+    left: var(--gutter);
+    right: var(--gutter);
+    justify-content: flex-end;
+    gap: 16px;
+    margin: 0 -12px;
+    font-size: 15px;
+  }
+}
+
 /* Top bar shared by inner pages. */
 .crumbs {
   position: absolute;
@@ -133,8 +195,7 @@ a:hover {
   z-index: 5;
   font-family: var(--caps);
   font-size: 15px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
+  letter-spacing: 0.03em;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
 }
 .crumbs a {
@@ -152,8 +213,9 @@ a:hover {
 }
 @media (max-width: 640px) {
   .crumbs {
-    font-size: 12px;
-    letter-spacing: 0.1em;
+    top: 54px;
+    font-size: 16px;
+    letter-spacing: 0.03em;
     gap: 10px;
     white-space: nowrap;
   }

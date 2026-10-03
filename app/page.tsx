@@ -111,8 +111,8 @@ export default function Gate() {
       <div className={s.vignette} aria-hidden="true" />
 
       <header className={s.top}>
-        <span>{person.name}</span>
-        <span>Portfolio</span>
+        <span className="title-card">{person.name}</span>
+        <span className={s.pitch}>{person.pitch}</span>
       </header>
 
       <p className={s.hint} data-hidden={touched} aria-hidden="true">

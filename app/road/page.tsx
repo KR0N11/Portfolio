@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import DepthScene from "@/components/DepthScene";
 import Motes from "@/components/Motes";
 import { arrived, passThrough } from "@/components/Veil";
+import { sfx } from "@/lib/audio";
 import { person } from "@/lib/content";
 import s from "./road.module.css";
 
@@ -22,19 +23,19 @@ const MENU: Entry[] = [
   {
     key: "profile",
     label: "Profile",
-    help: "Where I come from, where I've worked, and what I do when the laptop is shut.",
+    help: "Where I've worked, and what I do off the clock.",
     href: "/profile/",
   },
   {
     key: "works",
     label: "Projects",
-    help: "Eight things I built, each recorded while it runs.",
+    help: "Eight projects, each recorded while it runs.",
     href: "/works/",
   },
   {
     key: "contact",
     label: "Contact",
-    help: "Leave word. A reply travels faster than most roads.",
+    help: `Email me at ${person.email}.`,
     href: `mailto:${person.email}`,
   },
   {
@@ -48,15 +49,44 @@ const MENU: Entry[] = [
 export default function Road() {
   const [sel, setSel] = useState(0);
   const [leaving, setLeaving] = useState(false);
+  const [found, setFound] = useState<"hidden" | "show" | "done">("hidden");
+  const [narrow, setNarrow] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     arrived();
+    const mq = window.matchMedia("(max-width: 720px)");
+    setNarrow(mq.matches);
+    // "Lost Grace Discovered", once per visit, the way the game does it.
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem("pcl-grace") === "1";
+      sessionStorage.setItem("pcl-grace", "1");
+    } catch {}
+    if (seen) {
+      setFound("done");
+      return;
+    }
+    const a = window.setTimeout(() => {
+      setFound("show");
+      sfx("grace");
+    }, 500);
+    const b = window.setTimeout(() => setFound("done"), 3300);
+    return () => {
+      window.clearTimeout(a);
+      window.clearTimeout(b);
+    };
   }, []);
+
+  const pick = (i: number) => {
+    if (i !== sel) sfx("tick");
+    setSel(i);
+  };
 
   const go = (i: number) => {
     const e = MENU[i];
     setSel(i);
+    sfx("confirm");
     if (e.href.startsWith("mailto:")) {
       window.location.href = e.href;
       return;
@@ -72,8 +102,8 @@ export default function Road() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown") setSel((i) => (i + 1) % MENU.length);
-      if (e.key === "ArrowUp") setSel((i) => (i + MENU.length - 1) % MENU.length);
+      if (e.key === "ArrowDown") pick((sel + 1) % MENU.length);
+      if (e.key === "ArrowUp") pick((sel + MENU.length - 1) % MENU.length);
       if (e.key === "Enter" && !(e.target instanceof HTMLButtonElement)) go(sel);
       if (e.key === "Escape") router.push("/");
     };
@@ -89,7 +119,7 @@ export default function Road() {
           src="/art/grace.jpg"
           depth="/art/grace-depth.png"
           aspect={16 / 9}
-          focus={[0.55, 0.45]}
+          focus={narrow ? [0.42, 0.5] : [0.55, 0.45]}
           grace={[0.394, 0.42, 0.6]}
         >
           <Motes source={[0.3, 0.48, 0.66, 0.76]} count={18} drift={0.01} rise={0.35} />
@@ -97,7 +127,13 @@ export default function Road() {
         <div className={s.shade} aria-hidden="true" />
       </div>
 
-      <nav className={s.menu} aria-label="Site of Grace">
+      {found === "show" && (
+        <div className={s.found} aria-live="polite">
+          <span>Lost Grace Discovered</span>
+        </div>
+      )}
+
+      <nav className={s.menu} data-ready={found === "done"} aria-label="Site of Grace">
         <div className={`${s.place} title-card`}>{person.name}</div>
         <ul>
           {MENU.map((e, i) => (
@@ -106,8 +142,8 @@ export default function Road() {
                 type="button"
                 className={s.item}
                 data-on={i === sel}
-                onMouseEnter={() => setSel(i)}
-                onFocus={() => setSel(i)}
+                onMouseEnter={() => pick(i)}
+                onFocus={() => pick(i)}
                 onClick={() => go(i)}
               >
                 {e.label}
@@ -117,9 +153,11 @@ export default function Road() {
         </ul>
       </nav>
 
-      <p className={s.help} key={sel} aria-live="polite">
-        {MENU[sel].help}
-      </p>
+      {found === "done" && (
+        <p className={s.help} key={sel} aria-live="polite">
+          {MENU[sel].help}
+        </p>
+      )}
 
       <div className={s.keys} aria-hidden="true">
         <span>
