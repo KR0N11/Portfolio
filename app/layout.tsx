@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cinzel, EB_Garamond } from "next/font/google";
+import { Cinzel, Cormorant_Garamond, EB_Garamond } from "next/font/google";
 import SoundToggle from "@/components/SoundToggle";
 import Veil from "@/components/Veil";
 import "./globals.css";
@@ -10,6 +10,14 @@ const cinzel = Cinzel({
   variable: "--font-cinzel",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
+});
+
+/* Closest free match to the ELDEN RING wordmark (Agmena-style inscription
+   capitals): used only for the name, set like a title card. */
+const titleCard = Cormorant_Garamond({
+  variable: "--font-title",
+  subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 const garamond = EB_Garamond({
@@ -30,7 +38,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${cinzel.variable} ${garamond.variable}`}>
+    <html lang="en" className={`${cinzel.variable} ${garamond.variable} ${titleCard.variable}`}>
       <body>
         {children}
         <SoundToggle />

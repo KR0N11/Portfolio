@@ -115,12 +115,10 @@
   grid-template-columns: minmax(0, 1fr) minmax(220px, 340px);
 }
 .name {
-  margin: 6px 0 0;
-  font-family: var(--display);
-  font-weight: 400;
-  font-size: clamp(44px, 6.5vw, 96px);
-  letter-spacing: 0.04em;
-  line-height: 1.02;
+  margin: 10px 0 0;
+  font-size: clamp(40px, 4.6vw, 76px);
+  line-height: 1;
+  white-space: nowrap;
   color: #efe3c4;
 }
 .role {
@@ -455,6 +453,9 @@
 }
 
 @media (max-width: 860px) {
+  .name {
+    white-space: normal;
+  }
   .heroInner[data-portrait="true"] {
     grid-template-columns: minmax(0, 1fr);
   }

@@ -100,7 +100,7 @@ export default function ProfileView({ gallery, portrait }: Props) {
         <div className={s.heroInner} data-portrait={!!portrait}>
           <div>
             <div className={s.eyebrow}>Status</div>
-            <h1 className={s.name}>{person.name}</h1>
+            <h1 className={`${s.name} title-card`}>{person.name}</h1>
             <p className={s.role}>
               {person.role} · {person.home}
             </p>
