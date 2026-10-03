@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import Motes from "@/components/Motes";
 import { arrived } from "@/components/Veil";
 import { person, profile } from "@/lib/content";
 import s from "./profile.module.css";
@@ -67,7 +68,10 @@ export default function ProfileView({ gallery, portrait }: Props) {
 
       {/* Opening frame */}
       <header className={s.hero}>
-        <div className={s.heroArt} style={{ backgroundImage: "url(/profile/art/hero.jpg)" }} aria-hidden="true" />
+        <div className={s.heroGlow} aria-hidden="true">
+          {portrait && <div className={s.blur} style={{ backgroundImage: `url(${portrait})` }} />}
+          <Motes source={[0.1, 0.9, 0.75, 1.05]} count={22} drift={0.02} rise={0.45} />
+        </div>
         <div className={s.heroInner} data-portrait={!!portrait}>
           <div>
             <div className={s.eyebrow}>Status</div>
@@ -127,10 +131,13 @@ export default function ProfileView({ gallery, portrait }: Props) {
           Off the clock
         </h2>
       </section>
-      {profile.pastimes.map((p) => (
-        <section key={p.slug} className={s.pastime} data-plain={!p.art}>
-          {p.art && <div className={s.pastimeArt} style={{ backgroundImage: `url(${p.art})` }} aria-hidden="true" />}
-          <div className={s.pastimeInner} data-reveal>
+      {profile.pastimes.map((p, n) => {
+        const backdrop = (gallery[p.slug] ?? []).find((src) => !src.endsWith(".mp4"));
+        return (
+        <section key={p.slug} className={s.pastime}>
+          {backdrop && <div className={s.blur} style={{ backgroundImage: `url(${backdrop})` }} aria-hidden="true" />}
+          <div className={s.pastimeInner} data-side={n % 2 ? "right" : "left"} data-reveal>
+            <div className={s.pastimeText}>
             <h3>{p.name}</h3>
             <p>{p.line}</p>
             {p.list && (
@@ -141,10 +148,12 @@ export default function ProfileView({ gallery, portrait }: Props) {
               </ol>
             )}
             {p.also && <p className={s.also}>{p.also}</p>}
+            </div>
             <Photos list={gallery[p.slug] ?? []} alt={p.name} />
           </div>
         </section>
-      ))}
+        );
+      })}
 
       <footer className={s.footer}>
         <div className={s.links}>
@@ -158,15 +167,8 @@ export default function ProfileView({ gallery, portrait }: Props) {
           <Link href="/works/">See the works &rarr;</Link>
         </div>
         <p className={s.credit}>
-          Music: &ldquo;RPG - Foreboding Ambiance&rdquo; by HitCtrl,{" "}
-          <a href="https://opengameart.org/content/rpg-foreboding-ambiance" target="_blank" rel="noreferrer">
-            OpenGameArt
-          </a>
-          ,{" "}
-          <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noreferrer">
-            CC BY 3.0
-          </a>
-          . Scene art &copy; FromSoftware / Bandai Namco.
+          Music: &ldquo;Elden Ring&rdquo; by Tsukasa Saitoh. Elden Ring art, footage and music &copy; FromSoftware /
+          Bandai Namco, used as a fan tribute.
         </p>
       </footer>
     </main>

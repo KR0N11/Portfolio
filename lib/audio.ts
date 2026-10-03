@@ -13,7 +13,7 @@ const notify = () => listeners.forEach((l) => l());
 
 function audio() {
   if (!el && typeof window !== "undefined") {
-    el = new Audio("/audio/ambient-1.mp3");
+    el = new Audio("/audio/elden-ring-theme.mp3");
     el.loop = true;
     el.volume = 0;
     el.preload = "auto";
