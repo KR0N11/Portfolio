@@ -44,10 +44,7 @@
   }
 }
 .place {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding-bottom: 14px;
+  padding: 0 0 14px 22px;
   margin-right: 60px;
   border-bottom: 1px solid rgba(232, 182, 76, 0.35);
   font-family: var(--display);
@@ -55,26 +52,6 @@
   letter-spacing: 0.06em;
   color: #efe3c4;
 }
-.placeIcon {
-  width: 14px;
-  height: 22px;
-  flex: none;
-  border-radius: 50% 50% 45% 45%;
-  background: radial-gradient(ellipse at 50% 65%, #fff6d8 0%, #f3dc9a 30%, rgba(232, 182, 76, 0.3) 60%, rgba(232, 182, 76, 0) 75%);
-  animation: flame 2.6s ease-in-out infinite;
-}
-@keyframes flame {
-  0%,
-  100% {
-    transform: scaleY(0.92);
-    opacity: 0.85;
-  }
-  50% {
-    transform: scaleY(1.08);
-    opacity: 1;
-  }
-}
-
 .menu ul {
   list-style: none;
   margin: 18px 0 0;
