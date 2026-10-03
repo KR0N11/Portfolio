@@ -1,130 +1,175 @@
 "use client";
 
 /*
-  The Road. After the sword comes free: real footage of the Tarnished riding
-  the ridge toward the Erdtree (a loop cut from the official Shadow of the
-  Erdtree gameplay trailer), with a menu laid over it the way the game lays
-  out its own. Arrow keys choose, Enter travels, Esc goes back to the sword.
+  The Road. The Tarnished sits in the grass at a Site of Grace at night: a 4K
+  frame from the official Elden Ring Gameplay Preview. With its depth map the
+  frame becomes a small 3D scene: move the pointer and the grass slides past
+  him while the forest stays far off. The landmarks ride the same parallax:
+  the Tarnished is the profile, the grace holds the projects, the hill keeps a
+  lantern for contact. Arrow keys choose, Enter travels, Esc goes back.
 */
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import DepthScene from "@/components/DepthScene";
+import Motes from "@/components/Motes";
 import { arrived, passThrough } from "@/components/Veil";
 import { person } from "@/lib/content";
 import s from "./road.module.css";
 
-type Entry = { key: string; label: string; line: string; href: string };
+type Mark = {
+  key: string;
+  label: string;
+  /** spot in the image, 0..1 */
+  at: [number, number];
+  /** depth there (0 far, 1 near), so the marker moves with the scene */
+  depth: number;
+  eyebrow: string;
+  title: string;
+  line: string;
+  cta: string;
+  href: string;
+};
 
-const MENU: Entry[] = [
+const MARKS: Mark[] = [
   {
-    key: "profile",
+    key: "self",
     label: "Profile",
+    at: [0.665, 0.23],
+    depth: 0.47,
+    eyebrow: "The Tarnished",
+    title: "Who rests at this grace",
     line: "Where I come from, where I've worked, and what I do when the laptop is shut.",
+    cta: "Look closer",
     href: "/profile/",
   },
   {
-    key: "works",
+    key: "tree",
     label: "Projects",
+    at: [0.394, 0.39],
+    depth: 0.12,
+    eyebrow: "The Site of Grace",
+    title: "Great Works",
     line: "Eight things I built, each recorded while it runs.",
+    cta: "Approach the tree",
     href: "/works/",
   },
   {
-    key: "contact",
+    key: "lantern",
     label: "Contact",
+    at: [0.86, 0.3],
+    depth: 0.14,
+    eyebrow: "Up the hill",
+    title: "The Lantern",
     line: "Leave word. A reply travels faster than most roads.",
+    cta: "Send word",
     href: `mailto:${person.email}`,
   },
 ];
 
 export default function Road() {
-  const [sel, setSel] = useState(0);
-  const [leaving, setLeaving] = useState(false);
+  const [sel, setSel] = useState("self");
+  const [entering, setEntering] = useState<{ x: number; y: number } | null>(null);
   const router = useRouter();
+  const markRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   useEffect(() => {
     arrived();
   }, []);
 
-  const go = (i: number) => {
-    const e = MENU[i];
-    setSel(i);
-    if (e.href.startsWith("mailto:")) {
-      window.location.href = e.href;
+  const enter = (m: Mark) => {
+    if (entering) return;
+    setSel(m.key);
+    if (m.href.startsWith("mailto:")) {
+      window.location.href = m.href;
       return;
     }
-    if (leaving) return;
-    setLeaving(true);
-    passThrough(e.href, "dark");
+    const b = markRefs.current[m.key]?.getBoundingClientRect();
+    setEntering(
+      b
+        ? { x: ((b.left + b.width / 2) / window.innerWidth) * 100, y: ((b.top + b.height / 2) / window.innerHeight) * 100 }
+        : { x: 50, y: 50 },
+    );
+    passThrough(m.href, "dark");
   };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown" || e.key === "ArrowRight") setSel((i) => (i + 1) % MENU.length);
-      if (e.key === "ArrowUp" || e.key === "ArrowLeft") setSel((i) => (i + MENU.length - 1) % MENU.length);
-      if (e.key === "Enter" && !(e.target instanceof HTMLButtonElement)) go(sel);
+      const i = MARKS.findIndex((m) => m.key === sel);
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") setSel(MARKS[(i + 1) % MARKS.length].key);
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") setSel(MARKS[(i + MARKS.length - 1) % MARKS.length].key);
+      if (e.key === "Enter" && !(e.target instanceof HTMLButtonElement)) enter(MARKS[i]);
       if (e.key === "Escape") router.push("/");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   });
 
+  const cur = MARKS.find((m) => m.key === sel)!;
+
   return (
-    <main className={s.road} data-leaving={leaving}>
+    <main className={s.road}>
       <h1 className="sr-only">The road: choose where to go</h1>
-      <video
-        className={s.video}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        poster="/art/landing.jpg"
-        aria-hidden="true"
+      <div
+        className={s.scene}
+        style={{
+          transformOrigin: entering ? `${entering.x}% ${entering.y}%` : "50% 50%",
+          transform: entering ? "scale(2.2)" : "scale(1)",
+        }}
       >
-        <source src="/art/landing-720.mp4" type="video/mp4" media="(max-width: 900px)" />
-        <source src="/art/landing.mp4" type="video/mp4" />
-      </video>
-      <div className={s.shade} aria-hidden="true" />
+        <DepthScene
+          src="/art/grace.jpg"
+          depth="/art/grace-depth.png"
+          aspect={16 / 9}
+          focus={[0.5, 0.45]}
+          grace={[0.394, 0.42, 0.6]}
+        >
+          <div className={s.shade} aria-hidden="true" />
+          <Motes source={[0.3, 0.48, 0.66, 0.76]} count={18} drift={0.01} rise={0.35} />
+          {MARKS.map((m) => (
+            <button
+              key={m.key}
+              ref={(el) => {
+                markRefs.current[m.key] = el;
+              }}
+              type="button"
+              className={s.mark}
+              data-on={m.key === sel}
+              style={{ left: `${m.at[0] * 100}%`, top: `${m.at[1] * 100}%`, ["--d" as string]: m.depth }}
+              onMouseEnter={() => setSel(m.key)}
+              onFocus={() => setSel(m.key)}
+              onClick={() => enter(m)}
+            >
+              <span className="diamond" data-on={m.key === sel} data-pulse={m.key === sel} />
+              <span>{m.label}</span>
+            </button>
+          ))}
+        </DepthScene>
+      </div>
 
       <nav className="crumbs" aria-label="Back">
         <Link href="/">&larr; Back to the sword</Link>
       </nav>
+      <nav className={s.quick} aria-label="Quick links">
+        <Link href="/profile/">Profile</Link>
+        <Link href="/works/">Projects</Link>
+        <a href={`mailto:${person.email}`}>Contact</a>
+      </nav>
 
-      <div className={s.menu}>
-        <div className={s.who}>
-          <div className={s.name}>{person.name}</div>
-          <div className={s.role}>
-            {person.role} · {person.home}
-          </div>
-        </div>
-        <ul role="menu">
-          {MENU.map((e, i) => (
-            <li key={e.key} role="none">
-              <button
-                type="button"
-                role="menuitem"
-                className={s.item}
-                data-on={i === sel}
-                onMouseEnter={() => setSel(i)}
-                onFocus={() => setSel(i)}
-                onClick={() => go(i)}
-              >
-                <span className="diamond" data-on={i === sel} data-pulse={i === sel} />
-                {e.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-        <p className={s.line} key={sel}>
-          {MENU[sel].line}
-        </p>
-      </div>
+      <section className={s.panel} aria-live="polite">
+        <div className={s.eyebrow}>{cur.eyebrow}</div>
+        <h2 className={s.title}>{cur.title}</h2>
+        <p className={s.line}>{cur.line}</p>
+        <button type="button" className={s.cta} onClick={() => enter(cur)}>
+          {cur.cta} &rarr;
+        </button>
+      </section>
 
       <div className={s.keys} aria-hidden="true">
         <span>
-          <kbd>&uarr;</kbd>
-          <kbd>&darr;</kbd> Choose
+          <kbd>&larr;</kbd>
+          <kbd>&rarr;</kbd> Choose
         </span>
         <span>
           <kbd>Enter</kbd> Travel
