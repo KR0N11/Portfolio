@@ -22,37 +22,83 @@
     linear-gradient(to bottom, rgba(5, 9, 12, 0.3) 0%, rgba(5, 9, 12, 0) 22%, rgba(5, 9, 12, 0) 75%, rgba(5, 9, 12, 0.6) 100%);
 }
 
+/* Landmarks: a point of light and a carved word, no boxes. */
 .mark {
   position: absolute;
-  transform: translate(
-    calc(-50% + var(--px, 0px) * (var(--d) - var(--focus))),
-    calc(-100% + var(--py, 0px) * (var(--d) - var(--focus)))
-  );
   display: flex;
   align-items: center;
-  gap: 12px;
-  height: 42px;
-  padding: 0 18px 0 14px;
-  background: rgba(5, 9, 12, 0.66);
-  border: 1px solid rgba(232, 182, 76, 0.4);
-  color: var(--bone);
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+  gap: 14px;
+  padding: 10px 14px 10px 0;
+  background: none;
+  border: 0;
   cursor: pointer;
+  transform: translate(
+    calc(-9px + var(--nx, 0px) + var(--px, 0px) * (var(--d) - var(--focus))),
+    calc(-50% + var(--ny, 0px) + var(--py, 0px) * (var(--d) - var(--focus)))
+  );
+}
+.glint {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff6d8 0%, #f3dc9a 22%, rgba(232, 182, 76, 0.45) 45%, rgba(232, 182, 76, 0) 72%);
+  animation: glint 2.8s ease-in-out infinite;
+}
+.glint::after {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(243, 220, 154, 0.25), rgba(243, 220, 154, 0) 65%);
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+@keyframes glint {
+  0%,
+  100% {
+    transform: scale(0.85);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+.label {
+  position: relative;
   font-family: var(--caps);
   font-size: 16px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   white-space: nowrap;
-  backdrop-filter: blur(2px);
-  transition:
-    background 300ms,
-    border-color 300ms;
+  color: rgba(233, 222, 196, 0.72);
+  text-shadow:
+    0 0 12px rgba(0, 0, 0, 0.95),
+    0 1px 3px rgba(0, 0, 0, 0.9);
+  transition: color 300ms ease;
 }
-.mark[data-on="true"] {
-  background: rgba(14, 10, 4, 0.82);
-  box-shadow: 0 0 24px rgba(232, 182, 76, 0.25);
-  border-color: var(--grace);
-  color: var(--pale);
+.label::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -7px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--grace), rgba(232, 182, 76, 0));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 500ms var(--ease-out);
+}
+.mark[data-on="true"] .label {
+  color: #f6e7bf;
+}
+.mark[data-on="true"] .label::after {
+  transform: scaleX(1);
+}
+.mark[data-on="true"] .glint::after {
+  opacity: 1;
 }
 
 .quick {
@@ -76,55 +122,66 @@
   color: var(--pale);
 }
 
-.panel {
+/* Bottom prompt band, like "Touch grace" in the game. */
+.prompt {
   position: absolute;
-  left: var(--gutter);
-  top: clamp(84px, 12vh, 110px);
-  width: min(400px, calc(100% - 2 * var(--gutter)));
-  padding: 18px 26px 20px 24px;
-  border-left: 1px solid var(--grace);
-  background: linear-gradient(90deg, rgba(5, 9, 12, 0.85), rgba(5, 9, 12, 0));
+  left: 50%;
+  bottom: clamp(56px, 9vh, 90px);
+  transform: translateX(-50%);
+  width: min(760px, calc(100% - 2 * var(--gutter)));
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 18px 40px 16px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.72) 22%, rgba(0, 0, 0, 0.72) 78%, rgba(0, 0, 0, 0));
+  border: 0;
+  cursor: pointer;
+  text-align: center;
+  animation: rise 500ms var(--ease-out);
 }
-.eyebrow {
-  font-family: var(--caps);
-  font-size: 14px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--muted);
+.prompt::before,
+.prompt::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(232, 182, 76, 0), rgba(232, 182, 76, 0.55), rgba(232, 182, 76, 0));
 }
-.title {
-  margin: 6px 0 0;
+.prompt::before {
+  top: 0;
+}
+.prompt::after {
+  bottom: 0;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+}
+.promptTitle {
   font-family: var(--display);
-  font-weight: 400;
-  font-size: clamp(24px, 2.2vw, 30px);
-  letter-spacing: 0.03em;
-  line-height: 1.15;
-  color: var(--pale);
+  font-size: clamp(20px, 1.9vw, 26px);
+  letter-spacing: 0.06em;
+  color: #f1e4c2;
 }
-.line {
-  margin: 10px 0 0;
+.promptLine {
   font-style: italic;
-  font-size: 18px;
-  line-height: 1.45;
+  font-size: 17px;
   color: var(--bone-dim);
 }
-.cta {
-  margin-top: 16px;
-  padding: 0 0 4px;
-  background: none;
-  border: 0;
-  border-bottom: 1px solid var(--grace);
-  cursor: pointer;
+.promptAction {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-family: var(--caps);
-  font-size: 15px;
-  letter-spacing: 0.13em;
+  font-size: 13px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--grace);
 }
-.cta:hover {
-  color: var(--pale);
-}
-
 /* Button prompts, bottom left, like the game's menu footer. */
 .keys {
   position: absolute;
@@ -145,6 +202,7 @@
   align-items: center;
   gap: 6px;
 }
+.promptAction kbd,
 .keys kbd {
   min-width: 22px;
   padding: 2px 6px;
@@ -158,8 +216,10 @@
 }
 
 @media (max-width: 720px) {
-  .keys,
-  .panel {
+  .keys {
+    display: none;
+  }
+  .promptLine {
     display: none;
   }
   .quick {
@@ -169,8 +229,7 @@
     gap: 20px;
     font-size: 13px;
   }
-  .mark {
+  .label {
     font-size: 13px;
-    height: 36px;
   }
 }
