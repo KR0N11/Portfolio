@@ -19,6 +19,7 @@ export const person = {
     public/profile/<pastime slug>/*    (photography, gym, travel, games)
 */
 export const profile = {
+  quote: "Until death, all defeats are psychological.",
   origin: "I started by hacking mobile games and taking apart Android apps to see how they worked. I still learn that way.",
   served: [
     {
@@ -53,12 +54,17 @@ export const profile = {
       name: "Photography",
       line: "The camera is always packed.",
       body: "I love catching a moment the way it actually felt, not just the way it looked. Light at the end of the day, a street that's empty for three seconds, friends who forgot I was holding a camera. A photo is the closest thing I have to a save point.",
+      companion: {
+        src: "/profile/hachiware-camera.png",
+        alt: "Hachiware from Chiikawa holding a camera",
+        caption: "Hachiware worked part-time jobs to save up for his camera, then photographed everything his friends did. Relatable.",
+      },
     },
     {
       slug: "gym",
       name: "Gym",
       line: "Consistency over motivation.",
-      body: "I like improving myself in a way you can measure. The bar doesn't care how the week went: either the weight went up or it didn't. It's the same thing I like about building software. Show up, do the reps, and the progress is real.",
+      body: "I like improving myself in a way you can measure. The bar doesn't care how the week went: either the weight went up or it didn't. I train the way Hachiware from Chiikawa lives: work hard, keep smiling when it goes wrong, yell \"make it work!\" and go again. Failing a set isn't losing. Quitting is.",
     },
     {
       slug: "travel",
@@ -80,7 +86,15 @@ export const profile = {
       also: "Also: the Fate series and Rampart of Ice.",
       body: "Frieren for the quiet: a story about what a journey means after it's already over. KonoSuba because nothing else makes me laugh that hard. Jujutsu Kaisen for the fights, and for panels like this one.",
     },
-  ] as { slug: string; name: string; line: string; body: string; list?: string[]; also?: string }[],
+  ] as {
+    slug: string;
+    name: string;
+    line: string;
+    body: string;
+    list?: string[];
+    also?: string;
+    companion?: { src: string; alt: string; caption: string };
+  }[],
 };
 
 export type Work = {

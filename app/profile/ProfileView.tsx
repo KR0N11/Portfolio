@@ -105,6 +105,7 @@ export default function ProfileView({ gallery, portrait }: Props) {
               {person.role} · {person.home}
             </p>
             <p className={s.origin}>{profile.origin}</p>
+            <blockquote className={s.quote}>&ldquo;{profile.quote}&rdquo;</blockquote>
           </div>
           {portrait && (
             <figure className={`${s.frame} ${s.portrait}`}>
@@ -174,6 +175,13 @@ export default function ProfileView({ gallery, portrait }: Props) {
               )}
               {p.also && <p className={s.also}>{p.also}</p>}
               <p className={s.body}>{p.body}</p>
+              {p.companion && (
+                <figure className={s.companion}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.companion.src} alt={p.companion.alt} loading="lazy" />
+                  <figcaption>{p.companion.caption}</figcaption>
+                </figure>
+              )}
             </div>
           </article>
         ))}
