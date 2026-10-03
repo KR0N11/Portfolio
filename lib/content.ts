@@ -20,7 +20,7 @@ export const person = {
 */
 export const profile = {
   quote: "Until death, all defeats are psychological.",
-  origin: "I started by hacking mobile games and taking apart Android apps to see how they worked. I still learn that way.",
+  origin: "I build software, lift heavy things, and take too many photos. Only one of those has a commit history.",
   served: [
     {
       slug: "genetec",
