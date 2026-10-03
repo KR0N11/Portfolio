@@ -5,11 +5,16 @@
   background: var(--abyss);
 }
 
-/* Footage, shade and markers move together when you travel. */
 .scene {
   position: absolute;
   inset: 0;
-  transition: transform 1200ms cubic-bezier(0.3, 0, 0.2, 1);
+  transition:
+    transform 1200ms cubic-bezier(0.3, 0, 0.2, 1),
+    filter 1200ms ease;
+}
+.road[data-leaving="true"] .scene {
+  transform: scale(1.12);
+  filter: brightness(0.6);
 }
 
 .shade {
@@ -17,172 +22,125 @@
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.5) 100%),
-    linear-gradient(90deg, rgba(5, 9, 12, 0.55) 0%, rgba(5, 9, 12, 0) 35%),
-    linear-gradient(to bottom, rgba(5, 9, 12, 0.3) 0%, rgba(5, 9, 12, 0) 22%, rgba(5, 9, 12, 0) 75%, rgba(5, 9, 12, 0.6) 100%);
+    radial-gradient(ellipse at 60% 50%, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.5) 100%),
+    linear-gradient(to bottom, rgba(5, 9, 12, 0) 75%, rgba(5, 9, 12, 0.6) 100%);
 }
 
-/* Landmarks: a point of light and a carved word, no boxes. */
-.mark {
+/* The grace menu: a dark column on the left, like resting in the game. */
+.menu {
   position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: min(420px, 100%);
+  padding: clamp(70px, 14vh, 140px) 0 0 var(--gutter);
+  background: linear-gradient(90deg, rgba(3, 5, 7, 0.86) 0%, rgba(3, 5, 7, 0.7) 60%, rgba(3, 5, 7, 0) 100%);
+  animation: menuIn 700ms var(--ease-out);
+}
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+}
+.place {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 10px 14px 10px 0;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  transform: translate(
-    calc(-9px + var(--nx, 0px) + var(--px, 0px) * (var(--d) - var(--focus))),
-    calc(-50% + var(--ny, 0px) + var(--py, 0px) * (var(--d) - var(--focus)))
-  );
+  gap: 12px;
+  padding-bottom: 14px;
+  margin-right: 60px;
+  border-bottom: 1px solid rgba(232, 182, 76, 0.35);
+  font-family: var(--display);
+  font-size: clamp(18px, 1.6vw, 22px);
+  letter-spacing: 0.06em;
+  color: #efe3c4;
 }
-.glint {
-  position: relative;
-  width: 18px;
-  height: 18px;
+.placeIcon {
+  width: 14px;
+  height: 22px;
   flex: none;
-  border-radius: 50%;
-  background: radial-gradient(circle, #fff6d8 0%, #f3dc9a 22%, rgba(232, 182, 76, 0.45) 45%, rgba(232, 182, 76, 0) 72%);
-  animation: glint 2.8s ease-in-out infinite;
+  border-radius: 50% 50% 45% 45%;
+  background: radial-gradient(ellipse at 50% 65%, #fff6d8 0%, #f3dc9a 30%, rgba(232, 182, 76, 0.3) 60%, rgba(232, 182, 76, 0) 75%);
+  animation: flame 2.6s ease-in-out infinite;
 }
-.glint::after {
-  content: "";
-  position: absolute;
-  inset: -14px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(243, 220, 154, 0.25), rgba(243, 220, 154, 0) 65%);
-  opacity: 0;
-  transition: opacity 400ms ease;
-}
-@keyframes glint {
+@keyframes flame {
   0%,
   100% {
-    transform: scale(0.85);
-    opacity: 0.75;
+    transform: scaleY(0.92);
+    opacity: 0.85;
   }
   50% {
-    transform: scale(1.1);
+    transform: scaleY(1.08);
     opacity: 1;
   }
 }
-.label {
-  position: relative;
-  font-family: var(--caps);
-  font-size: 16px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: rgba(233, 222, 196, 0.72);
-  text-shadow:
-    0 0 12px rgba(0, 0, 0, 0.95),
-    0 1px 3px rgba(0, 0, 0, 0.9);
-  transition: color 300ms ease;
+
+.menu ul {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
 }
-.label::after {
+.menu li[data-gap="true"] {
+  margin-top: 26px;
+}
+.item {
+  position: relative;
+  width: 100%;
+  padding: 11px 0 11px 22px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--display);
+  font-size: clamp(19px, 1.7vw, 23px);
+  letter-spacing: 0.04em;
+  color: rgba(222, 210, 182, 0.7);
+  transition: color 200ms;
+}
+/* Selected: a lit bar that fades to the right, hairlines above and below. */
+.item::before {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -7px;
-  height: 1px;
-  background: linear-gradient(90deg, var(--grace), rgba(232, 182, 76, 0));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 500ms var(--ease-out);
+  inset: 0;
+  background: linear-gradient(90deg, rgba(232, 200, 140, 0.22), rgba(232, 200, 140, 0.08) 55%, rgba(232, 200, 140, 0));
+  border-top: 1px solid rgba(243, 220, 154, 0.35);
+  border-bottom: 1px solid rgba(243, 220, 154, 0.35);
+  -webkit-mask-image: linear-gradient(90deg, #000 60%, transparent);
+  mask-image: linear-gradient(90deg, #000 60%, transparent);
+  opacity: 0;
+  transition: opacity 200ms;
 }
-.mark[data-on="true"] .label {
-  color: #f6e7bf;
+.item[data-on="true"] {
+  color: #fbf0d4;
 }
-.mark[data-on="true"] .label::after {
-  transform: scaleX(1);
-}
-.mark[data-on="true"] .glint::after {
+.item[data-on="true"]::before {
   opacity: 1;
 }
 
-.quick {
-  position: absolute;
-  right: var(--gutter);
-  top: clamp(20px, 4vh, 40px);
-  display: flex;
-  gap: 28px;
-  z-index: 5;
-  font-family: var(--caps);
-  font-size: 15px;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
-}
-.quick a {
-  color: var(--label);
-  text-decoration: none;
-}
-.quick a:hover {
-  color: var(--pale);
-}
-
-/* Bottom prompt band, like "Touch grace" in the game. */
-.prompt {
+/* The game shows the selected entry's description along the bottom. */
+.help {
   position: absolute;
   left: 50%;
-  bottom: clamp(56px, 9vh, 90px);
+  bottom: clamp(48px, 8vh, 76px);
   transform: translateX(-50%);
-  width: min(760px, calc(100% - 2 * var(--gutter)));
-  display: grid;
-  justify-items: center;
-  gap: 6px;
-  padding: 18px 40px 16px;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.72) 22%, rgba(0, 0, 0, 0.72) 78%, rgba(0, 0, 0, 0));
-  border: 0;
-  cursor: pointer;
+  width: min(720px, calc(100% - 2 * var(--gutter)));
+  margin: 0;
+  padding: 12px 24px;
   text-align: center;
-  animation: rise 500ms var(--ease-out);
+  font-family: var(--display);
+  font-size: clamp(15px, 1.25vw, 18px);
+  letter-spacing: 0.03em;
+  color: #e9dcbc;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.62) 20%, rgba(0, 0, 0, 0.62) 80%, rgba(0, 0, 0, 0));
+  animation: show 400ms ease;
 }
-.prompt::before,
-.prompt::after {
-  content: "";
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(232, 182, 76, 0), rgba(232, 182, 76, 0.55), rgba(232, 182, 76, 0));
-}
-.prompt::before {
-  top: 0;
-}
-.prompt::after {
-  bottom: 0;
-}
-@keyframes rise {
+@keyframes show {
   from {
     opacity: 0;
-    transform: translate(-50%, 8px);
   }
 }
-.promptTitle {
-  font-family: var(--display);
-  font-size: clamp(20px, 1.9vw, 26px);
-  letter-spacing: 0.06em;
-  color: #f1e4c2;
-}
-.promptLine {
-  font-style: italic;
-  font-size: 17px;
-  color: var(--bone-dim);
-}
-.promptAction {
-  margin-top: 6px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--caps);
-  font-size: 13px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--grace);
-}
-/* Button prompts, bottom left, like the game's menu footer. */
+
+/* Button prompts along the bottom left, like the game's footer. */
 .keys {
   position: absolute;
   left: var(--gutter);
@@ -202,7 +160,6 @@
   align-items: center;
   gap: 6px;
 }
-.promptAction kbd,
 .keys kbd {
   min-width: 22px;
   padding: 2px 6px;
@@ -216,20 +173,17 @@
 }
 
 @media (max-width: 720px) {
+  .menu {
+    top: auto;
+    width: 100%;
+    padding: 28px var(--gutter) 90px;
+    background: linear-gradient(to top, rgba(3, 5, 7, 0.92) 55%, rgba(3, 5, 7, 0));
+  }
+  .help {
+    bottom: auto;
+    top: 24px;
+  }
   .keys {
     display: none;
-  }
-  .promptLine {
-    display: none;
-  }
-  .quick {
-    top: 64px;
-    left: var(--gutter);
-    right: auto;
-    gap: 20px;
-    font-size: 13px;
-  }
-  .label {
-    font-size: 13px;
   }
 }
