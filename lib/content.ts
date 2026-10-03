@@ -26,18 +26,21 @@ export const profile = {
       name: "Genetec",
       logo: "/profile/logos/genetec-white.svg",
       line: "Monitoring for the digital twin platform.",
+      body: "I work on observability: the monitoring application for Genetec's digital twin platform. The goal is simple to say and hard to do: problems should show up on a screen before anyone has to go looking for them.",
     },
     {
       slug: "vffice",
       name: "Vffice",
       logo: "/profile/logos/vffice-wordmark-white.png",
       line: "AI agents on Azure, and automation for a quality management system.",
+      body: "I built an AI agent on Azure AI Foundry that drafts RFP responses from the company's own documents, and automated a quality management system with Power Automate and Office Scripts. The team demoed the agent proof of concept at a Microsoft partner event.",
     },
     {
       slug: "paultech",
       name: "Paul Tech",
       logo: "/profile/logos/paultech-wordmark-white.png",
       line: "Moved nurses' spreadsheets into a Power Pages app.",
+      body: "My first internship, and it started with a direct message. Nurses were tracking everything in Excel; I moved it into a Power Pages app on Dataverse so the data lived in one place.",
     },
   ],
   schools: [
@@ -45,18 +48,39 @@ export const profile = {
     { name: "LaSalle College", field: "Computer Science" },
   ],
   pastimes: [
-    { slug: "photography", name: "Photography", line: "The camera is always packed." },
-    { slug: "gym", name: "Gym", line: "Consistency over motivation." },
-    { slug: "travel", name: "Travel", line: "Every trip gets photographed and vlogged." },
-    { slug: "games", name: "Games", line: "Emerald in R6. Destiny. The occasional Roblox. Never League." },
+    {
+      slug: "photography",
+      name: "Photography",
+      line: "The camera is always packed.",
+      body: "I love catching a moment the way it actually felt, not just the way it looked. Light at the end of the day, a street that's empty for three seconds, friends who forgot I was holding a camera. A photo is the closest thing I have to a save point.",
+    },
+    {
+      slug: "gym",
+      name: "Gym",
+      line: "Consistency over motivation.",
+      body: "I like improving myself in a way you can measure. The bar doesn't care how the week went: either the weight went up or it didn't. It's the same thing I like about building software. Show up, do the reps, and the progress is real.",
+    },
+    {
+      slug: "travel",
+      name: "Travel",
+      line: "Every trip gets photographed and vlogged.",
+      body: "Who doesn't love Japan? Fuji over a field of blue flowers, a fire on the beach after dark. I travel to see how other places live, eat far too much, and come home with more photos than I'll ever sort.",
+    },
+    {
+      slug: "games",
+      name: "Games",
+      line: "Emerald in R6. Destiny. The occasional Roblox. Never League.",
+      body: "Games are how I got into code in the first place: hacking mobile games led to taking apart Android apps. R6 is the one I keep coming back to, because every round is a small puzzle you solve with four other people and a timer.",
+    },
     {
       slug: "anime",
       name: "Manga & Anime",
       line: "Top three, in order:",
       list: ["Frieren: Beyond Journey's End", "KonoSuba", "Jujutsu Kaisen"],
       also: "Also: the Fate series and Rampart of Ice.",
+      body: "Frieren for the quiet: a story about what a journey means after it's already over. KonoSuba because nothing else makes me laugh that hard. Jujutsu Kaisen for the fights, and for panels like this one.",
     },
-  ] as { slug: string; name: string; line: string; list?: string[]; also?: string }[],
+  ] as { slug: string; name: string; line: string; body: string; list?: string[]; also?: string }[],
 };
 
 export type Work = {

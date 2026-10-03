@@ -1,11 +1,11 @@
 "use client";
 
 /*
-  The Road. A still from the official Elden Ring gameplay trailer, upscaled to
-  4K: the Tarnished at sunset beside a Site of Grace. With its depth map the
+  The Road. The Tarnished sits in the grass at a Site of Grace at night: a 4K
+  frame from the official Elden Ring Gameplay Preview. With its depth map the
   frame becomes a small 3D scene: move the pointer and the grass slides past
-  him while the sky stays far off. The landmarks ride the same parallax: the
-  Tarnished is the profile, the grace holds the projects, the cliff keeps a
+  him while the forest stays far off. The landmarks ride the same parallax:
+  the Tarnished is the profile, the grace holds the projects, the hill keeps a
   lantern for contact. Arrow keys choose, Enter travels, Esc goes back.
 */
 
@@ -36,8 +36,8 @@ const MARKS: Mark[] = [
   {
     key: "self",
     label: "Profile",
-    at: [0.526, 0.13],
-    depth: 0.35,
+    at: [0.665, 0.23],
+    depth: 0.47,
     eyebrow: "The Tarnished",
     title: "Who rests at this grace",
     line: "Where I come from, where I've worked, and what I do when the laptop is shut.",
@@ -47,8 +47,8 @@ const MARKS: Mark[] = [
   {
     key: "tree",
     label: "Projects",
-    at: [0.396, 0.22],
-    depth: 0.1,
+    at: [0.394, 0.39],
+    depth: 0.12,
     eyebrow: "The Site of Grace",
     title: "Great Works",
     line: "Eight things I built, each recorded while it runs.",
@@ -58,9 +58,9 @@ const MARKS: Mark[] = [
   {
     key: "lantern",
     label: "Contact",
-    at: [0.83, 0.19],
-    depth: 0.17,
-    eyebrow: "On the cliff",
+    at: [0.86, 0.3],
+    depth: 0.14,
+    eyebrow: "Up the hill",
     title: "The Lantern",
     line: "Leave word. A reply travels faster than most roads.",
     cta: "Send word",
@@ -123,10 +123,10 @@ export default function Road() {
           depth="/art/grace-depth.png"
           aspect={16 / 9}
           focus={[0.5, 0.45]}
-          grace={[0.396, 0.29, 0.54]}
+          grace={[0.394, 0.42, 0.6]}
         >
           <div className={s.shade} aria-hidden="true" />
-          <Motes source={[0.37, 0.42, 0.42, 0.56]} count={16} drift={0.01} rise={0.3} />
+          <Motes source={[0.3, 0.48, 0.66, 0.76]} count={18} drift={0.01} rise={0.35} />
           {MARKS.map((m) => (
             <button
               key={m.key}

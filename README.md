@@ -3,7 +3,7 @@
 My portfolio, built around one idea: draw the blade, walk the road.
 
 1. **The Gate** (`/`). The kneeling Tarnished under the ring. Drag the sword upward: the hilt and the fist on it rise against the pull and the blade comes up out of the ground. Let go early and it sinks back. The first touch also starts the music.
-2. **The Road** (`/road`). The Tarnished at sunset beside a Site of Grace: a still from the official gameplay trailer, upscaled to 4K (Real-ESRGAN) with a depth map (Depth Anything V2) so it moves in 3D with the pointer. Landmarks on the scene: the Tarnished (Profile), the grace (Projects), the cliff (Contact). Arrow keys choose, Enter travels, Esc goes back to the sword.
+2. **The Road** (`/road`). The Tarnished sitting at a Site of Grace at night: a native 4K frame from the official Elden Ring Gameplay Preview (11:05), with a depth map (Depth Anything V2) so it moves in 3D with the pointer. Landmarks on the scene: the Tarnished (Profile), the grace (Projects), the hill (Contact). Arrow keys choose, Enter travels, Esc goes back to the sword.
 3. **Status** (`/profile`). A long scroll: who I am, the companies I've worked at (with logos), and full-screen scenes for each pastime. No timeline on purpose.
 4. **Great Works** (`/works`). An inventory of projects. Each one plays a recording of the real app running.
 
