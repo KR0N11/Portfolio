@@ -36,7 +36,7 @@ const MARKS: Mark[] = [
   {
     key: "self",
     label: "Profile",
-    at: [0.665, 0.23],
+    at: [0.655, 0.165],
     depth: 0.47,
     eyebrow: "The Tarnished",
     title: "Who rests at this grace",
@@ -76,6 +76,39 @@ export default function Road() {
 
   useEffect(() => {
     arrived();
+  }, []);
+
+  // Keep every landmark on screen: nudge it back in when a narrow or short
+  // viewport crops the scene (the nudge relaxes to 0 when there is room).
+  useEffect(() => {
+    let raf = 0;
+    const keep = () => {
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const top = 96;
+      const bottom = H - (W < 720 ? 230 : 250);
+      for (const el of Object.values(markRefs.current)) {
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        let nx = Number(el.dataset.nx || 0);
+        let ny = Number(el.dataset.ny || 0);
+        if (r.right > W - 12) nx -= r.right - (W - 12);
+        else if (r.left < 12) nx += 12 - r.left;
+        else if (nx < 0) nx = Math.min(0, nx + (W - 12 - r.right));
+        else if (nx > 0) nx = Math.max(0, nx - (r.left - 12));
+        if (r.top < top) ny += top - r.top;
+        else if (r.bottom > bottom) ny -= r.bottom - bottom;
+        else if (ny > 0) ny = Math.max(0, ny - (r.top - top));
+        else if (ny < 0) ny = Math.min(0, ny + (bottom - r.bottom));
+        el.dataset.nx = String(nx);
+        el.dataset.ny = String(ny);
+        el.style.setProperty("--nx", `${nx}px`);
+        el.style.setProperty("--ny", `${ny}px`);
+      }
+      raf = requestAnimationFrame(keep);
+    };
+    raf = requestAnimationFrame(keep);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   const enter = (m: Mark) => {
@@ -141,8 +174,8 @@ export default function Road() {
               onFocus={() => setSel(m.key)}
               onClick={() => enter(m)}
             >
-              <span className="diamond" data-on={m.key === sel} data-pulse={m.key === sel} />
-              <span>{m.label}</span>
+              <span className={s.glint} aria-hidden="true" />
+              <span className={s.label}>{m.label}</span>
             </button>
           ))}
         </DepthScene>
@@ -157,22 +190,19 @@ export default function Road() {
         <a href={`mailto:${person.email}`}>Contact</a>
       </nav>
 
-      <section className={s.panel} aria-live="polite">
-        <div className={s.eyebrow}>{cur.eyebrow}</div>
-        <h2 className={s.title}>{cur.title}</h2>
-        <p className={s.line}>{cur.line}</p>
-        <button type="button" className={s.cta} onClick={() => enter(cur)}>
-          {cur.cta} &rarr;
-        </button>
-      </section>
+      {/* The game's own interaction prompt: a dark band across the bottom. */}
+      <button type="button" className={s.prompt} onClick={() => enter(cur)} key={cur.key}>
+        <span className={s.promptTitle}>{cur.title}</span>
+        <span className={s.promptLine}>{cur.line}</span>
+        <span className={s.promptAction}>
+          <kbd>Enter</kbd> {cur.cta}
+        </span>
+      </button>
 
       <div className={s.keys} aria-hidden="true">
         <span>
           <kbd>&larr;</kbd>
           <kbd>&rarr;</kbd> Choose
-        </span>
-        <span>
-          <kbd>Enter</kbd> Travel
         </span>
         <span>
           <kbd>Esc</kbd> Back
