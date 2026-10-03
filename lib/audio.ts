@@ -5,6 +5,8 @@
 */
 
 const KEY = "pcl-muted";
+/** The track opens with a few near-silent seconds; play from here and loop back here. */
+const START_AT = 5;
 let el: HTMLAudioElement | null = null;
 let started = false;
 const listeners = new Set<() => void>();
@@ -14,7 +16,12 @@ const notify = () => listeners.forEach((l) => l());
 function audio() {
   if (!el && typeof window !== "undefined") {
     el = new Audio("/audio/elden-ring-theme.mp3");
-    el.loop = true;
+    el.loop = false;
+    el.addEventListener("ended", () => {
+      if (!el) return;
+      el.currentTime = START_AT;
+      el.play().catch(() => {});
+    });
     el.volume = 0;
     el.preload = "auto";
   }
@@ -48,6 +55,7 @@ export function startAudio() {
   const a = audio();
   if (!a || started || isMuted()) return;
   started = true;
+  if (a.currentTime < START_AT) a.currentTime = START_AT;
   a.play()
     .then(() => fadeTo(0.45))
     .catch(() => {
