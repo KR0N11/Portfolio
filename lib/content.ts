@@ -20,7 +20,7 @@ export const person = {
 */
 export const profile = {
   quote: "Until death, all defeats are psychological.",
-  origin: "I build software, lift heavy things, and take too many photos. Only one of those has a commit history.",
+  origin: "My commit messages go \"fix\", \"fix again\", \"actually fix\", \"please work\". These days I mostly stop at the first one.",
   served: [
     {
       slug: "genetec",
@@ -70,7 +70,7 @@ export const profile = {
       slug: "travel",
       name: "Travel",
       line: "Every trip gets photographed and vlogged.",
-      body: "Who doesn't love Japan? Fuji over a field of blue flowers, a fire on the beach after dark. I travel to see how other places live, eat far too much, and come home with more photos than I'll ever sort.",
+      body: "Who doesn't love Japan? Fuji over a field of blue flowers, golden hour on a hillside staircase. I travel to see how other places live, eat far too much, and come home with more photos than I'll ever sort.",
     },
     {
       slug: "games",
