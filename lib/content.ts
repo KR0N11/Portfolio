@@ -122,6 +122,8 @@ export type Work = {
   hasVideo: boolean;
   /** width / height of the recording, when it isn't 16:10 */
   aspect?: number;
+  /** a light-mode recording, dimmed so it doesn't glare on the dark page */
+  bright?: boolean;
 };
 
 export const works: Work[] = [
@@ -151,7 +153,7 @@ export const works: Work[] = [
     ],
     stack: ["C#", ".NET 10", "Roslyn", "ASP.NET Core", "React", "React Flow"],
     repo: "https://github.com/KR0N11/archlens",
-    recording: "Live run · the SampleShop sample repo, overview to call flow",
+    recording: "Live run · dotnet/eShop analysed from a fresh clone, then the call flow for POST api/orders/draft with the file and line behind each arrow",
     hasVideo: true,
   },
   {
@@ -175,7 +177,7 @@ export const works: Work[] = [
     what: [
       "When an alert fires, it folds related alerts into one incident, works out which other services are about to be hit, and builds one timeline of logs, deploys and feature flag changes.",
       "It ranks likely root causes with a fixed scoring formula, so the ranking can be tested, and shows the runbook and evidence behind each one.",
-      "Read-only checks run on their own; any change waits for a person to approve it. On 28 labelled, replayable incidents it ranked the right root cause first 92.9% of the time, and ran no change without approval.",
+      "Read-only checks run on their own; any change waits for a person to approve it. On 28 generated, labelled incident recordings it ranked the right root cause first 92.9% of the time, and ran no change without approval.",
     ],
     stack: ["Python", "LangGraph", "FastAPI", "HTMX", "LlamaIndex", "Terraform"],
     repo: "https://github.com/KR0N11/sentinel",
@@ -188,8 +190,8 @@ export const works: Work[] = [
     kind: "Reinforcement learning · Python",
     what: [
       "A small neural network learns World 1-1 of Super Mario Bros from scratch. It sees only stacked gray frames and picks one of 7 button combos.",
-      "It is trained with PPO on many copies of the NES emulator at once. The ghost comes from jump timings tuned inside the emulator, because frame-perfect speedrun inputs drift out of sync between emulators.",
-      "A wall of emulators races a see-through ghost Mario from a run tuned in the emulator. Borders turn green when a Mario is ahead of the ghost and red when behind.",
+      "It is trained with PPO on many copies of the NES emulator at once.",
+      "A wall of emulators races a see-through ghost Mario; borders turn green when a Mario is ahead and red when behind. The ghost comes from jump timings tuned inside the emulator, because frame-perfect speedrun inputs drift out of sync between emulators.",
     ],
     stack: ["Python", "PyTorch", "Stable-Baselines3", "Gymnasium", "OpenCV"],
     repo: "https://github.com/KR0N11/sisyphus",

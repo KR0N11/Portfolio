@@ -50,7 +50,7 @@ function Clip({ src, alt }: { src: string; alt: string }) {
     return () => io.disconnect();
   }, []);
   return (
-    <video ref={v} src={src} poster={src.replace(/\.mp4$/, ".jpg")} muted loop playsInline preload="none" aria-label={alt} />
+    <video ref={v} src={src} poster={src.replace(/\.mp4$/, ".poster.jpg")} muted loop playsInline preload="none" aria-label={alt} />
   );
 }
 

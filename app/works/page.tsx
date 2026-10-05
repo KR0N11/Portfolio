@@ -84,48 +84,63 @@ export default function Works() {
                 className={s.tile}
                 data-on={n === i}
                 onClick={() => pick(n)}
-                title={x.name}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/clips/${x.slug}/tile.jpg`} alt="" loading="lazy" />
-                <span className={s.tileName}>{x.name}</span>
+                <img src={`/clips/${x.slug}/tile.jpg`} alt={x.name} loading="lazy" />
               </button>
             ))}
           </div>
+
+          {/* Item names under the slots, as the game lists them. */}
+          <ol className={s.names}>
+            {works.map((x, n) => (
+              <li key={x.slug}>
+                <button type="button" tabIndex={-1} data-on={n === i} onClick={() => pick(n)}>
+                  {x.name}
+                  <span>{x.kind.split(" · ")[0]}</span>
+                </button>
+              </li>
+            ))}
+          </ol>
         </aside>
 
         <section ref={detailRef} className={s.detail}>
-          <div className={s.frame} style={{ aspectRatio: w.aspect ?? 16 / 10 }}>
+          <div className={s.nameRow}>
+            <h2 className={s.name} aria-live="polite">
+              {w.name}
+            </h2>
+            <a className={s.code} href={w.repo} target="_blank" rel="noreferrer">
+              View code &#8599;
+            </a>
+          </div>
+          <div className={s.kind}>{w.kind}</div>
+
+          <div
+            className={s.frame}
+            data-bright={!!w.bright}
+            style={{ aspectRatio: w.aspect ?? 16 / 10, width: `min(100%, calc(60vh * ${w.aspect ?? 16 / 10}))` }}
+          >
             {w.hasVideo ? (
               <video
                 key={w.slug}
                 className={s.media}
                 src={`${base}/demo.mp4`}
-                poster={`${base}/poster.jpg`}
+                poster={`${base}/poster.webp`}
                 autoPlay={!reduce}
                 controls={reduce}
                 muted
                 loop
                 playsInline
-                preload="auto"
+                preload="metadata"
               />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
-              <img key={w.slug} className={s.media} src={`${base}/poster.jpg`} alt={`${w.name} screenshot`} />
+              <img key={w.slug} className={s.media} src={`${base}/poster.webp`} alt={`${w.name} screenshot`} />
             )}
           </div>
           <div className={s.caption}>{w.recording}</div>
 
           <div className={s.info}>
-            <div className={s.nameRow}>
-              <h2 className={s.name} aria-live="polite">
-                {w.name}
-              </h2>
-              <a className={s.code} href={w.repo} target="_blank" rel="noreferrer">
-                View code &#8599;
-              </a>
-            </div>
-            <div className={s.kind}>{w.kind}</div>
             <p className={s.stack}>
               <span>Built with</span>
               {w.stack.join(" · ")}

@@ -236,7 +236,11 @@ export default function DepthScene({ src, depth, aspect, focus, grace, children 
           if (!alive) return;
           const dt = Math.min(0.05, (now - last) / 1000);
           last = now;
-          if (now - lastMove > 2500) {
+          if (reduce) {
+            // Reduced motion: hold the scene still, no drift or parallax.
+            target.x = 0;
+            target.y = 0;
+          } else if (now - lastMove > 2500) {
             target.x = Math.sin(now / 5200) * 0.35;
             target.y = Math.sin(now / 7300) * 0.2;
           }
@@ -271,7 +275,8 @@ export default function DepthScene({ src, depth, aspect, focus, grace, children 
               st.style.setProperty("--py", `${oy * r.height}px`);
             }
           }
-          raf = requestAnimationFrame(draw!);
+          // Reduced motion draws once, then only again on resize.
+          if (!reduce) raf = requestAnimationFrame(draw!);
         };
         raf = requestAnimationFrame((now) => {
           draw?.(now);
@@ -282,12 +287,17 @@ export default function DepthScene({ src, depth, aspect, focus, grace, children 
 
     const onVis = () => {
       cancelAnimationFrame(raf);
-      if (!document.hidden && alive && draw) raf = requestAnimationFrame(draw);
+      if (!document.hidden && alive && draw && !reduce) raf = requestAnimationFrame(draw);
+    };
+    const onResize = () => {
+      if (reduce && alive && draw) raf = requestAnimationFrame(draw);
     };
     document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("resize", onResize);
     return () => {
       alive = false;
       cancelAnimationFrame(raf);
+      window.removeEventListener("resize", onResize);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("deviceorientation", onTilt);
       document.removeEventListener("visibilitychange", onVis);

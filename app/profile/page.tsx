@@ -12,7 +12,11 @@ import ProfileView from "./ProfileView";
 const IMG = /\.(jpe?g|png|webp|avif|mp4)$/i;
 const root = path.join(process.cwd(), "public", "profile");
 
-export const metadata: Metadata = { title: "Profile", alternates: { canonical: "/profile/" } };
+export const metadata: Metadata = {
+  title: "Profile",
+  alternates: { canonical: "/profile/" },
+  openGraph: { title: "Profile · Ping Chun Lui", url: "/profile/", images: ["/og.jpg"] },
+};
 
 function photos(dir: string) {
   try {
