@@ -167,7 +167,7 @@ export const works: Work[] = [
     ],
     stack: ["TypeScript", "React", "Canvas 2D", "Vite", "OpenStreetMap"],
     repo: "https://github.com/KR0N11/waypoint",
-    recording: "Live run · route, Dijkstra vs A*, isochrone",
+    recording: "Live run · a 1.06 km route with walk, bike and drive times; A* against Dijkstra (race speed raised on screen); a 10-minute walk isochrone",
     hasVideo: true,
   },
   {
@@ -181,7 +181,7 @@ export const works: Work[] = [
     ],
     stack: ["Python", "LangGraph", "FastAPI", "HTMX", "LlamaIndex", "Terraform"],
     repo: "https://github.com/KR0N11/sentinel",
-    recording: "Live run · CLI triage of incident inc-001, offline replay mode",
+    recording: "Live run · CLI triage of incident inc-001 in offline replay mode (deterministic LLM stub), then scrolling back through its real output",
     hasVideo: true,
   },
   {
@@ -209,9 +209,8 @@ export const works: Work[] = [
     ],
     stack: ["Python", "LangGraph", "Pydantic", "DuckDB", "Streamlit", "FastAPI"],
     repo: "https://github.com/KR0N11/loom",
-    recording: "Ingest, semantic retrieval and the DuckDB query · no LLM step",
+    recording: "Ingest, semantic retrieval (a short script calling Loom's search) and the DuckDB query · no LLM step · ingest wait shown at 3×",
     hasVideo: true,
-    aspect: 800 / 704,
   },
   {
     slug: "recap",
@@ -238,7 +237,7 @@ export const works: Work[] = [
     ],
     stack: ["JavaScript", "HTML", "CSS", "localStorage", "Vitest"],
     repo: "https://github.com/KR0N11/mactype",
-    recording: "Live run · a 10-word lesson",
+    recording: "Live run · a 10-word lesson typed with real keypresses, then the results",
     hasVideo: true,
   },
 ];
