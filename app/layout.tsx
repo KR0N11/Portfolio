@@ -20,9 +20,21 @@ const garamond = EB_Garamond({
   style: ["normal", "italic"],
 });
 
+const description = "Ping Chun Lui, Computer Science at Concordia, Montréal. Eight software projects, each shown running.";
+
 export const metadata: Metadata = {
-  title: "Ping Chun Lui",
-  description: "Ping Chun Lui, software developer in Montréal. Walk the road and watch the projects run.",
+  metadataBase: new URL("https://pingchunlui.ca"),
+  title: { default: "Ping Chun Lui", template: "%s · Ping Chun Lui" },
+  description,
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Ping Chun Lui",
+    title: "Ping Chun Lui",
+    description,
+    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Ping Chun Lui" }],
+  },
+  twitter: { card: "summary_large_image", title: "Ping Chun Lui", description, images: ["/og.jpg"] },
 };
 
 export const viewport: Viewport = {

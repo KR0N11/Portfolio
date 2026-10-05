@@ -50,16 +50,17 @@ export const profile = {
     { name: "Concordia University", field: "Computer Science", logo: "/profile/logos/concordia-white.svg" },
     { name: "LaSalle College", field: "Computer Science", logo: "/profile/logos/lasalle-white.svg" },
   ],
-  /* Skill cards, like gordonng.ca. Levels are Ping's call; "Other" has none. */
+  /* Skills by group: [name, icon file in public/skills]. */
   skills: [
-    { group: "Languages", items: [["Python", "python", "Advanced"], ["JavaScript", "javascript", "Advanced"], ["Java", "java", "Intermediate"], ["C#", "csharp", "Intermediate"], ["TypeScript", "typescript", "Intermediate"], ["Swift", "swift", "Basic"]] },
-    { group: "Frontend", items: [["React", "react", "Intermediate"], ["HTML", "html5", "Advanced"], ["CSS", "css3", "Intermediate"], ["Next.js", "nextjs", "Basic"]] },
-    { group: "Backend & Cloud", items: [["Azure", "azure", "Advanced"], [".NET", "dotnetcore", "Intermediate"], ["Node.js", "nodejs", "Basic"], ["PostgreSQL", "postgresql", "Basic"], ["AWS", "amazonwebservices", "Basic"], ["Docker", "docker", "Basic"]] },
+    { group: "Languages", items: [["Python", "python"], ["JavaScript", "javascript"], ["Java", "java"], ["C#", "csharp"], ["TypeScript", "typescript"], ["Swift", "swift"]] },
+    { group: "Frontend", items: [["React", "react"], ["HTML", "html5"], ["CSS", "css3"], ["Next.js", "nextjs"]] },
+    { group: "Backend & Cloud", items: [["Azure", "azure"], [".NET", "dotnetcore"], ["Node.js", "nodejs"], ["PostgreSQL", "postgresql"], ["AWS", "amazonwebservices"], ["Docker", "docker"]] },
     { group: "Other", items: [["Git", "git"], ["GitHub", "github"], ["Azure DevOps", "azuredevops"], ["PyTorch", "pytorch"]] },
-  ] as { group: string; items: ([string, string] | [string, string, string])[] }[],
+  ] as { group: string; items: [string, string][] }[],
   pastimes: [
     {
       slug: "photography",
+      alts: ["Ping taking a mirror photo with a compact camera"],
       name: "Photography",
       body: "Small camera, always in the bag. Mostly friends, streets, and that light right before sunset.",
       companion: {
@@ -70,21 +71,25 @@ export const profile = {
     },
     {
       slug: "gym",
+      alts: ["Weight plates and dumbbells at home"],
       name: "Gym",
       body: "The bar doesn't care how my week went. The weight either went up or it didn't (some months it didn't). Hachiware is the mood: fail, yell \"make it work!\", go again.",
     },
     {
       slug: "travel",
+      alts: ["Mount Fuji behind a field of blue nemophila flowers", "A hillside staircase in Japan at golden hour"],
       name: "Travel",
       body: "Japan, mostly. Fuji over a field of blue flowers, a hillside staircase at golden hour. Every trip gets photographed and vlogged.",
     },
     {
       slug: "games",
+      alts: ["Rainbow Six Siege clip, aiming down a hallway"],
       name: "Games",
       line: "Emerald in R6. Destiny. The occasional Roblox. Never League.",
     },
     {
       slug: "anime",
+      alts: ["Jujutsu Kaisen panel: Yuji yelling about a special grade larper"],
       name: "Manga & Anime",
       line: "Top three, in order:",
       list: ["Frieren: Beyond Journey's End", "KonoSuba", "Jujutsu Kaisen"],
@@ -93,6 +98,8 @@ export const profile = {
     },
   ] as {
     slug: string;
+    /** alt text for each photo, in file order */
+    alts?: string[];
     name: string;
     line?: string;
     body?: string;
@@ -113,6 +120,8 @@ export type Work = {
   /** how the clip was made, shown under the video */
   recording: string;
   hasVideo: boolean;
+  /** width / height of the recording, when it isn't 16:10 */
+  aspect?: number;
 };
 
 export const works: Work[] = [
@@ -123,7 +132,7 @@ export const works: Work[] = [
     what: [
       "Every pixel is a key in a five-node store modeled on Amazon's Dynamo and written from scratch in C#: a hash ring, three copies of each key, and writes that need two replies.",
       "Kill a node or cut the network and writes keep landing. Hinted handoff, read repair and Merkle-tree anti-entropy bring the missing copies back once it returns.",
-      "Vector clocks decide which versions to keep, and a write-ahead log lets a crashed node recover. The dashboard has buttons to kill, revive, partition and heal.",
+      "Merkle trees are kept per key range, not per node, because two replicas only share some ranges. 59 tests cover a node killed mid-write, partitions, crash recovery and anti-entropy.",
     ],
     stack: ["C#", ".NET 10", "ASP.NET Core", "React", "TypeScript", "Canvas"],
     repo: "https://github.com/KR0N11/pixelring",
@@ -137,7 +146,7 @@ export const works: Work[] = [
     what: [
       "Paste a public C# repo and it draws an ArchiMate-style diagram: projects, services, HTTP entry points, data entities, outside systems, and the calls between them.",
       "Roslyn walks every method body. Each arrow stores the file and line that proves it, and from every HTTP entry point it traces a call flow you can click through.",
-      "The analysis is static and deterministic. An optional LLM step may only relabel boxes the rules were unsure about; it can never add, remove or move an arrow.",
+      "The analysis is static and deterministic. An optional LLM step may only relabel boxes the rules were unsure about; it can never add, remove or move an arrow. On dotnet/eShop it maps 19 projects, 1,064 boxes and 613 arrows in 2.9 s.",
     ],
     stack: ["C#", ".NET 10", "Roslyn", "ASP.NET Core", "React", "React Flow"],
     repo: "https://github.com/KR0N11/archlens",
@@ -165,7 +174,7 @@ export const works: Work[] = [
     what: [
       "When an alert fires, it folds related alerts into one incident, works out which other services are about to be hit, and builds one timeline of logs, deploys and feature flag changes.",
       "It ranks likely root causes with a fixed scoring formula, so the ranking can be tested, and shows the runbook and evidence behind each one.",
-      "Read-only checks run on their own. Any change waits at an approval step until a person says yes.",
+      "Read-only checks run on their own; any change waits for a person to approve it. On 28 labelled, replayable incidents it ranked the right root cause first 92.9% of the time, and ran no change without approval.",
     ],
     stack: ["Python", "LangGraph", "FastAPI", "HTMX", "LlamaIndex", "Terraform"],
     repo: "https://github.com/KR0N11/sentinel",
@@ -178,27 +187,29 @@ export const works: Work[] = [
     kind: "Reinforcement learning · Python",
     what: [
       "A small neural network learns World 1-1 of Super Mario Bros from scratch. It sees only stacked gray frames and picks one of 7 button combos.",
-      "It is trained with PPO on many copies of the NES emulator at once.",
+      "It is trained with PPO on many copies of the NES emulator at once. The ghost comes from jump timings tuned inside the emulator, because frame-perfect speedrun inputs drift out of sync between emulators.",
       "A wall of emulators races a see-through ghost Mario from a run tuned in the emulator. Borders turn green when a Mario is ahead of the ghost and red when behind.",
     ],
     stack: ["Python", "PyTorch", "Stable-Baselines3", "Gymnasium", "OpenCV"],
     repo: "https://github.com/KR0N11/sisyphus",
     recording: "Live run · trained model on 10 emulators · real time",
     hasVideo: true,
+    aspect: 1280 / 600,
   },
   {
     slug: "loom",
     name: "Loom",
     kind: "Multi-agent analysis · Python",
     what: [
-      "Ask a question about messy tables in plain English. Five agents plan the analysis, find the right tables and columns, run SQL in a sandbox, check the numbers, and write a short memo with charts.",
+      "Ask a question about messy tables in plain English. Five agents are built to plan the analysis, find the right tables and columns, run SQL in a sandbox, check the numbers, and write a short memo with charts.",
       "The verifier works out each key number a second way and checks units, sample sizes, nulls, duplicates and truncation. A failed check forces the headline to say UNVERIFIED.",
-      "Every memo ends with an audit appendix listing each query that ran.",
+      "Built and tested so far: ingest, semantic retrieval, the DuckDB sandbox and a 172-question benchmark with answers checked against the real data. The full run with the LLM hasn't happened yet.",
     ],
     stack: ["Python", "LangGraph", "Pydantic", "DuckDB", "Streamlit", "FastAPI"],
     repo: "https://github.com/KR0N11/loom",
     recording: "Ingest, semantic retrieval and the DuckDB query · no LLM step",
     hasVideo: true,
+    aspect: 800 / 704,
   },
   {
     slug: "recap",

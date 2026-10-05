@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import LivingImage, { type Live } from "@/components/LivingImage";
 import Motes from "@/components/Motes";
 import { arrived, passThrough } from "@/components/Veil";
+import { startAudio } from "@/lib/audio";
 import { person } from "@/lib/content";
 import s from "./gate.module.css";
 
@@ -57,6 +58,7 @@ export default function Gate() {
     if (freed.current) return;
     freed.current = true;
     drag.current = null;
+    startAudio();
     target.current = FREE_LIFT;
     live.current.flash = 0.95;
     setShake(true);

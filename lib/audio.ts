@@ -1,7 +1,7 @@
 /*
-  One looping ambient track shared by every page. Browsers only allow sound
-  after a user gesture, so the first click or key press anywhere starts it.
-  The mute choice is remembered per browser.
+  One looping ambient track shared by every page. It starts only on a
+  deliberate act (pulling the sword, choosing at the grace, or the sound
+  button), never on a stray click or Tab. The mute choice is remembered.
 */
 
 const KEY = "pcl-muted";
@@ -9,6 +9,7 @@ const KEY = "pcl-muted";
 const START_AT = 5;
 let el: HTMLAudioElement | null = null;
 let started = false;
+let playing = false;
 const listeners = new Set<() => void>();
 
 const notify = () => listeners.forEach((l) => l());
@@ -22,10 +23,22 @@ function audio() {
       el.currentTime = START_AT;
       el.play().catch(() => {});
     });
+    el.addEventListener("play", () => {
+      playing = true;
+      notify();
+    });
+    el.addEventListener("pause", () => {
+      playing = false;
+      notify();
+    });
     el.volume = 0;
-    el.preload = "auto";
+    el.preload = "none";
   }
   return el;
+}
+
+export function isPlaying() {
+  return playing;
 }
 
 export function isMuted() {
@@ -105,19 +118,57 @@ function tone(freq: number, start: number, dur: number, gain: number, type: Osci
   o.stop(start + dur + 0.05);
 }
 
+/** A short burst of filtered noise: soft and papery, like the game's cursor. */
+function noise(start: number, dur: number, gain: number, freq: number, q = 1.2) {
+  if (!ctx) return;
+  const n = Math.ceil(ctx.sampleRate * dur);
+  const buf = ctx.createBuffer(1, n, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  const f = ctx.createBiquadFilter();
+  f.type = "bandpass";
+  f.frequency.value = freq;
+  f.Q.value = q;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(gain, start);
+  g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+  src.connect(f).connect(g).connect(ctx.destination);
+  src.start(start);
+}
+
+/** A slow swell, for when a grace is found. */
+function swell(freq: number, start: number, dur: number, gain: number) {
+  if (!ctx) return;
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.frequency.value = freq;
+  g.gain.setValueAtTime(0.0001, start);
+  g.gain.exponentialRampToValueAtTime(gain, start + dur * 0.35);
+  g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+  o.connect(g).connect(ctx.destination);
+  o.start(start);
+  o.stop(start + dur + 0.05);
+}
+
 export function sfx(kind: "tick" | "confirm" | "grace") {
   if (typeof window === "undefined" || isMuted()) return;
   try {
     ctx ??= new AudioContext();
     if (ctx.state === "suspended") ctx.resume();
     const t = ctx.currentTime;
-    if (kind === "tick") tone(1450, t, 0.07, 0.035, "triangle");
+    if (kind === "tick") noise(t, 0.035, 0.09, 2500);
     if (kind === "confirm") {
-      tone(392, t, 0.9, 0.06);
-      tone(587, t + 0.02, 0.8, 0.035);
+      noise(t, 0.06, 0.08, 1800);
+      tone(196, t, 0.7, 0.05);
+      tone(98, t, 0.9, 0.04);
     }
     if (kind === "grace") {
-      [523, 659, 784, 1047].forEach((f, i) => tone(f, t + i * 0.09, 2.2, 0.03));
+      swell(110, t, 2.6, 0.05);
+      swell(165, t + 0.05, 2.4, 0.025);
+      swell(1320, t + 0.3, 1.8, 0.006);
+      noise(t + 0.2, 1.6, 0.015, 4000, 0.6);
     }
   } catch {}
 }

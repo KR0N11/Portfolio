@@ -31,79 +31,71 @@
 /* ---------- Opening ---------- */
 .hero {
   position: relative;
-  min-height: 86vh;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-.heroGlow {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 50% 45% at 72% 45%, rgba(201, 178, 124, 0.08), rgba(201, 178, 124, 0) 70%),
-    var(--abyss);
 }
 .heroInner {
   position: relative;
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--col);
   margin: 0 auto;
-  padding: 120px var(--gutter) 60px;
+  padding: clamp(130px, 18vh, 170px) var(--gutter) clamp(40px, 7vh, 72px);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: center;
   gap: 56px;
 }
 .heroInner[data-portrait="true"] {
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
 }
 .name {
   margin: 0;
-  font-size: clamp(40px, 4.6vw, 72px);
+  font-size: clamp(40px, 4.6vw, 68px);
   color: #efe6cc;
   white-space: nowrap;
 }
 .role {
-  margin: 18px 0 0;
+  margin: 16px 0 0;
   font-family: var(--display);
   font-size: clamp(19px, 1.6vw, 22px);
   color: var(--grace);
 }
 .intro {
   margin: 22px 0 0;
-  max-width: 34em;
+  max-width: 32em;
   font-size: clamp(18px, 1.45vw, 21px);
   line-height: 1.6;
   color: var(--bone);
 }
 .heroQuote {
-  margin-top: 30px;
-  font-size: clamp(21px, 1.7vw, 25px);
+  margin-top: 28px;
+  font-style: italic;
+  font-size: clamp(19px, 1.5vw, 22px);
+  color: var(--bone-dim);
 }
 .portrait {
   aspect-ratio: 3 / 4;
 }
 
 /* ---------- Chapters ---------- */
+.page {
+  --col: 1120px;
+}
 .chapter {
-  max-width: 1100px;
+  max-width: var(--col);
   margin: 0 auto;
-  padding: clamp(50px, 8vh, 90px) var(--gutter) 0;
+  padding: clamp(56px, 9vh, 96px) var(--gutter) 0;
 }
-.wide {
-  max-width: 1320px;
-}
-/* A centred title on a smoky black band. */
+/* Section titles: left-aligned over a gold hairline that fades out, the same
+   header the grace menu uses. */
 .band {
-  margin: 0 calc(-1 * var(--gutter)) clamp(28px, 5vh, 48px);
-  padding: 22px 0;
-  text-align: center;
+  margin: 0 0 8px;
+  padding: 0 0 14px;
   font-family: var(--display);
   font-weight: 500;
-  font-size: clamp(26px, 2.6vw, 36px);
+  font-size: clamp(26px, 2.4vw, 34px);
   letter-spacing: 0.04em;
   color: #e9dfc4;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6) 25%, rgba(0, 0, 0, 0.6) 75%, rgba(0, 0, 0, 0));
+  border-bottom: 1px solid;
+  border-image: linear-gradient(90deg, rgba(201, 178, 124, 0.55), rgba(201, 178, 124, 0.12) 70%, rgba(201, 178, 124, 0)) 1;
 }
 
 .page h3 {
@@ -122,24 +114,31 @@
   color: var(--bone);
 }
 
-/* ---------- Work: compact rows ---------- */
+/* Small capitals in gold: the game's label style. */
+.label,
+.page h3.label {
+  margin: 0;
+  font-family: var(--caps);
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--grace);
+}
+
+/* ---------- Work: ruled rows, like the equipment list ---------- */
 .job {
   display: grid;
-  grid-template-columns: minmax(240px, 400px) minmax(0, 1fr);
+  grid-template-columns: 300px minmax(0, 1fr);
   align-items: center;
-  gap: clamp(28px, 5vw, 80px);
-  min-height: 260px;
-  margin: 0 0 24px;
-  padding: clamp(40px, 6vh, 64px) clamp(28px, 4vw, 64px);
-  border-radius: 14px;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
-  border: 1px solid rgba(200, 190, 160, 0.12);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  gap: clamp(24px, 4vw, 64px);
+  padding: 34px 0;
+  border-bottom: 1px solid rgba(200, 190, 160, 0.12);
 }
 .job .body {
   margin: 0;
-  max-width: 40em;
-  font-size: clamp(20px, 1.7vw, 25px);
+  max-width: 34em;
+  font-size: clamp(18px, 1.45vw, 20px);
+  line-height: 1.6;
 }
 .jobHead {
   display: flex;
@@ -147,157 +146,110 @@
   gap: 14px;
 }
 .logo {
-  height: clamp(64px, 6vw, 92px);
+  height: 44px;
   width: auto;
-  max-width: 100%;
+  max-width: 220px;
   object-fit: contain;
   object-position: left;
-  opacity: 0.9;
-  filter: grayscale(0.2);
-}
-.title {
-  margin: 8px 0 0;
-  font-size: clamp(19px, 1.5vw, 22px);
-  color: var(--muted);
-}
-.stack {
-  list-style: none;
-  margin: 16px 0 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.stack li {
-  padding: 2px 10px;
-  border: 1px solid rgba(200, 190, 160, 0.2);
-  font-size: 15px;
-  color: var(--bone-dim);
-}
-.job .photos {
-  margin-top: 18px;
+  opacity: 0.88;
 }
 
 .schools {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
 }
 .school {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 18px;
-  min-height: 220px;
-  padding: clamp(32px, 5vh, 52px) clamp(28px, 3vw, 52px);
-  border-radius: 14px;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
-  border: 1px solid rgba(200, 190, 160, 0.12);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  gap: 14px;
+  padding: 34px 0;
+  border-bottom: 1px solid rgba(200, 190, 160, 0.12);
+}
+.school + .school {
+  padding-left: clamp(24px, 4vw, 56px);
+  border-left: 1px solid rgba(200, 190, 160, 0.12);
 }
 .schoolLogo {
-  height: clamp(64px, 6vw, 92px);
+  height: 48px;
   width: auto;
   max-width: 100%;
   object-fit: contain;
   object-position: left;
-  opacity: 0.92;
-}
-.school span {
-  font-size: clamp(19px, 1.6vw, 23px);
-  color: var(--muted);
+  opacity: 0.88;
 }
 @media (max-width: 860px) {
   .schools {
     grid-template-columns: minmax(0, 1fr);
   }
+  .school + .school {
+    padding-left: 0;
+    border-left: 0;
+  }
 }
 
-/* ---------- Skills: wide panels, same look as Work ---------- */
+/* ---------- Skills: four columns, like the Status screen ---------- */
 .skills {
   display: grid;
-  gap: 24px;
-}
-.skillCard {
-  display: grid;
-  grid-template-columns: minmax(200px, 300px) minmax(0, 1fr);
-  align-items: center;
-  gap: clamp(24px, 4vw, 64px);
-  padding: clamp(32px, 5vh, 48px) clamp(28px, 4vw, 64px);
-  border-radius: 14px;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
-  border: 1px solid rgba(200, 190, 160, 0.12);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
-}
-.skillCard h3 {
-  font-size: clamp(28px, 2.6vw, 38px);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0 clamp(20px, 3vw, 44px);
+  padding-top: 26px;
 }
 .skillCard ul {
   list-style: none;
-  margin: 0;
+  margin: 12px 0 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 26px 20px;
 }
 .skillCard li {
   display: flex;
   align-items: center;
-  gap: 16px;
-}
-.skillCard img {
-  width: 40px;
-  height: 40px;
-  flex: none;
-  object-fit: contain;
-}
-.skillCard li span {
-  display: flex;
-  flex-direction: column;
-  font-size: clamp(19px, 1.5vw, 22px);
-  line-height: 1.2;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(200, 190, 160, 0.09);
+  font-size: 19px;
   color: var(--bone);
 }
-.skillCard li em {
-  font-style: normal;
-  font-size: 15px;
-  color: var(--muted);
+.skillCard img {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  object-fit: contain;
+  filter: grayscale(1) sepia(0.35) brightness(1.25) opacity(0.7);
 }
-@media (max-width: 860px) {
-  .skillCard {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .skillCard ul {
+@media (max-width: 960px) {
+  .skills {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (min-width: 861px) and (max-width: 1150px) {
-  .skillCard ul {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: 32px;
   }
 }
 
-/* ---------- Pastimes ---------- */
+/* ---------- Pastimes: photo first, a short label beside it ---------- */
 .item {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: center;
-  gap: clamp(28px, 5vw, 72px);
-  padding: clamp(32px, 6vh, 56px) 0;
-  border-top: 1px solid rgba(200, 190, 160, 0.12);
+  align-items: start;
+  gap: clamp(28px, 5vw, 64px);
+  padding: 44px 0;
+  border-bottom: 1px solid rgba(200, 190, 160, 0.12);
+}
+.item:last-child {
+  border-bottom: 0;
 }
 .item[data-side="right"] .photos {
   order: 2;
 }
+.itemText {
+  padding-top: 6px;
+}
 .line {
-  margin: 8px 0 0;
-  font-size: 18px;
-  color: var(--muted);
+  margin: 10px 0 0;
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--bone);
 }
 .photos {
   display: grid;
   grid-template-columns: repeat(var(--n, 1), minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 .photos[data-count="2"] {
   --n: 2;
@@ -306,43 +258,30 @@
   --n: 3;
 }
 .photos .frame {
-  aspect-ratio: 3 / 4;
-  max-height: 62vh;
+  aspect-ratio: 4 / 5;
+  box-shadow: none;
+}
+/* One grade for every photo, so phone shots sit in the same dark page. */
+.photos img,
+.photos video {
+  filter: saturate(0.85) contrast(1.05) brightness(0.9);
 }
 .photos[data-count="1"] .frame {
-  max-width: 380px;
-  justify-self: center;
   width: 100%;
+  max-width: 420px;
 }
-/* Two pictures in a pastime fan out like cards on a table. */
-.item .photos[data-count="2"] {
-  position: relative;
-  display: block;
-  min-height: clamp(380px, 56vh, 600px);
-}
-.item .photos[data-count="2"] .frame {
-  position: absolute;
-  width: 62%;
-  max-height: none;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
-}
-.item .photos[data-count="2"] .frame:first-child {
-  left: 0;
-  top: 0;
-  transform: rotate(-3deg);
-  z-index: 1;
-}
-.item .photos[data-count="2"] .frame:last-child {
-  right: 0;
-  bottom: 0;
-  transform: rotate(2.5deg);
+.item[data-side="right"] .photos[data-count="1"] .frame {
+  justify-self: end;
 }
 .photos .frame[data-video="true"] {
   aspect-ratio: 16 / 9;
   max-width: none;
 }
-.frame:has(img[alt^="Manga"]) {
+.frame:has(img[alt^="Jujutsu"]) {
   aspect-ratio: 1;
+}
+.frame:has(img[alt^="Jujutsu"]) img {
+  filter: none;
 }
 
 .ranked {
@@ -385,13 +324,11 @@
   align-items: center;
   gap: 18px;
   margin: 22px 0 0;
-  max-width: 34em;
-  padding: 12px 18px 12px 12px;
-  border: 1px solid rgba(200, 190, 160, 0.16);
+  max-width: 30em;
 }
 .companion img {
   flex: none;
-  width: 84px;
+  width: 72px;
   height: auto;
   animation: bob 3.2s ease-in-out infinite;
 }
@@ -412,7 +349,7 @@
 
 /* ---------- Footer ---------- */
 .footer {
-  max-width: 1100px;
+  max-width: var(--col);
   margin: clamp(50px, 8vh, 90px) auto 0;
   padding: 40px var(--gutter) 70px;
   border-top: 1px solid rgba(200, 190, 160, 0.15);
@@ -437,9 +374,6 @@
 }
 
 @media (max-width: 860px) {
-  .hero {
-    min-height: 0;
-  }
   .heroInner {
     padding-top: 110px;
   }
@@ -458,22 +392,13 @@
   .item {
     grid-template-columns: minmax(0, 1fr);
   }
+  .item[data-side="right"] .photos[data-count="1"] .frame {
+    justify-self: start;
+  }
   .job {
-    margin-left: 0;
-    margin-right: 0;
+    gap: 18px;
   }
   .item[data-side="right"] .photos {
     order: 0;
-  }
-  /* Keep the tilted corners inside the gutter on narrow screens. */
-  .item .photos[data-count="2"] .frame:first-child {
-    left: 3%;
-    top: 2%;
-    transform: rotate(-2deg);
-  }
-  .item .photos[data-count="2"] .frame:last-child {
-    right: 3%;
-    bottom: 2%;
-    transform: rotate(1.5deg);
   }
 }
