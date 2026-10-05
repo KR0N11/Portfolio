@@ -136,8 +136,9 @@ export const works: Work[] = [
     ],
     stack: ["C#", ".NET 10", "ASP.NET Core", "React", "TypeScript", "Canvas"],
     repo: "https://github.com/KR0N11/pixelring",
-    recording: "Live run · painting, then node-b killed and revived",
+    recording: "Live run · canvas painted through the API; node-b killed and revived; a partition leaves two versions of the same pixels",
     hasVideo: true,
+    aspect: 1600 / 1300,
   },
   {
     slug: "archlens",
