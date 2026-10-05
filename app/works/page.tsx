@@ -95,7 +95,7 @@ export default function Works() {
         </aside>
 
         <section ref={detailRef} className={s.detail}>
-          <div className={s.frame} data-bright={w.slug === "pixelring"} style={{ aspectRatio: w.aspect ?? 16 / 10 }}>
+          <div className={s.frame} style={{ aspectRatio: w.aspect ?? 16 / 10 }}>
             {w.hasVideo ? (
               <video
                 key={w.slug}

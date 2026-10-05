@@ -99,10 +99,6 @@
   background: #050708;
   border: 1px solid rgba(200, 190, 160, 0.2);
 }
-/* Very white recordings are toned down so they don't glare on the dark page. */
-.frame[data-bright="true"] .media {
-  filter: brightness(0.82);
-}
 .media {
   position: absolute;
   inset: 0;
