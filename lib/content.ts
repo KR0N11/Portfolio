@@ -181,7 +181,7 @@ export const works: Work[] = [
     ],
     stack: ["Python", "LangGraph", "FastAPI", "HTMX", "LlamaIndex", "Terraform"],
     repo: "https://github.com/KR0N11/sentinel",
-    recording: "Live run · CLI triage of incident inc-001 in offline replay mode, then scrolling back through its real output. --yes approves the change at the prompt; the LLM is a deterministic stub, so the call and cost line is the stub's own count",
+    recording: "Live run · triage of incident inc-001 in offline replay mode, then a scroll back through the real output. `--yes` approves the change; the LLM is a deterministic stub, so the call and cost line is the stub's count",
     hasVideo: true,
   },
   {

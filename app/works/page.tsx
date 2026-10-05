@@ -147,7 +147,10 @@ export default function Works() {
               <img key={w.slug} className={s.media} src={`${base}/poster.webp`} alt={`${w.name} screenshot`} />
             )}
           </div>
-          <div className={s.caption}>{w.recording}</div>
+          <div className={s.caption}>
+            {/* `backticks` in a caption mark a command-line flag or name. */}
+            {w.recording.split("`").map((part, n) => (n % 2 ? <code key={n}>{part}</code> : part))}
+          </div>
 
           <div className={s.info}>
             <p className={s.stack}>

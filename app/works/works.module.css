@@ -15,15 +15,11 @@
   gap: 0 clamp(28px, 4vw, 64px);
   max-width: 1400px;
   margin: 0 auto;
-  padding: clamp(96px, 13vh, 120px) var(--gutter) 64px;
+  padding: clamp(96px, 13vh, 120px) var(--gutter) 96px;
 }
 
-/* The grid stays in view while the details scroll. */
 .side {
   grid-area: side;
-  position: sticky;
-  top: 96px;
-  align-self: start;
 }
 
 .heading {
@@ -160,6 +156,11 @@
 .frame[data-bright="true"] .media {
   filter: brightness(0.8) contrast(0.95);
 }
+.caption code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.86em;
+  color: var(--bone-dim);
+}
 .caption {
   margin-top: 10px;
   max-width: 60ch;
@@ -248,9 +249,6 @@
     grid-template-columns: minmax(0, 1fr);
     padding-top: 100px;
   }
-  .side {
-    position: static;
-  }
   .detail {
     scroll-margin-top: 16px;
   }
@@ -268,16 +266,18 @@
 }
 .keys {
   position: fixed;
-  right: var(--gutter);
-  bottom: clamp(14px, 2.6vh, 24px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  justify-content: flex-end;
   gap: 22px;
-  padding: 6px 12px;
-  margin-right: -12px;
+  padding: 26px var(--gutter) clamp(14px, 2.6vh, 22px);
   font-family: var(--caps);
   font-size: 15px;
   letter-spacing: 0.03em;
   color: var(--label);
-  background: rgba(5, 9, 12, 0.82);
+  /* A strip that fades up from the bottom, so scrolled text never runs under the prompts. */
+  background: linear-gradient(rgba(5, 9, 12, 0), rgba(5, 9, 12, 0.92) 45%);
   pointer-events: none;
 }
 .keys span {

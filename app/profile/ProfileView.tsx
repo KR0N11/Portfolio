@@ -8,6 +8,7 @@
 */
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { arrived } from "@/components/Veil";
 import { person, profile } from "@/lib/content";
@@ -101,9 +102,17 @@ function SkillCards() {
 export default function ProfileView({ gallery, portrait }: Props) {
   const ref = useReveal();
 
+  const router = useRouter();
+
   useEffect(() => {
     arrived();
-  }, []);
+    // Esc leaves, as at the grace and in the projects.
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") router.push("/road/");
+    };
+    window.addEventListener("keydown", onEsc);
+    return () => window.removeEventListener("keydown", onEsc);
+  }, [router]);
 
   return (
     <main className={s.page} ref={ref}>
