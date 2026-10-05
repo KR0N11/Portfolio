@@ -178,12 +178,13 @@
   border-left: 1px solid rgba(200, 190, 160, 0.12);
 }
 .schoolLogo {
-  height: 48px;
+  height: 42px;
   width: auto;
   max-width: 100%;
   object-fit: contain;
   object-position: left;
   opacity: 0.88;
+  filter: grayscale(1) brightness(1.5);
 }
 @media (max-width: 860px) {
   .schools {
@@ -239,14 +240,8 @@
   padding: 44px 0;
   border-bottom: 1px solid rgba(200, 190, 160, 0.12);
 }
-.item[data-side="right"] {
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-}
 .item:last-child {
   border-bottom: 0;
-}
-.item[data-side="right"] .photos {
-  order: 2;
 }
 .itemText {
   padding-bottom: 4px;
@@ -277,12 +272,9 @@
 .photos video {
   filter: saturate(0.85) contrast(1.05) brightness(0.9);
 }
+/* Every row the same: the photo fills the wide column, the caption sits at its foot. */
 .photos[data-count="1"] .frame {
   width: 100%;
-  max-width: 500px;
-}
-.item[data-side="right"] .photos[data-count="1"] .frame {
-  justify-self: end;
 }
 .photos .frame[data-video="true"] {
   aspect-ratio: 16 / 9;
@@ -407,17 +399,10 @@
     max-width: 240px;
   }
   .job,
-  .item,
-  .item[data-side="right"] {
+  .item {
     grid-template-columns: minmax(0, 1fr);
-  }
-  .item[data-side="right"] .photos[data-count="1"] .frame {
-    justify-self: start;
   }
   .job {
     gap: 18px;
-  }
-  .item[data-side="right"] .photos {
-    order: 0;
   }
 }

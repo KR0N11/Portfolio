@@ -19,12 +19,18 @@ const COLS = 4;
 export default function Works() {
   const [i, setI] = useState(0);
   const [reduce, setReduce] = useState(false);
+  const [narrow, setNarrow] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
   const detailRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     arrived();
     setReduce(matchMedia("(prefers-reduced-motion: reduce)").matches);
+    // Phones get the name list only; the slots are a desktop thing.
+    const mq = matchMedia("(max-width: 720px)");
+    const onMq = () => setNarrow(mq.matches);
+    onMq();
+    mq.addEventListener("change", onMq);
     // Follow #slug on load and whenever it changes (links, back/forward).
     const sync = () => {
       const n = works.findIndex((w) => `#${w.slug}` === window.location.hash);
@@ -32,7 +38,10 @@ export default function Works() {
     };
     sync();
     window.addEventListener("hashchange", sync);
-    return () => window.removeEventListener("hashchange", sync);
+    return () => {
+      window.removeEventListener("hashchange", sync);
+      mq.removeEventListener("change", onMq);
+    };
   }, []);
 
   const pick = useCallback(
@@ -91,11 +100,13 @@ export default function Works() {
             ))}
           </div>
 
-          {/* Item names under the slots, as the game lists them. */}
-          <ol className={s.names}>
+          {/* Item names under the slots, as the game lists them. On desktop the
+              slots are the control, so screen readers get them once; on phones
+              the slots are hidden and this list is the control. */}
+          <ol className={s.names} aria-hidden={!narrow} aria-label="Projects">
             {works.map((x, n) => (
               <li key={x.slug}>
-                <button type="button" tabIndex={-1} data-on={n === i} onClick={() => pick(n)}>
+                <button type="button" tabIndex={narrow ? 0 : -1} aria-current={n === i} data-on={n === i} onClick={() => pick(n)}>
                   {x.name}
                   <span>{x.kind.split(" · ")[0]}</span>
                 </button>
