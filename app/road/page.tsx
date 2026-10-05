@@ -88,7 +88,10 @@ export default function Road() {
   }, []);
 
   const pick = (i: number, focus = false) => {
-    if (i !== sel) sfx("tick");
+    if (i !== sel) {
+      sfx("tick");
+      setCopied(0);
+    }
     setSel(i);
     if (focus) btns.current[i]?.focus();
   };
@@ -99,7 +102,11 @@ export default function Road() {
     sfx("confirm");
     if (e.href.startsWith("mailto:")) {
       // Like picking up an item: copy the address and say so, no mail app needed.
-      navigator.clipboard?.writeText(person.email).then(
+      if (!navigator.clipboard) {
+        window.location.href = e.href;
+        return;
+      }
+      navigator.clipboard.writeText(person.email).then(
         () => setCopied(Date.now()),
         () => (window.location.href = e.href),
       );
@@ -187,16 +194,19 @@ export default function Road() {
       </nav>
 
       {ready && (
-        <p className={s.help} key={sel} aria-live="polite">
-          {MENU[sel].help}
+        <p className={s.help} key={copied ? `c${copied}` : sel}>
+          {copied ? (
+            <>
+              {person.email} <span className={s.got}>Copied</span>
+            </>
+          ) : (
+            MENU[sel].help
+          )}
         </p>
       )}
-
-      {copied > 0 && (
-        <p className={s.notice} key={copied} role="status">
-          {person.email} <span>copied</span>
-        </p>
-      )}
+      <p className="sr-only" role="status">
+        {copied ? `${person.email} copied to the clipboard` : ""}
+      </p>
 
       <div className={s.keys} aria-hidden="true">
         <span>

@@ -8,7 +8,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import LivingImage, { type Live } from "@/components/LivingImage";
+import LivingImage, { REDRAW, type Live } from "@/components/LivingImage";
 import Motes from "@/components/Motes";
 import { arrived, passThrough } from "@/components/Veil";
 import { startAudio } from "@/lib/audio";
@@ -31,12 +31,23 @@ export default function Gate() {
   const freed = useRef(false);
   const [touched, setTouched] = useState(false);
   const [shake, setShake] = useState(false);
+  const reduce = useRef(false);
+
+  /** Reduced motion has no animation loop: jump straight to the target and ask for one frame. */
+  const settle = () => {
+    if (!reduce.current) return;
+    live.current.pull = target.current;
+    live.current.flash = 0;
+    window.dispatchEvent(new Event(REDRAW));
+  };
 
   useEffect(() => {
     arrived();
   }, []);
 
   useEffect(() => {
+    reduce.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce.current) return;
     let raf = 0;
     let last = performance.now();
     const tick = (now: number) => {
@@ -61,6 +72,7 @@ export default function Gate() {
     startAudio();
     target.current = FREE_LIFT;
     live.current.flash = 0.95;
+    settle();
     setShake(true);
     window.setTimeout(() => passThrough("/road", "dark"), 120);
   };
@@ -77,12 +89,14 @@ export default function Gate() {
     const p = Math.max(0, (d.y0 - e.clientY) / (window.innerHeight * PULL_SPAN));
     // Resistance: the first part of the pull moves it most, the rest fights back.
     target.current = (MAX_LIFT * (1 - Math.exp(-2.4 * Math.min(p, 1)))) / (1 - Math.exp(-2.4));
+    settle();
     if (p >= 1) free();
   };
   const onUp = () => {
     if (!drag.current) return;
     drag.current = null;
     if (!freed.current) target.current = 0;
+    settle();
   };
 
   const onKey = (e: React.KeyboardEvent) => {
@@ -90,6 +104,7 @@ export default function Gate() {
     e.preventDefault();
     setTouched(true);
     target.current = MAX_LIFT;
+    settle();
     window.setTimeout(free, 700);
   };
 

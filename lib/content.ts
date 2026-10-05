@@ -153,7 +153,7 @@ export const works: Work[] = [
     ],
     stack: ["C#", ".NET 10", "Roslyn", "ASP.NET Core", "React", "React Flow"],
     repo: "https://github.com/KR0N11/archlens",
-    recording: "Live run · dotnet/eShop analysed from a fresh clone, then the call flow for POST api/orders/draft with the file and line behind each arrow",
+    recording: "Live run · dotnet/eShop analysed from a fresh clone (clip starts as the analysis finishes), then the call flow for POST api/orders/draft with the file and line behind each arrow",
     hasVideo: true,
   },
   {
@@ -189,8 +189,7 @@ export const works: Work[] = [
     name: "Sisyphus",
     kind: "Reinforcement learning · Python",
     what: [
-      "A small neural network learns World 1-1 of Super Mario Bros from scratch. It sees only stacked gray frames and picks one of 7 button combos.",
-      "It is trained with PPO on many copies of the NES emulator at once.",
+      "A small neural network learns World 1-1 of Super Mario Bros from scratch, trained with PPO on many copies of the NES emulator at once. It sees only stacked gray frames and picks one of 7 button combos.",
       "A wall of emulators races a see-through ghost Mario; borders turn green when a Mario is ahead and red when behind. The ghost comes from jump timings tuned inside the emulator, because frame-perfect speedrun inputs drift out of sync between emulators.",
     ],
     stack: ["Python", "PyTorch", "Stable-Baselines3", "Gymnasium", "OpenCV"],

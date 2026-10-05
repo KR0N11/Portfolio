@@ -176,8 +176,8 @@ export default function ProfileView({ gallery, portrait }: Props) {
         <h2 className={s.band} data-reveal>
           Off the clock
         </h2>
-        {profile.pastimes.map((p, n) => (
-          <article key={p.slug} className={s.item} data-side={n % 2 ? "right" : "left"} data-reveal>
+        {profile.pastimes.map((p) => (
+          <article key={p.slug} className={s.item} data-reveal>
             <Photos list={gallery[p.slug] ?? []} alt={p.name} alts={p.alts} />
             <div className={s.itemText}>
               <h3>{p.name}</h3>
