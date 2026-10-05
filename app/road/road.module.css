@@ -59,7 +59,7 @@
   justify-content: center;
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.78) 30%, rgba(0, 0, 0, 0.78) 70%, transparent);
   pointer-events: none;
-  animation: found 2800ms ease forwards;
+  animation: found 2300ms ease forwards;
 }
 .found span {
   padding: 0 var(--gutter);
@@ -208,11 +208,20 @@
     padding: 28px var(--gutter) 90px;
     background: linear-gradient(to top, rgba(3, 5, 7, 0.92) 55%, rgba(3, 5, 7, 0));
   }
+  /* The description sits right under the list, inside the menu's dark band. */
   .help {
-    bottom: auto;
-    top: 64px;
+    bottom: 22px;
+    background: none;
+    padding: 0;
+    font-size: 16px;
+    color: var(--muted);
   }
   .keys {
     display: none;
+  }
+  .found span {
+    white-space: nowrap;
+    font-size: clamp(17px, 5.2vw, 30px);
+    letter-spacing: 0.1em;
   }
 }

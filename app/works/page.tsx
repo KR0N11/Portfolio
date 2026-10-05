@@ -18,10 +18,13 @@ const COLS = 4;
 
 export default function Works() {
   const [i, setI] = useState(0);
+  const [reduce, setReduce] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
+  const detailRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     arrived();
+    setReduce(matchMedia("(prefers-reduced-motion: reduce)").matches);
     // Follow #slug on load and whenever it changes (links, back/forward).
     const sync = () => {
       const n = works.findIndex((w) => `#${w.slug}` === window.location.hash);
@@ -39,6 +42,8 @@ export default function Works() {
       setI(k);
       history.replaceState(null, "", `#${works[k].slug}`);
       if (focus) gridRef.current?.querySelectorAll("button")[k]?.focus();
+      // On narrow screens the detail sits below the grid: bring it into view.
+      else if (matchMedia("(max-width: 900px)").matches) detailRef.current?.scrollIntoView({ behavior: "smooth" });
     },
     [i],
   );
@@ -66,7 +71,7 @@ export default function Works() {
       <div className={s.layout}>
         <aside className={s.side}>
           <h1 className={s.heading}>Projects</h1>
-          <p className={s.sub}>Things I built. Each one is recorded while it runs.</p>
+          <p className={s.sub}>Things I built, shown running.</p>
 
           <div ref={gridRef} className={s.grid} onKeyDown={onKey} role="listbox" aria-label="Projects">
             {works.map((x, n) => (
@@ -75,28 +80,30 @@ export default function Works() {
                 type="button"
                 role="option"
                 aria-selected={n === i}
+                tabIndex={n === i ? 0 : -1}
                 className={s.tile}
                 data-on={n === i}
                 onClick={() => pick(n)}
                 title={x.name}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/clips/${x.slug}/poster.jpg`} alt="" loading="lazy" />
+                <img src={`/clips/${x.slug}/tile.jpg`} alt="" loading="lazy" />
                 <span className={s.tileName}>{x.name}</span>
               </button>
             ))}
           </div>
         </aside>
 
-        <section className={s.detail} aria-live="polite">
-          <div className={s.frame} data-bright={w.slug === "pixelring"}>
+        <section ref={detailRef} className={s.detail}>
+          <div className={s.frame} data-bright={w.slug === "pixelring"} style={{ aspectRatio: w.aspect ?? 16 / 10 }}>
             {w.hasVideo ? (
               <video
                 key={w.slug}
                 className={s.media}
                 src={`${base}/demo.mp4`}
                 poster={`${base}/poster.jpg`}
-                autoPlay
+                autoPlay={!reduce}
+                controls={reduce}
                 muted
                 loop
                 playsInline
@@ -111,17 +118,18 @@ export default function Works() {
 
           <div className={s.info}>
             <div className={s.nameRow}>
-              <h2 className={s.name}>{w.name}</h2>
+              <h2 className={s.name} aria-live="polite">
+                {w.name}
+              </h2>
               <a className={s.code} href={w.repo} target="_blank" rel="noreferrer">
                 View code &#8599;
               </a>
             </div>
             <div className={s.kind}>{w.kind}</div>
-            <ul className={s.stack} aria-label="Built with">
-              {w.stack.map((t) => (
-                <li key={t}>{t}</li>
-              ))}
-            </ul>
+            <p className={s.stack}>
+              <span>Built with</span>
+              {w.stack.join(" · ")}
+            </p>
             <ul className={s.what}>
               {w.what.map((line) => (
                 <li key={line}>{line}</li>

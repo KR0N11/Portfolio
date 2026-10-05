@@ -2,13 +2,13 @@
 
 /*
   Who I am, where I've worked, what I do off the clock. Work comes first and
-  stays compact; pastimes follow, each with my own photos. Section titles sit
-  on a smoky black band, the way the game titles its screens.
+  stays compact; pastimes follow, each with my own photos. Sections are ruled
+  rows under a gold-hairline header, like the game's Status and Equipment
+  screens.
 */
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import Motes from "@/components/Motes";
 import { arrived } from "@/components/Veil";
 import { person, profile } from "@/lib/content";
 import s from "./profile.module.css";
@@ -37,44 +37,58 @@ function useReveal() {
   return ref;
 }
 
+/* Clips load and play only while on screen, and never under reduced motion. */
+function Clip({ src, alt }: { src: string; alt: string }) {
+  const v = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const el = v.current;
+    if (!el || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? el.play().catch(() => {}) : el.pause()), {
+      threshold: 0.25,
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <video ref={v} src={src} poster={src.replace(/\.mp4$/, ".jpg")} muted loop playsInline preload="none" aria-label={alt} />
+  );
+}
+
 function Media({ src, alt }: { src: string; alt: string }) {
   return src.endsWith(".mp4") ? (
-    <video src={src} autoPlay muted loop playsInline preload="metadata" aria-label={alt} />
+    <Clip src={src} alt={alt} />
   ) : (
     // eslint-disable-next-line @next/next/no-img-element
     <img src={src} alt={alt} loading="lazy" />
   );
 }
 
-function Photos({ list, alt }: { list: string[]; alt: string }) {
+function Photos({ list, alt, alts = [] }: { list: string[]; alt: string; alts?: string[] }) {
   if (!list.length) return null;
   return (
     <div className={s.photos} data-count={Math.min(list.length, 3)}>
       {list.slice(0, 3).map((src, i) => (
         <figure key={src} className={s.frame} data-video={src.endsWith(".mp4")}>
-          <Media src={src} alt={`${alt}, ${i + 1}`} />
+          <Media src={src} alt={alts[i] ?? `${alt}, ${i + 1}`} />
         </figure>
       ))}
     </div>
   );
 }
 
-/* Skills: one wide panel per group, name on the left, skills across on the right. */
+/* Skills: one column per group, a ruled list under a gold label. */
 function SkillCards() {
   return (
     <div className={s.skills}>
       {profile.skills.map((g) => (
         <div key={g.group} className={s.skillCard} data-reveal>
-          <h3>{g.group}</h3>
+          <h3 className={s.label}>{g.group}</h3>
           <ul>
-            {g.items.map(([name, icon, level]) => (
+            {g.items.map(([name, icon]) => (
               <li key={name}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={`/skills/${icon}.svg`} alt="" loading="lazy" />
-                <span>
-                  {name}
-                  {level && <em>{level}</em>}
-                </span>
+                {name}
               </li>
             ))}
           </ul>
@@ -96,13 +110,10 @@ export default function ProfileView({ gallery, portrait }: Props) {
       <nav className="crumbs" aria-label="Breadcrumb">
         <Link href="/road/">&larr; The road</Link>
         <span className="sep">/</span>
-        <span className="here">Status</span>
+        <span className="here">Profile</span>
       </nav>
 
       <header className={s.hero}>
-        <div className={s.heroGlow} aria-hidden="true">
-          <Motes source={[0.1, 0.9, 0.75, 1.05]} count={18} drift={0.02} rise={0.45} />
-        </div>
         <div className={s.heroInner} data-portrait={!!portrait}>
           <div>
             <h1 className={`${s.name} title-card`}>{person.name}</h1>
@@ -128,7 +139,7 @@ export default function ProfileView({ gallery, portrait }: Props) {
             <div className={s.jobHead}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img className={s.logo} src={c.logo} alt={c.name} />
-              <p className={s.title}>{c.title}</p>
+              <p className={s.label}>{c.title}</p>
             </div>
             <div>
               <p className={s.body}>{c.body}</p>
@@ -148,7 +159,7 @@ export default function ProfileView({ gallery, portrait }: Props) {
             <div key={sc.name} className={s.school} data-reveal>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img className={s.schoolLogo} src={sc.logo} alt={sc.name} />
-              <span>{sc.field}</span>
+              <span className={s.label}>{sc.field}</span>
             </div>
           ))}
         </div>
@@ -167,7 +178,7 @@ export default function ProfileView({ gallery, portrait }: Props) {
         </h2>
         {profile.pastimes.map((p, n) => (
           <article key={p.slug} className={s.item} data-side={n % 2 ? "right" : "left"} data-reveal>
-            <Photos list={gallery[p.slug] ?? []} alt={p.name} />
+            <Photos list={gallery[p.slug] ?? []} alt={p.name} alts={p.alts} />
             <div className={s.itemText}>
               <h3>{p.name}</h3>
               {p.line && <p className={s.line}>{p.line}</p>}

@@ -3,6 +3,7 @@
   so adding pictures is just dropping files into the right folder.
 */
 
+import type { Metadata } from "next";
 import fs from "node:fs";
 import path from "node:path";
 import { profile } from "@/lib/content";
@@ -11,11 +12,13 @@ import ProfileView from "./ProfileView";
 const IMG = /\.(jpe?g|png|webp|avif|mp4)$/i;
 const root = path.join(process.cwd(), "public", "profile");
 
+export const metadata: Metadata = { title: "Profile", alternates: { canonical: "/profile/" } };
+
 function photos(dir: string) {
   try {
     return fs
       .readdirSync(path.join(root, dir))
-      .filter((f) => IMG.test(f))
+      .filter((f) => IMG.test(f) && !f.includes(".poster."))
       .sort()
       .map((f) => `/profile/${dir}/${encodeURIComponent(f)}`);
   } catch {
