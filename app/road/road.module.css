@@ -170,6 +170,44 @@
   }
 }
 
+/* The game's pickup notice: a short black band, then it fades. */
+.notice {
+  position: absolute;
+  left: 50%;
+  top: 22%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 14px 60px;
+  white-space: nowrap;
+  font-family: var(--display);
+  font-size: 21px;
+  letter-spacing: 0.03em;
+  color: #fbf0d4;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.78) 18%, rgba(0, 0, 0, 0.78) 82%, rgba(0, 0, 0, 0));
+  animation: notice 2600ms ease forwards;
+  pointer-events: none;
+}
+.notice span {
+  margin-left: 8px;
+  font-family: var(--caps);
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--grace);
+}
+@keyframes notice {
+  0% {
+    opacity: 0;
+  }
+  12%,
+  78% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 /* Button prompts along the bottom left, like the game's footer. */
 .keys {
   position: absolute;
@@ -218,6 +256,11 @@
   }
   .keys {
     display: none;
+  }
+  .notice {
+    top: 18%;
+    padding: 12px 28px;
+    font-size: 17px;
   }
   .found span {
     white-space: nowrap;

@@ -128,7 +128,7 @@
 /* ---------- Work: ruled rows, like the equipment list ---------- */
 .job {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-columns: minmax(320px, 360px) minmax(0, 1fr);
   align-items: center;
   gap: clamp(24px, 4vw, 64px);
   padding: 34px 0;
@@ -145,13 +145,21 @@
   flex-direction: column;
   gap: 14px;
 }
+/* All logos in one tone; heights set by eye so they read the same size. */
 .logo {
-  height: 44px;
+  height: 40px;
   width: auto;
   max-width: 220px;
   object-fit: contain;
   object-position: left;
   opacity: 0.88;
+  filter: grayscale(1) brightness(1.5);
+}
+.logo[alt="Genetec"] {
+  height: 36px;
+}
+.logo[alt="Paul Tech"] {
+  height: 50px;
 }
 
 .schools {
@@ -225,11 +233,14 @@
 /* ---------- Pastimes: photo first, a short label beside it ---------- */
 .item {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: start;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  align-items: end;
   gap: clamp(28px, 5vw, 64px);
   padding: 44px 0;
   border-bottom: 1px solid rgba(200, 190, 160, 0.12);
+}
+.item[data-side="right"] {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
 }
 .item:last-child {
   border-bottom: 0;
@@ -238,7 +249,7 @@
   order: 2;
 }
 .itemText {
-  padding-top: 6px;
+  padding-bottom: 4px;
 }
 .line {
   margin: 10px 0 0;
@@ -268,7 +279,7 @@
 }
 .photos[data-count="1"] .frame {
   width: 100%;
-  max-width: 420px;
+  max-width: 500px;
 }
 .item[data-side="right"] .photos[data-count="1"] .frame {
   justify-self: end;
@@ -276,6 +287,10 @@
 .photos .frame[data-video="true"] {
   aspect-ratio: 16 / 9;
   max-width: none;
+}
+/* The white wall behind the weights is the brightest thing on the page. */
+.photos img[alt^="Weight"] {
+  filter: saturate(0.85) contrast(1.05) brightness(0.78);
 }
 .frame:has(img[alt^="Jujutsu"]) {
   aspect-ratio: 1;
@@ -351,7 +366,10 @@
 .footer {
   max-width: var(--col);
   margin: clamp(50px, 8vh, 90px) auto 0;
-  padding: 40px var(--gutter) 70px;
+  padding: 0 var(--gutter) 70px;
+}
+.footer > :first-child {
+  padding-top: 40px;
   border-top: 1px solid rgba(200, 190, 160, 0.15);
 }
 .links {
@@ -389,7 +407,8 @@
     max-width: 240px;
   }
   .job,
-  .item {
+  .item,
+  .item[data-side="right"] {
     grid-template-columns: minmax(0, 1fr);
   }
   .item[data-side="right"] .photos[data-count="1"] .frame {

@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import DepthScene from "@/components/DepthScene";
 import Motes from "@/components/Motes";
 import { arrived, passThrough } from "@/components/Veil";
-import { sfx, startAudio } from "@/lib/audio";
+import { sfx } from "@/lib/audio";
 import { person } from "@/lib/content";
 import s from "./road.module.css";
 
@@ -35,7 +35,7 @@ const MENU: Entry[] = [
   {
     key: "contact",
     label: "Contact",
-    help: `Email me at ${person.email}.`,
+    help: `Copy my email: ${person.email}`,
     href: `mailto:${person.email}`,
   },
   {
@@ -51,6 +51,7 @@ export default function Road() {
   const [leaving, setLeaving] = useState(false);
   const [found, setFound] = useState<"hidden" | "show" | "done">("hidden");
   const [narrow, setNarrow] = useState(false);
+  const [copied, setCopied] = useState(0);
   const btns = useRef<(HTMLButtonElement | null)[]>([]);
   const router = useRouter();
   const ready = found === "done";
@@ -96,9 +97,12 @@ export default function Road() {
     const e = MENU[i];
     setSel(i);
     sfx("confirm");
-    startAudio();
     if (e.href.startsWith("mailto:")) {
-      window.location.href = e.href;
+      // Like picking up an item: copy the address and say so, no mail app needed.
+      navigator.clipboard?.writeText(person.email).then(
+        () => setCopied(Date.now()),
+        () => (window.location.href = e.href),
+      );
       return;
     }
     if (e.href === "/") {
@@ -109,6 +113,12 @@ export default function Road() {
     setLeaving(true);
     passThrough(e.href, "dark");
   };
+
+  useEffect(() => {
+    if (!copied) return;
+    const t = window.setTimeout(() => setCopied(0), 2600);
+    return () => window.clearTimeout(t);
+  }, [copied]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -138,7 +148,7 @@ export default function Road() {
           src="/art/grace.jpg"
           depth="/art/grace-depth.png"
           aspect={16 / 9}
-          focus={narrow ? [0.47, 0.5] : [0.55, 0.45]}
+          focus={narrow ? [0.5, 0.5] : [0.55, 0.45]}
           grace={[0.394, 0.42, 0.6]}
         >
           <Motes source={[0.3, 0.48, 0.66, 0.76]} count={18} drift={0.01} rise={0.35} />
@@ -179,6 +189,12 @@ export default function Road() {
       {ready && (
         <p className={s.help} key={sel} aria-live="polite">
           {MENU[sel].help}
+        </p>
+      )}
+
+      {copied > 0 && (
+        <p className={s.notice} key={copied} role="status">
+          {person.email} <span>copied</span>
         </p>
       )}
 

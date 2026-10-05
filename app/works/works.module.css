@@ -76,18 +76,44 @@
 .tile[data-on="true"] img {
   filter: none;
 }
-.tileName {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 14px 6px 5px;
-  font-family: var(--display);
-  font-size: 15px;
-  line-height: 1.1;
+/* Names under the slots: a ruled list, the selected one lit in gold. */
+.names {
+  list-style: none;
+  margin: 22px 0 0;
+  padding: 0;
+  border-top: 1px solid rgba(200, 190, 160, 0.12);
+}
+.names li {
+  border-bottom: 1px solid rgba(200, 190, 160, 0.12);
+}
+.names button {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 2px;
+  background: none;
+  border: 0;
+  cursor: pointer;
   text-align: left;
-  color: #efe6cc;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+  font-family: var(--display);
+  font-size: 19px;
+  color: var(--label);
+}
+.names button span {
+  font-family: var(--caps);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.names button:hover,
+.names button[data-on="true"] {
+  color: #fbf0d4;
+}
+.names button[data-on="true"] span {
+  color: var(--grace);
 }
 
 .detail {
@@ -95,6 +121,7 @@
 }
 .frame {
   position: relative;
+  margin-top: 18px;
   aspect-ratio: 16 / 10;
   background: #050708;
   border: 1px solid rgba(200, 190, 160, 0.2);
@@ -112,15 +139,20 @@
     opacity: 0;
   }
 }
+/* Light-mode recordings are toned down so they don't glare on the dark page. */
+.frame[data-bright="true"] .media {
+  filter: brightness(0.8) contrast(0.95);
+}
 .caption {
   margin-top: 10px;
-  text-align: right;
+  max-width: 60ch;
   font-size: 15px;
+  line-height: 1.5;
   color: var(--muted);
 }
 
 .info {
-  margin-top: 6px;
+  margin-top: 4px;
   max-width: 52em;
 }
 .nameRow {
@@ -147,7 +179,7 @@
 }
 /* The item-type line, in the game's small gold capitals. */
 .kind {
-  margin-top: 8px;
+  margin-top: 10px;
   font-family: var(--caps);
   font-size: 15px;
   letter-spacing: 0.12em;
@@ -155,7 +187,7 @@
   color: var(--grace);
 }
 .stack {
-  margin: 14px 0 0;
+  margin: 16px 0 0;
   padding: 10px 0;
   border-top: 1px solid rgba(200, 190, 160, 0.12);
   border-bottom: 1px solid rgba(200, 190, 160, 0.12);

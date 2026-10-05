@@ -1,7 +1,7 @@
 /*
   One looping ambient track shared by every page. It starts only on a
-  deliberate act (pulling the sword, choosing at the grace, or the sound
-  button), never on a stray click or Tab. The mute choice is remembered.
+  deliberate act (pulling the sword, or the sound button), never on a menu
+  choice, a stray click or Tab. The mute choice is remembered.
 */
 
 const KEY = "pcl-muted";

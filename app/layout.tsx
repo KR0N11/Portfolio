@@ -26,9 +26,9 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://pingchunlui.ca"),
   title: { default: "Ping Chun Lui", template: "%s · Ping Chun Lui" },
   description,
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
-    url: "/",
     siteName: "Ping Chun Lui",
     title: "Ping Chun Lui",
     description,
