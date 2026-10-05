@@ -17,8 +17,9 @@ type Props = { gallery: Record<string, string[]>; portrait: string | null };
 
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
+  // Runs after every render so sections added later (or hot-reloaded) still fade in.
   useEffect(() => {
-    const els = ref.current?.querySelectorAll<HTMLElement>("[data-reveal]");
+    const els = ref.current?.querySelectorAll<HTMLElement>("[data-reveal]:not([data-reveal='in'])");
     if (!els) return;
     const io = new IntersectionObserver(
       (entries) =>
@@ -32,7 +33,7 @@ function useReveal() {
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, []);
+  });
   return ref;
 }
 
@@ -53,6 +54,31 @@ function Photos({ list, alt }: { list: string[]; alt: string }) {
         <figure key={src} className={s.frame} data-video={src.endsWith(".mp4")}>
           <Media src={src} alt={`${alt}, ${i + 1}`} />
         </figure>
+      ))}
+    </div>
+  );
+}
+
+/* Skills: one wide panel per group, name on the left, skills across on the right. */
+function SkillCards() {
+  return (
+    <div className={s.skills}>
+      {profile.skills.map((g) => (
+        <div key={g.group} className={s.skillCard} data-reveal>
+          <h3>{g.group}</h3>
+          <ul>
+            {g.items.map(([name, icon, level]) => (
+              <li key={name}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/skills/${icon}.svg`} alt="" loading="lazy" />
+                <span>
+                  {name}
+                  {level && <em>{level}</em>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       ))}
     </div>
   );
@@ -82,10 +108,7 @@ export default function ProfileView({ gallery, portrait }: Props) {
             <h1 className={`${s.name} title-card`}>{person.name}</h1>
             <p className={s.role}>{person.pitch}</p>
             <p className={s.intro}>{profile.intro}</p>
-            <div className={s.heroLinks}>
-              <Link href="/works/">See the projects &rarr;</Link>
-              <a href={`mailto:${person.email}`}>{person.email}</a>
-            </div>
+            <blockquote className={`${s.quote} ${s.heroQuote}`}>&ldquo;{profile.quote}&rdquo;</blockquote>
           </div>
           {portrait && (
             <figure className={`${s.frame} ${s.portrait}`}>
@@ -96,7 +119,7 @@ export default function ProfileView({ gallery, portrait }: Props) {
         </div>
       </header>
 
-      <section className={s.chapter}>
+      <section className={`${s.chapter} ${s.wide}`}>
         <h2 className={s.band} data-reveal>
           Work
         </h2>
@@ -104,32 +127,38 @@ export default function ProfileView({ gallery, portrait }: Props) {
           <article key={c.slug} className={s.job} data-reveal>
             <div className={s.jobHead}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className={s.logo} src={c.logo} alt={`${c.name} logo`} />
-              <div>
-                <h3>{c.name}</h3>
-                <p className={s.title}>{c.title}</p>
-              </div>
+              <img className={s.logo} src={c.logo} alt={c.name} />
+              <p className={s.title}>{c.title}</p>
             </div>
             <div>
               <p className={s.body}>{c.body}</p>
-              <ul className={s.stack} aria-label="Built with">
-                {c.stack.map((t) => (
-                  <li key={t}>{t}</li>
-                ))}
-              </ul>
               <Photos list={gallery[c.slug] ?? []} alt={c.name} />
             </div>
           </article>
         ))}
 
-        <div className={s.schools} data-reveal>
-          <span className={s.schoolsLabel}>Studied at</span>
+      </section>
+
+      <section className={`${s.chapter} ${s.wide}`}>
+        <h2 className={s.band} data-reveal>
+          Studied at
+        </h2>
+        <div className={s.schools}>
           {profile.schools.map((sc) => (
-            <span key={sc.name} className={s.school}>
-              {sc.name} <em>{sc.field}</em>
-            </span>
+            <div key={sc.name} className={s.school} data-reveal>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className={s.schoolLogo} src={sc.logo} alt={sc.name} />
+              <span>{sc.field}</span>
+            </div>
           ))}
         </div>
+      </section>
+
+      <section className={`${s.chapter} ${s.wide}`}>
+        <h2 className={s.band} data-reveal>
+          Skills
+        </h2>
+        <SkillCards />
       </section>
 
       <section className={s.chapter}>
@@ -150,7 +179,7 @@ export default function ProfileView({ gallery, portrait }: Props) {
                 </ol>
               )}
               {p.also && <p className={s.also}>{p.also}</p>}
-              <p className={s.body}>{p.body}</p>
+              {p.body && <p className={s.body}>{p.body}</p>}
               {p.quote && <blockquote className={s.quote}>&ldquo;{p.quote}&rdquo;</blockquote>}
               {p.companion && (
                 <figure className={s.companion}>
