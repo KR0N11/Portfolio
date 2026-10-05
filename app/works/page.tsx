@@ -8,6 +8,7 @@
 */
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { arrived } from "@/components/Veil";
 import { sfx } from "@/lib/audio";
@@ -22,6 +23,7 @@ export default function Works() {
   const [narrow, setNarrow] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
   const detailRef = useRef<HTMLElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     arrived();
@@ -64,6 +66,15 @@ export default function Works() {
       pick(i + step, true);
     }
   };
+
+  // Esc leaves, as at the grace.
+  useEffect(() => {
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") router.push("/road/");
+    };
+    window.addEventListener("keydown", onEsc);
+    return () => window.removeEventListener("keydown", onEsc);
+  }, [router]);
 
   const w = works[i];
   if (!w) return null;
@@ -108,6 +119,7 @@ export default function Works() {
               <li key={x.slug}>
                 <button type="button" tabIndex={narrow ? 0 : -1} aria-current={n === i} data-on={n === i} onClick={() => pick(n)}>
                   {x.name}
+                  <span className="sr-only">, </span>
                   <span>{x.kind.split(" · ")[0]}</span>
                 </button>
               </li>
@@ -163,6 +175,19 @@ export default function Works() {
             </ul>
           </div>
         </section>
+      </div>
+
+      {/* Button prompts, the same footer the grace menu uses. */}
+      <div className={s.keys} aria-hidden="true">
+        <span>
+          <kbd>&larr;</kbd>
+          <kbd>&rarr;</kbd>
+          <kbd>&uarr;</kbd>
+          <kbd>&darr;</kbd> Select
+        </span>
+        <span>
+          <kbd>Esc</kbd> Back
+        </span>
       </div>
     </main>
   );

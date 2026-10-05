@@ -147,6 +147,10 @@ a:hover {
 .sitebar .sound:hover {
   color: var(--pale);
 }
+.sitebar a[aria-current="page"] {
+  color: var(--grace);
+  pointer-events: none;
+}
 .sitebar .sound {
   display: flex;
   align-items: center;

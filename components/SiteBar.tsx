@@ -7,6 +7,7 @@
 */
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { isPlaying, setMuted, subscribeAudio } from "@/lib/audio";
 import { person } from "@/lib/content";
@@ -14,12 +15,15 @@ import { person } from "@/lib/content";
 export default function SiteBar() {
   const playing = useSyncExternalStore(subscribeAudio, isPlaying, () => false);
   const [mounted, setMounted] = useState(false);
+  const here = usePathname();
 
   useEffect(() => setMounted(true), []);
 
   return (
     <nav className="sitebar" aria-label="Contact and links" onPointerDown={(e) => e.stopPropagation()}>
-      <Link href="/works/">Projects</Link>
+      <Link href="/works/" aria-current={here?.startsWith("/works") ? "page" : undefined}>
+        Projects
+      </Link>
       <a href={person.github} target="_blank" rel="noreferrer">
         GitHub
       </a>
