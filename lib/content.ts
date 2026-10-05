@@ -22,7 +22,7 @@ export const person = {
 export const profile = {
   intro:
     "Hi, I'm Ping! I want to build things that make people's day a little easier, and I'm just getting started.",
-  quote: "Until death, all defeats are psychological.",
+  quote: "A fool in motion will go further than a genius sitting still.",
   served: [
     {
       slug: "genetec",
