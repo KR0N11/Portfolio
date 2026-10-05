@@ -15,7 +15,7 @@ export const person = {
 
 /*
   Profile photos are picked up from folders at build time, no code changes:
-    public/profile/portrait.jpg        (optional, shown in the opening frame)
+    public/profile/portrait.webp       (optional, shown in the opening frame)
     public/profile/<company slug>/*    (genetec, vffice, paultech)
     public/profile/<pastime slug>/*    (photography, gym, travel, games)
 */
@@ -181,7 +181,7 @@ export const works: Work[] = [
     ],
     stack: ["Python", "LangGraph", "FastAPI", "HTMX", "LlamaIndex", "Terraform"],
     repo: "https://github.com/KR0N11/sentinel",
-    recording: "Live run · CLI triage of incident inc-001 in offline replay mode (deterministic LLM stub), then scrolling back through its real output",
+    recording: "Live run · CLI triage of incident inc-001 in offline replay mode, then scrolling back through its real output. --yes approves the change at the prompt; the LLM is a deterministic stub, so the call and cost line is the stub's own count",
     hasVideo: true,
   },
   {
@@ -209,7 +209,7 @@ export const works: Work[] = [
     ],
     stack: ["Python", "LangGraph", "Pydantic", "DuckDB", "Streamlit", "FastAPI"],
     repo: "https://github.com/KR0N11/loom",
-    recording: "Ingest, semantic retrieval (a short script calling Loom's search) and the DuckDB query · no LLM step · ingest wait shown at 3×",
+    recording: "Semantic retrieval through Loom's HybridSearch (from a short demo script), then a hand-written SQL query run directly in DuckDB; the earlier ingest shows when it scrolls back · no LLM step",
     hasVideo: true,
   },
   {

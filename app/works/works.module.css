@@ -112,6 +112,15 @@
 .names button[data-on="true"] {
   color: #fbf0d4;
 }
+/* The selected row gets the grace menu's lit bar, so it reads on a phone too. */
+.names button[data-on="true"] {
+  padding-left: 10px;
+  background: linear-gradient(90deg, rgba(232, 200, 140, 0.18), rgba(232, 200, 140, 0) 70%);
+  box-shadow:
+    inset 2px 0 0 var(--grace),
+    inset 0 1px rgba(230, 220, 192, 0.3),
+    inset 0 -1px rgba(230, 220, 192, 0.3);
+}
 .names button[data-on="true"] span {
   color: var(--grace);
 }
@@ -236,5 +245,66 @@
   }
   .detail {
     scroll-margin-top: 16px;
+  }
+}
+
+/* Button prompts, fixed bottom right like the grace menu's footer. */
+.keys {
+  position: fixed;
+  right: var(--gutter);
+  bottom: clamp(14px, 2.6vh, 24px);
+  display: flex;
+  gap: 22px;
+  padding: 6px 12px;
+  margin-right: -12px;
+  font-family: var(--caps);
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  color: var(--label);
+  background: rgba(5, 9, 12, 0.82);
+  pointer-events: none;
+}
+.keys span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.keys kbd {
+  min-width: 22px;
+  padding: 1px 6px;
+  border: 1px solid rgba(201, 178, 124, 0.5);
+  border-radius: 3px;
+  font-family: var(--serif);
+  font-size: 15px;
+  text-align: center;
+  color: var(--pale);
+}
+
+/* Phones: the selected project comes first, the list of the rest after it. */
+@media (max-width: 720px) {
+  .keys {
+    display: none;
+  }
+  .layout {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .detail {
+    margin-top: 30px;
+  }
+  .side {
+    display: contents;
+  }
+  .heading,
+  .sub {
+    order: 0;
+  }
+  .detail {
+    order: 1;
+  }
+  .names {
+    order: 2;
+    margin-top: 36px;
   }
 }
