@@ -18,6 +18,9 @@ import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "re
 export type Scene = "gate" | "road";
 
 /** Values a page can change every frame. `pull` is the sword lift in image heights. */
+/** Fired by a page to ask for one frame when reduced motion has stopped the loop. */
+export const REDRAW = "living-image:redraw";
+
 export type Live = { pull: number; flash: number };
 
 type Props = {
@@ -283,7 +286,8 @@ export default function LivingImage({ src, mask, aspect, scene, focus, live, sta
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
             lastKey = key;
           }
-          raf = requestAnimationFrame(draw!);
+          // Reduced motion: no loop. Draw again only on resize or a "redraw" event.
+          if (!reduce) raf = requestAnimationFrame(draw!);
         };
         raf = requestAnimationFrame((now) => {
           draw?.(now);
@@ -294,14 +298,21 @@ export default function LivingImage({ src, mask, aspect, scene, focus, live, sta
 
     const onVis = () => {
       cancelAnimationFrame(raf);
-      if (!document.hidden && alive && draw) raf = requestAnimationFrame(draw);
+      if (!document.hidden && alive && draw && !reduce) raf = requestAnimationFrame(draw);
+    };
+    const redraw = () => {
+      if (reduce && alive && draw) raf = requestAnimationFrame(draw);
     };
     document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("resize", redraw);
+    window.addEventListener(REDRAW, redraw);
 
     return () => {
       alive = false;
       cancelAnimationFrame(raf);
       document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("resize", redraw);
+      window.removeEventListener(REDRAW, redraw);
       // Free what we made but keep the context: React may mount this canvas
       // again (dev double-mount, back navigation), and a lost context never
       // comes back, which left the scene frozen on return.

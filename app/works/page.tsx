@@ -8,6 +8,7 @@
 */
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { arrived } from "@/components/Veil";
 import { sfx } from "@/lib/audio";
@@ -18,10 +19,20 @@ const COLS = 4;
 
 export default function Works() {
   const [i, setI] = useState(0);
+  const [reduce, setReduce] = useState(false);
+  const [narrow, setNarrow] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
+  const detailRef = useRef<HTMLElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     arrived();
+    setReduce(matchMedia("(prefers-reduced-motion: reduce)").matches);
+    // Phones get the name list only; the slots are a desktop thing.
+    const mq = matchMedia("(max-width: 720px)");
+    const onMq = () => setNarrow(mq.matches);
+    onMq();
+    mq.addEventListener("change", onMq);
     // Follow #slug on load and whenever it changes (links, back/forward).
     const sync = () => {
       const n = works.findIndex((w) => `#${w.slug}` === window.location.hash);
@@ -29,7 +40,10 @@ export default function Works() {
     };
     sync();
     window.addEventListener("hashchange", sync);
-    return () => window.removeEventListener("hashchange", sync);
+    return () => {
+      window.removeEventListener("hashchange", sync);
+      mq.removeEventListener("change", onMq);
+    };
   }, []);
 
   const pick = useCallback(
@@ -39,6 +53,8 @@ export default function Works() {
       setI(k);
       history.replaceState(null, "", `#${works[k].slug}`);
       if (focus) gridRef.current?.querySelectorAll("button")[k]?.focus();
+      // On narrow screens the detail sits below the grid: bring it into view.
+      else if (matchMedia("(max-width: 900px)").matches) detailRef.current?.scrollIntoView({ behavior: "smooth" });
     },
     [i],
   );
@@ -50,6 +66,15 @@ export default function Works() {
       pick(i + step, true);
     }
   };
+
+  // Esc leaves, as at the grace.
+  useEffect(() => {
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") router.push("/road/");
+    };
+    window.addEventListener("keydown", onEsc);
+    return () => window.removeEventListener("keydown", onEsc);
+  }, [router]);
 
   const w = works[i];
   if (!w) return null;
@@ -66,7 +91,7 @@ export default function Works() {
       <div className={s.layout}>
         <aside className={s.side}>
           <h1 className={s.heading}>Projects</h1>
-          <p className={s.sub}>Things I built. Each one is recorded while it runs.</p>
+          <p className={s.sub}>Things I built, shown running.</p>
 
           <div ref={gridRef} className={s.grid} onKeyDown={onKey} role="listbox" aria-label="Projects">
             {works.map((x, n) => (
@@ -75,53 +100,63 @@ export default function Works() {
                 type="button"
                 role="option"
                 aria-selected={n === i}
+                tabIndex={n === i ? 0 : -1}
                 className={s.tile}
                 data-on={n === i}
                 onClick={() => pick(n)}
-                title={x.name}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/clips/${x.slug}/poster.jpg`} alt="" loading="lazy" />
-                <span className={s.tileName}>{x.name}</span>
+                <img src={`/clips/${x.slug}/tile.jpg`} alt={x.name} loading="lazy" />
               </button>
             ))}
           </div>
+
         </aside>
 
-        <section className={s.detail} aria-live="polite">
-          <div className={s.frame} data-bright={w.slug === "pixelring"}>
+        <section ref={detailRef} className={s.detail}>
+          <div className={s.nameRow}>
+            <h2 className={s.name} aria-live="polite">
+              {w.name}
+            </h2>
+            <a className={s.code} href={w.repo} target="_blank" rel="noreferrer">
+              View code &#8599;
+            </a>
+          </div>
+          <div className={s.kind}>{w.kind}</div>
+
+          <div
+            className={s.frame}
+            data-bright={!!w.bright}
+            style={{ aspectRatio: w.aspect ?? 16 / 10, width: `min(100%, calc(60vh * ${w.aspect ?? 16 / 10}))` }}
+          >
             {w.hasVideo ? (
               <video
                 key={w.slug}
                 className={s.media}
                 src={`${base}/demo.mp4`}
-                poster={`${base}/poster.jpg`}
-                autoPlay
+                poster={`${base}/poster.webp`}
+                autoPlay={!reduce}
+                controls={reduce}
                 muted
                 loop
                 playsInline
-                preload="auto"
+                preload="metadata"
               />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
-              <img key={w.slug} className={s.media} src={`${base}/poster.jpg`} alt={`${w.name} screenshot`} />
+              <img key={w.slug} className={s.media} src={`${base}/poster.webp`} alt={`${w.name} screenshot`} />
             )}
           </div>
-          <div className={s.caption}>{w.recording}</div>
+          <div className={s.caption}>
+            {/* `backticks` in a caption mark a command-line flag or name. */}
+            {w.recording.split("`").map((part, n) => (n % 2 ? <code key={n}>{part}</code> : part))}
+          </div>
 
           <div className={s.info}>
-            <div className={s.nameRow}>
-              <h2 className={s.name}>{w.name}</h2>
-              <a className={s.code} href={w.repo} target="_blank" rel="noreferrer">
-                View code &#8599;
-              </a>
-            </div>
-            <div className={s.kind}>{w.kind}</div>
-            <ul className={s.stack} aria-label="Built with">
-              {w.stack.map((t) => (
-                <li key={t}>{t}</li>
-              ))}
-            </ul>
+            <p className={s.stack}>
+              <span>Built with</span>
+              {w.stack.join(" · ")}
+            </p>
             <ul className={s.what}>
               {w.what.map((line) => (
                 <li key={line}>{line}</li>
@@ -129,6 +164,35 @@ export default function Works() {
             </ul>
           </div>
         </section>
+
+        {/* Item names under the slots, as the game lists them. It comes after the
+          detail in the page so phones read the project first; on desktop the
+          grid places it under the slots. The slots are the control there, so
+          screen readers get the list only on phones. */}
+        <ol className={s.names} aria-hidden={!narrow} aria-label="Projects">
+          {works.map((x, n) => (
+            <li key={x.slug}>
+              <button type="button" tabIndex={narrow ? 0 : -1} aria-current={n === i} data-on={n === i} onClick={() => pick(n)}>
+                {x.name}
+                <span className="sr-only">, </span>
+                <span>{x.kind.split(" · ")[0]}</span>
+              </button>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      {/* Button prompts, the same footer the grace menu uses. */}
+      <div className={s.keys} aria-hidden="true">
+        <span>
+          <kbd>&larr;</kbd>
+          <kbd>&rarr;</kbd>
+          <kbd>&uarr;</kbd>
+          <kbd>&darr;</kbd> Select
+        </span>
+        <span>
+          <kbd>Esc</kbd> Back
+        </span>
       </div>
     </main>
   );

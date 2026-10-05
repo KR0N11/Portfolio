@@ -128,14 +128,11 @@
 }
 
 @media (max-width: 640px) {
-  .pitch {
-  font-family: var(--serif);
-  font-size: 16px;
-  letter-spacing: 0;
-  color: var(--bone);
-}
-
-.hint {
+  /* Clear the link bar, which spans the top on phones. */
+  .top {
+    top: 62px;
+  }
+  .hint {
     bottom: 64px;
   }
   .skip {
