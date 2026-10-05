@@ -111,20 +111,6 @@ export default function Works() {
             ))}
           </div>
 
-          {/* Item names under the slots, as the game lists them. On desktop the
-              slots are the control, so screen readers get them once; on phones
-              the slots are hidden and this list is the control. */}
-          <ol className={s.names} aria-hidden={!narrow} aria-label="Projects">
-            {works.map((x, n) => (
-              <li key={x.slug}>
-                <button type="button" tabIndex={narrow ? 0 : -1} aria-current={n === i} data-on={n === i} onClick={() => pick(n)}>
-                  {x.name}
-                  <span className="sr-only">, </span>
-                  <span>{x.kind.split(" · ")[0]}</span>
-                </button>
-              </li>
-            ))}
-          </ol>
         </aside>
 
         <section ref={detailRef} className={s.detail}>
@@ -175,6 +161,22 @@ export default function Works() {
             </ul>
           </div>
         </section>
+
+        {/* Item names under the slots, as the game lists them. It comes after the
+          detail in the page so phones read the project first; on desktop the
+          grid places it under the slots. The slots are the control there, so
+          screen readers get the list only on phones. */}
+        <ol className={s.names} aria-hidden={!narrow} aria-label="Projects">
+          {works.map((x, n) => (
+            <li key={x.slug}>
+              <button type="button" tabIndex={narrow ? 0 : -1} aria-current={n === i} data-on={n === i} onClick={() => pick(n)}>
+                {x.name}
+                <span className="sr-only">, </span>
+                <span>{x.kind.split(" · ")[0]}</span>
+              </button>
+            </li>
+          ))}
+        </ol>
       </div>
 
       {/* Button prompts, the same footer the grace menu uses. */}

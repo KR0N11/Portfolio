@@ -8,6 +8,11 @@
 .layout {
   display: grid;
   grid-template-columns: minmax(300px, 400px) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "side detail"
+    "names detail";
+  row-gap: 0;
   gap: clamp(28px, 4vw, 64px);
   max-width: 1400px;
   margin: 0 auto;
@@ -16,6 +21,7 @@
 
 /* The grid stays in view while the details scroll. */
 .side {
+  grid-area: side;
   position: sticky;
   top: 96px;
   align-self: start;
@@ -78,6 +84,8 @@
 }
 /* Names under the slots: a ruled list, the selected one lit in gold. */
 .names {
+  grid-area: names;
+  align-self: start;
   list-style: none;
   margin: 22px 0 0;
   padding: 0;
@@ -126,6 +134,7 @@
 }
 
 .detail {
+  grid-area: detail;
   min-width: 0;
 }
 .frame {
@@ -248,12 +257,20 @@
   }
 }
 
-/* Button prompts, fixed bottom right like the grace menu's footer. */
+/* Button prompts, fixed bottom right like the grace menu's footer.
+   Only where there's likely a keyboard. */
+.keys {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) and (min-width: 721px) {
+  .keys {
+    display: flex;
+  }
+}
 .keys {
   position: fixed;
   right: var(--gutter);
   bottom: clamp(14px, 2.6vh, 24px);
-  display: flex;
   gap: 22px;
   padding: 6px 12px;
   margin-right: -12px;
@@ -280,11 +297,8 @@
   color: var(--pale);
 }
 
-/* Phones: the selected project comes first, the list of the rest after it. */
+/* Phones: one column in page order: heading, the selected project, then the list. */
 @media (max-width: 720px) {
-  .keys {
-    display: none;
-  }
   .layout {
     display: flex;
     flex-direction: column;
@@ -293,18 +307,7 @@
   .detail {
     margin-top: 30px;
   }
-  .side {
-    display: contents;
-  }
-  .heading,
-  .sub {
-    order: 0;
-  }
-  .detail {
-    order: 1;
-  }
   .names {
-    order: 2;
     margin-top: 36px;
   }
 }
