@@ -12,8 +12,7 @@
   grid-template-areas:
     "side detail"
     "names detail";
-  row-gap: 0;
-  gap: clamp(28px, 4vw, 64px);
+  gap: 0 clamp(28px, 4vw, 64px);
   max-width: 1400px;
   margin: 0 auto;
   padding: clamp(96px, 13vh, 120px) var(--gutter) 64px;
