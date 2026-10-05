@@ -123,7 +123,7 @@ a:hover {
 
 /* Links + sound, top right on every page. */
 .sitebar {
-  position: fixed;
+  position: absolute;
   top: clamp(16px, 3.6vh, 34px);
   right: var(--gutter);
   z-index: 90;
@@ -132,8 +132,6 @@ a:hover {
   gap: 26px;
   padding: 6px 12px;
   margin-right: -12px;
-  background: rgba(5, 9, 12, 0.72);
-  backdrop-filter: blur(6px);
   font-family: var(--display);
   font-size: 17px;
   letter-spacing: 0.02em;
@@ -175,6 +173,7 @@ a:hover {
 }
 @media (max-width: 640px) {
   .sitebar {
+    top: 12px;
     left: var(--gutter);
     right: var(--gutter);
     justify-content: flex-end;
@@ -213,7 +212,7 @@ a:hover {
 }
 @media (max-width: 640px) {
   .crumbs {
-    top: 54px;
+    top: 62px;
     font-size: 16px;
     letter-spacing: 0.03em;
     gap: 10px;

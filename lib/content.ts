@@ -6,7 +6,7 @@
 export const person = {
   name: "Ping Chun Lui",
   role: "Software developer",
-  pitch: "Computer Science at Concordia · Software developer intern at Genetec",
+  pitch: "Computer Science at Concordia · Montréal",
   home: "Montréal",
   email: "kevinlui415@gmail.com",
   github: "https://github.com/KR0N11",
@@ -21,42 +21,47 @@ export const person = {
 */
 export const profile = {
   intro:
-    "At Genetec I build Digital Twin, a live map of which systems an outage hits, and the alerts that reach each owning team within two minutes. Before that I built AI agents on Azure at Vffice.",
+    "Hi, I'm Ping! I want to build things that make people's day a little easier, and I'm just getting started.",
+  quote: "Until death, all defeats are psychological.",
   served: [
     {
       slug: "genetec",
       name: "Genetec",
       title: "Software Developer Intern",
       logo: "/profile/logos/genetec-white.svg",
-      body: "I built Digital Twin, a React map of which systems an outage hits across a hybrid stack, fed by KQL and OData queries, and the outage monitoring behind it: synthetic tests in two Azure regions, API heartbeats and 30+ alert rules. A Java fallback I wrote for tickets our LLM triage agent couldn't classify raised the share solved without bouncing back from 81% to 99%.",
-      stack: ["React", "JavaScript", "KQL", "Java", "Azure", "Bicep", "Grafana"],
+      body: "I work on Digital Twin, an internal React app that shows how our systems depend on each other, and the alerts that go off when something breaks.",
     },
     {
       slug: "vffice",
       name: "Vffice",
       title: "R&D Software Developer Intern",
       logo: "/profile/logos/vffice-wordmark-white.png",
-      body: "I owned a Python RAG agent on Azure AI Foundry that drafts sales RFPs from the company's own documents. It cut document review time by 53% and was demoed at a Microsoft partner session in Toronto. I was also tech lead on the QMS project: a custom SharePoint approval workflow that calls REST APIs to trigger the next steps.",
-      stack: ["Python", "Azure AI Foundry", "Azure AI Search", "Copilot Studio", "SharePoint"],
+      body: "I built two AI agents in Python. One writes first drafts of sales proposals, the other sets up access for new employees.",
     },
     {
       slug: "paultech",
       name: "Paul Tech",
       title: "Cloud Developer Intern",
       logo: "/profile/logos/paultech-wordmark-white.png",
-      body: "For CHUM hospital I built a proof of concept that moves nurses' separate Excel sheets into one registration system, and demoed it to the client's system designers. It shipped to Azure through pull-request code review.",
-      stack: ["Power Pages", "Dataverse", "Azure"],
+      body: "My first internship. I built a proof of concept for CHUM hospital that put the nurses' Excel sheets into one system.",
     },
   ],
   schools: [
-    { name: "Concordia University", field: "Computer Science" },
-    { name: "LaSalle College", field: "Computer Science" },
+    { name: "Concordia University", field: "Computer Science", logo: "/profile/logos/concordia-white.svg" },
+    { name: "LaSalle College", field: "Computer Science", logo: "/profile/logos/lasalle-white.svg" },
   ],
+  /* Skill cards, like gordonng.ca. Levels are Ping's call; "Other" has none. */
+  skills: [
+    { group: "Languages", items: [["Python", "python", "Advanced"], ["JavaScript", "javascript", "Advanced"], ["Java", "java", "Intermediate"], ["C#", "csharp", "Intermediate"], ["TypeScript", "typescript", "Intermediate"], ["Swift", "swift", "Basic"]] },
+    { group: "Frontend", items: [["React", "react", "Intermediate"], ["HTML", "html5", "Advanced"], ["CSS", "css3", "Intermediate"], ["Next.js", "nextjs", "Basic"]] },
+    { group: "Backend & Cloud", items: [["Azure", "azure", "Advanced"], [".NET", "dotnetcore", "Intermediate"], ["Node.js", "nodejs", "Basic"], ["PostgreSQL", "postgresql", "Basic"], ["AWS", "amazonwebservices", "Basic"], ["Docker", "docker", "Basic"]] },
+    { group: "Other", items: [["Git", "git"], ["GitHub", "github"], ["Azure DevOps", "azuredevops"], ["PyTorch", "pytorch"]] },
+  ] as { group: string; items: ([string, string] | [string, string, string])[] }[],
   pastimes: [
     {
       slug: "photography",
       name: "Photography",
-      body: "I carry a small camera almost everywhere and mostly shoot friends, streets and late-afternoon light.",
+      body: "Small camera, always in the bag. Mostly friends, streets, and that light right before sunset.",
       companion: {
         src: "/profile/hachiware-camera.png",
         alt: "Hachiware from Chiikawa holding a camera",
@@ -66,19 +71,17 @@ export const profile = {
     {
       slug: "gym",
       name: "Gym",
-      body: "I like that lifting is easy to measure: the weight on the bar either went up this month or it didn't. Hachiware from Chiikawa is the mood. He works hard, fails sometimes, yells \"make it work!\" and goes again.",
-      quote: "Until death, all defeats are psychological.",
+      body: "The bar doesn't care how my week went. The weight either went up or it didn't (some months it didn't). Hachiware is the mood: fail, yell \"make it work!\", go again.",
     },
     {
       slug: "travel",
       name: "Travel",
-      body: "Who doesn't love Japan? Fuji over a field of nemophila, golden hour on a hillside staircase. Every trip gets photographed and vlogged.",
+      body: "Japan, mostly. Fuji over a field of blue flowers, a hillside staircase at golden hour. Every trip gets photographed and vlogged.",
     },
     {
       slug: "games",
       name: "Games",
       line: "Emerald in R6. Destiny. The occasional Roblox. Never League.",
-      body: "Games are how I got into code: hacking mobile games led to taking apart Android apps to see how they worked.",
     },
     {
       slug: "anime",
@@ -92,7 +95,7 @@ export const profile = {
     slug: string;
     name: string;
     line?: string;
-    body: string;
+    body?: string;
     list?: string[];
     also?: string;
     quote?: string;
