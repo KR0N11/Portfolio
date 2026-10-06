@@ -325,15 +325,15 @@
   counter-increment: rank;
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 8px;
   padding: 2px 0;
   font-family: var(--display);
-  font-size: clamp(19px, 1.6vw, 22px);
+  font-size: clamp(18px, 1.4vw, 20px);
   color: #efe6cc;
 }
 .ranked li::before {
   content: counter(rank) ".";
-  min-width: 1.4em;
+  min-width: 1.1em;
   color: var(--grace);
 }
 .also {
@@ -433,6 +433,11 @@
   }
   .item[data-slug="travel"] {
     grid-column: span 2;
+    order: 3;
+  }
+  /* Games pairs with the manga on the last row instead of sitting alone. */
+  .item[data-slug="games"] {
+    order: 4;
   }
   .item .body,
   .item .line {
