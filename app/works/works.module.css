@@ -163,7 +163,7 @@
 }
 .caption {
   margin-top: 10px;
-  max-width: 60ch;
+  max-width: 68ch;
   font-size: 15px;
   line-height: 1.5;
   color: var(--muted);
@@ -294,6 +294,7 @@
   }
   .menu {
     position: static;
+    align-self: stretch;
     margin-top: 36px;
     scroll-margin-top: 16px;
   }

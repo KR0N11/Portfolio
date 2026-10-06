@@ -278,7 +278,8 @@
 .photos {
   display: grid;
   grid-template-columns: repeat(var(--n, 1), minmax(0, 1fr));
-  gap: 10px;
+  /* Same gutter as the grid around it, so Travel's photos line up with the row above. */
+  gap: clamp(20px, 2.4vw, 32px);
 }
 .photos[data-count="2"] {
   --n: 2;
@@ -306,12 +307,11 @@
 .photos img[alt^="Weight"] {
   filter: saturate(0.85) contrast(1.05) brightness(0.78);
 }
-/* The manga panel is square and full of lettering: show it whole on white. */
-.frame:has(img[alt^="Jujutsu"]) {
-  background: #fff;
+/* The manga panel is square and full of lettering: show it whole, square. */
+.photos .frame:has(img[alt^="Jujutsu"]) {
+  aspect-ratio: 1;
 }
 .frame:has(img[alt^="Jujutsu"]) img {
-  object-fit: contain;
   filter: none;
 }
 
@@ -423,12 +423,37 @@
     max-width: 240px;
   }
   .job,
+  /* Phones: two across, Travel's pair full width. */
   .pastimes {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 14px;
   }
-  .item,
+  .item {
+    grid-column: span 1;
+  }
   .item[data-slug="travel"] {
     grid-column: span 2;
+  }
+  .item .body,
+  .item .line {
+    font-size: 15px;
+  }
+  .item h3,
+  .page .item h3 {
+    font-size: 21px;
+  }
+  .ranked li {
+    font-size: 17px;
+  }
+  .companion {
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .companion img {
+    width: 44px;
+  }
+  .companion figcaption {
+    font-size: 13px;
   }
   .job {
     gap: 18px;
