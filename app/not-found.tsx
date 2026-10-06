@@ -1,4 +1,7 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = { title: "Nothing here" };
 
 /* A wrong turn. Kept as plain as the game's own messages. */
 export default function NotFound() {
