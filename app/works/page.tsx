@@ -57,14 +57,20 @@ export default function Works() {
     }
   };
 
-  // Esc leaves, as at the grace.
+  // As at the grace: arrows choose from anywhere on the page, Esc leaves.
   useEffect(() => {
-    const onEsc = (e: KeyboardEvent) => {
+    const onKeys = (e: KeyboardEvent) => {
       if (e.key === "Escape") router.push("/road/");
+      // The menu's own buttons handle arrows themselves (and keep focus in it).
+      if (listRef.current?.contains(e.target as Node)) return;
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        pick(i + (e.key === "ArrowDown" ? 1 : -1), true);
+      }
     };
-    window.addEventListener("keydown", onEsc);
-    return () => window.removeEventListener("keydown", onEsc);
-  }, [router]);
+    window.addEventListener("keydown", onKeys);
+    return () => window.removeEventListener("keydown", onKeys);
+  }, [router, pick, i]);
 
   const w = works[i];
   if (!w) return null;
