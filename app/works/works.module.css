@@ -91,6 +91,11 @@
 .names button[data-on="true"] {
   color: #fbf0d4;
 }
+/* Keyboard focus: a thin gold rule, not the browser's white box over the lit bar. */
+.names button:focus-visible {
+  outline: 1px solid rgba(201, 178, 124, 0.7);
+  outline-offset: -1px;
+}
 /* The selected row gets the grace menu's lit bar, so it reads on a phone too. */
 .names button[data-on="true"] {
   padding-left: 10px;
