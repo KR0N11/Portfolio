@@ -15,11 +15,16 @@
   gap: 0 clamp(28px, 4vw, 64px);
   max-width: 1400px;
   margin: 0 auto;
-  padding: clamp(96px, 13vh, 120px) var(--gutter) 96px;
+  padding: clamp(96px, 13vh, 120px) var(--gutter) 64px;
 }
 
 .side {
   grid-area: side;
+}
+
+/* Phones only: a jump to the list, which sits after the selected project. */
+.jump {
+  display: none;
 }
 
 .heading {
@@ -37,47 +42,15 @@
   color: var(--muted);
 }
 
-/* The inventory grid: square tiles, gold inner glow on the selected one. */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 26px;
+/* The project menu: a ruled list, the selected one lit like the grace menu.
+   It stays in view while a long project scrolls. */
+.menu {
+  grid-area: names;
+  align-self: start;
+  position: sticky;
+  top: 24px;
+  margin-top: 30px;
 }
-.tile {
-  position: relative;
-  aspect-ratio: 1;
-  padding: 0;
-  overflow: hidden;
-  cursor: pointer;
-  background: #0b0f11;
-  border: 1px solid rgba(200, 190, 160, 0.18);
-  transition:
-    border-color 200ms,
-    box-shadow 200ms;
-}
-.tile img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: saturate(0.6) brightness(0.72);
-  transition: filter 250ms;
-}
-.tile:hover img {
-  filter: saturate(0.85) brightness(0.9);
-}
-.tile:focus-visible {
-  outline: 1px solid var(--pale);
-  outline-offset: 2px;
-}
-.tile[data-on="true"] {
-  border-color: rgba(201, 178, 124, 0.85);
-  box-shadow: inset 0 0 0 1px rgba(201, 178, 124, 0.35);
-}
-.tile[data-on="true"] img {
-  filter: none;
-}
-/* Names under the slots: a ruled list, the selected one lit in gold. */
 .names {
   grid-area: names;
   align-self: start;
@@ -267,11 +240,6 @@
   opacity: 0.7;
 }
 
-@media (max-width: 720px) {
-  .grid {
-    display: none;
-  }
-}
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: minmax(0, 1fr);
@@ -282,31 +250,21 @@
   }
 }
 
-/* Button prompts, fixed bottom right like the grace menu's footer.
+/* Button prompts under the menu, as the game puts them under a list.
    Only where there's likely a keyboard. */
 .keys {
   display: none;
+  gap: 22px;
+  margin-top: 18px;
+  font-family: var(--caps);
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  color: var(--label);
 }
 @media (hover: hover) and (pointer: fine) and (min-width: 721px) {
   .keys {
     display: flex;
   }
-}
-.keys {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  justify-content: flex-end;
-  gap: 22px;
-  padding: 26px var(--gutter) clamp(14px, 2.6vh, 22px);
-  font-family: var(--caps);
-  font-size: 15px;
-  letter-spacing: 0.03em;
-  color: var(--label);
-  /* A strip that fades up from the bottom, so scrolled text never runs under the prompts. */
-  background: linear-gradient(rgba(5, 9, 12, 0), rgba(5, 9, 12, 0.92) 45%);
-  pointer-events: none;
 }
 .keys span {
   display: flex;
@@ -334,8 +292,28 @@
   .detail {
     margin-top: 30px;
   }
-  .names {
+  .menu {
     position: static;
     margin-top: 36px;
+    scroll-margin-top: 16px;
+  }
+  /* The bullets carry the depth; on a phone they come before the stack line. */
+  .info {
+    display: flex;
+    flex-direction: column;
+  }
+  .stack {
+    order: 2;
+  }
+  .note {
+    order: 3;
+  }
+  .jump {
+    display: inline-block;
+    margin-left: 12px;
+    padding: 6px 0;
+    color: var(--pale);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(201, 178, 124, 0.5);
   }
 }

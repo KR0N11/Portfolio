@@ -154,6 +154,8 @@ function swell(freq: number, start: number, dur: number, gain: number) {
 
 export function sfx(kind: "tick" | "confirm" | "grace") {
   if (typeof window === "undefined" || isMuted()) return;
+  // Browsers refuse sound before the first click or key; don't even try.
+  if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
   try {
     ctx ??= new AudioContext();
     if (ctx.state === "suspended") ctx.resume();
