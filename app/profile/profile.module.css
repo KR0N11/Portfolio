@@ -231,20 +231,43 @@
   }
 }
 
-/* ---------- Pastimes: photo first, a short label beside it ---------- */
-.item {
+/* ---------- Pastimes: a photo grid, a short caption under each ---------- */
+.pastimes {
   display: grid;
-  grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
-  align-items: center;
-  gap: clamp(28px, 5vw, 64px);
-  padding: 44px 0;
-  border-bottom: 1px solid rgba(200, 190, 160, 0.12);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 44px clamp(20px, 2.4vw, 32px);
+  padding-top: 30px;
 }
-.item:last-child {
-  border-bottom: 0;
+.item {
+  grid-column: span 2;
+}
+/* Photography, Gym, Games across the top; Travel's two photos and the manga below. */
+.item[data-slug="photography"] {
+  order: 1;
+}
+.item[data-slug="gym"] {
+  order: 2;
+}
+.item[data-slug="games"] {
+  order: 3;
+}
+.item[data-slug="travel"] {
+  order: 4;
+  grid-column: span 4;
+}
+.item[data-slug="anime"] {
+  order: 5;
 }
 .itemText {
-  padding: 4px 0;
+  padding-top: 16px;
+}
+.item h3,
+.page .item h3 {
+  font-size: clamp(24px, 2vw, 28px);
+}
+.item .body {
+  font-size: 17px;
+  line-height: 1.6;
 }
 .line {
   margin: 10px 0 0;
@@ -272,23 +295,23 @@
 .photos video {
   filter: saturate(0.85) contrast(1.05) brightness(0.9);
 }
-/* Every row the same: photo on the left, its caption beside it, centred on the photo. */
-.photos[data-count="1"] .frame {
-  width: 100%;
-  max-width: 460px;
-}
+/* Every picture the same shape, so the grid reads as one set. */
+.photos .frame,
 .photos .frame[data-video="true"] {
-  aspect-ratio: 16 / 9;
+  width: 100%;
+  aspect-ratio: 4 / 5;
   max-width: none;
 }
 /* The white wall behind the weights is the brightest thing on the page. */
 .photos img[alt^="Weight"] {
   filter: saturate(0.85) contrast(1.05) brightness(0.78);
 }
+/* The manga panel is square and full of lettering: show it whole on white. */
 .frame:has(img[alt^="Jujutsu"]) {
-  aspect-ratio: 1;
+  background: #fff;
 }
 .frame:has(img[alt^="Jujutsu"]) img {
+  object-fit: contain;
   filter: none;
 }
 
@@ -302,10 +325,10 @@
   counter-increment: rank;
   display: flex;
   align-items: baseline;
-  gap: 14px;
-  padding: 4px 0;
+  gap: 12px;
+  padding: 2px 0;
   font-family: var(--display);
-  font-size: clamp(20px, 1.9vw, 25px);
+  font-size: clamp(19px, 1.6vw, 22px);
   color: #efe6cc;
 }
 .ranked li::before {
@@ -400,10 +423,23 @@
     max-width: 240px;
   }
   .job,
-  .item {
-    grid-template-columns: minmax(0, 1fr);
+  .pastimes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .item,
+  .item[data-slug="travel"] {
+    grid-column: span 2;
   }
   .job {
     gap: 18px;
+  }
+}
+
+@media (min-width: 521px) and (max-width: 860px) {
+  .item[data-slug="photography"],
+  .item[data-slug="gym"],
+  .item[data-slug="games"],
+  .item[data-slug="anime"] {
+    grid-column: span 1;
   }
 }

@@ -20,7 +20,9 @@ function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
   // Runs after every render so sections added later (or hot-reloaded) still fade in.
   useEffect(() => {
-    const els = ref.current?.querySelectorAll<HTMLElement>("[data-reveal]:not([data-reveal='in'])");
+    const els = ref.current?.querySelectorAll<HTMLElement>(
+      "[data-reveal]:not([data-reveal='in'])",
+    );
     if (!els) return;
     const io = new IntersectionObserver(
       (entries) =>
@@ -44,14 +46,26 @@ function Clip({ src, alt }: { src: string; alt: string }) {
   useEffect(() => {
     const el = v.current;
     if (!el || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? el.play().catch(() => {}) : el.pause()), {
-      threshold: 0.25,
-    });
+    const io = new IntersectionObserver(
+      ([e]) => (e.isIntersecting ? el.play().catch(() => {}) : el.pause()),
+      {
+        threshold: 0.25,
+      },
+    );
     io.observe(el);
     return () => io.disconnect();
   }, []);
   return (
-    <video ref={v} src={src} poster={src.replace(/\.mp4$/, ".poster.jpg")} muted loop playsInline preload="none" aria-label={alt} />
+    <video
+      ref={v}
+      src={src}
+      poster={src.replace(/\.mp4$/, ".poster.jpg")}
+      muted
+      loop
+      playsInline
+      preload="none"
+      aria-label={alt}
+    />
   );
 }
 
@@ -64,7 +78,15 @@ function Media({ src, alt }: { src: string; alt: string }) {
   );
 }
 
-function Photos({ list, alt, alts = [] }: { list: string[]; alt: string; alts?: string[] }) {
+function Photos({
+  list,
+  alt,
+  alts = [],
+}: {
+  list: string[];
+  alt: string;
+  alts?: string[];
+}) {
   if (!list.length) return null;
   return (
     <div className={s.photos} data-count={Math.min(list.length, 3)}>
@@ -128,7 +150,9 @@ export default function ProfileView({ gallery, portrait }: Props) {
             <h1 className={`${s.name} title-card`}>{person.name}</h1>
             <p className={s.role}>{person.pitch}</p>
             <p className={s.intro}>{profile.intro}</p>
-            <blockquote className={`${s.quote} ${s.heroQuote}`}>&ldquo;{profile.quote}&rdquo;</blockquote>
+            <blockquote className={`${s.quote} ${s.heroQuote}`}>
+              &ldquo;{profile.quote}&rdquo;
+            </blockquote>
           </div>
           {portrait && (
             <figure className={`${s.frame} ${s.portrait}`}>
@@ -139,7 +163,7 @@ export default function ProfileView({ gallery, portrait }: Props) {
         </div>
       </header>
 
-      <section className={`${s.chapter} ${s.wide}`}>
+      <section className={s.chapter}>
         <h2 className={s.band} data-reveal>
           Work
         </h2>
@@ -156,10 +180,9 @@ export default function ProfileView({ gallery, portrait }: Props) {
             </div>
           </article>
         ))}
-
       </section>
 
-      <section className={`${s.chapter} ${s.wide}`}>
+      <section className={s.chapter}>
         <h2 className={s.band} data-reveal>
           Studied at
         </h2>
@@ -174,7 +197,7 @@ export default function ProfileView({ gallery, portrait }: Props) {
         </div>
       </section>
 
-      <section className={`${s.chapter} ${s.wide}`}>
+      <section className={s.chapter}>
         <h2 className={s.band} data-reveal>
           Skills
         </h2>
@@ -185,32 +208,47 @@ export default function ProfileView({ gallery, portrait }: Props) {
         <h2 className={s.band} data-reveal>
           Off the clock
         </h2>
-        {profile.pastimes.map((p) => (
-          <article key={p.slug} className={s.item} data-reveal>
-            <Photos list={gallery[p.slug] ?? []} alt={p.name} alts={p.alts} />
-            <div className={s.itemText}>
-              <h3>{p.name}</h3>
-              {p.line && <p className={s.line}>{p.line}</p>}
-              {p.list && (
-                <ol className={s.ranked}>
-                  {p.list.map((t) => (
-                    <li key={t}>{t}</li>
-                  ))}
-                </ol>
-              )}
-              {p.also && <p className={s.also}>{p.also}</p>}
-              {p.body && <p className={s.body}>{p.body}</p>}
-              {p.quote && <blockquote className={s.quote}>&ldquo;{p.quote}&rdquo;</blockquote>}
-              {p.companion && (
-                <figure className={s.companion}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={p.companion.src} alt={p.companion.alt} loading="lazy" />
-                  <figcaption>{p.companion.caption}</figcaption>
-                </figure>
-              )}
-            </div>
-          </article>
-        ))}
+        <div className={s.pastimes}>
+          {profile.pastimes.map((p) => (
+            <article
+              key={p.slug}
+              className={s.item}
+              data-slug={p.slug}
+              data-reveal
+            >
+              <Photos list={gallery[p.slug] ?? []} alt={p.name} alts={p.alts} />
+              <div className={s.itemText}>
+                <h3>{p.name}</h3>
+                {p.line && <p className={s.line}>{p.line}</p>}
+                {p.list && (
+                  <ol className={s.ranked}>
+                    {p.list.map((t) => (
+                      <li key={t}>{t}</li>
+                    ))}
+                  </ol>
+                )}
+                {p.also && <p className={s.also}>{p.also}</p>}
+                {p.body && <p className={s.body}>{p.body}</p>}
+                {p.quote && (
+                  <blockquote className={s.quote}>
+                    &ldquo;{p.quote}&rdquo;
+                  </blockquote>
+                )}
+                {p.companion && (
+                  <figure className={s.companion}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={p.companion.src}
+                      alt={p.companion.alt}
+                      loading="lazy"
+                    />
+                    <figcaption>{p.companion.caption}</figcaption>
+                  </figure>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
       <footer className={s.footer}>
@@ -225,8 +263,9 @@ export default function ProfileView({ gallery, portrait }: Props) {
           <Link href="/works/">Projects &rarr;</Link>
         </div>
         <p className={s.credit}>
-          Music: &ldquo;Elden Ring&rdquo; by Tsukasa Saitoh. Elden Ring art, footage and music &copy; FromSoftware /
-          Bandai Namco, used as a fan tribute. Hachiware &copy; Nagano.
+          Music: &ldquo;Elden Ring&rdquo; by Tsukasa Saitoh. Elden Ring art,
+          footage and music &copy; FromSoftware / Bandai Namco, used as a fan
+          tribute. Hachiware &copy; Nagano.
         </p>
       </footer>
     </main>

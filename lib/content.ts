@@ -73,7 +73,7 @@ export const profile = {
       slug: "gym",
       alts: ["Weight plates and dumbbells at home"],
       name: "Gym",
-      body: "The bar doesn't care how my week went. The weight either went up or it didn't (some months it didn't). Hachiware is the mood: fail, yell \"make it work!\", go again.",
+      body: "The bar doesn't care how my week went. The weight either went up or it didn't (some months it didn't). Hachiware is the mood: fail, yell “make it work!”, go again.",
     },
     {
       slug: "travel",
