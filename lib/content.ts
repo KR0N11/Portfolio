@@ -117,8 +117,10 @@ export type Work = {
   what: string[];
   stack: string[];
   repo: string;
-  /** how the clip was made, shown under the video */
+  /** what the clip shows, one line under the video */
   recording: string;
+  /** how the recording was made, when that needs saying; a footnote after the bullets */
+  note?: string;
   hasVideo: boolean;
   /** width / height of the recording, when it isn't 16:10 */
   aspect?: number;
@@ -153,7 +155,8 @@ export const works: Work[] = [
     ],
     stack: ["C#", ".NET 10", "Roslyn", "ASP.NET Core", "React", "React Flow"],
     repo: "https://github.com/KR0N11/archlens",
-    recording: "Live run · dotnet/eShop analysed from a fresh clone (clip starts as the analysis finishes), then the call flow for POST api/orders/draft with the file and line behind each arrow",
+    recording: "Live run · dotnet/eShop from a fresh clone, then the call flow for POST api/orders/draft with the file and line behind each arrow",
+    note: "The clip starts as the analysis finishes.",
     hasVideo: true,
   },
   {
@@ -163,11 +166,12 @@ export const works: Work[] = [
     what: [
       "Draws Montréal's roads, water, parks and about 14k building footprints on a canvas from raw OpenStreetMap data, with its own Web Mercator projection. No maps, tile or routing API.",
       "Click two points: a quadtree snaps each click to the nearest road, and A* finds the path over about 58k intersections, with walk, bike and drive times.",
-      "A visualizer runs Dijkstra and A* side by side with live node counts. Across 300 test routes, A* explored about 80% fewer nodes at the median.",
+      "A visualizer runs Dijkstra and A* side by side. Across 300 test routes A* explored about 80% fewer nodes at the median, and that benchmark caught a real bug: rounding edges to 0.1 m let the heuristic overestimate, so 2 routes came back 0.1 m too long. Edges are now clamped and a smoke test guards it.",
     ],
     stack: ["TypeScript", "React", "Canvas 2D", "Vite", "OpenStreetMap"],
     repo: "https://github.com/KR0N11/waypoint",
-    recording: "Live run · a 1.06 km route with walk, bike and drive times; A* against Dijkstra (race speed raised on screen); a 10-minute walk isochrone",
+    recording: "Live run · a 1.06 km route with walk, bike and drive times; A* racing Dijkstra; a 10-minute walk isochrone",
+    note: "The race speed is raised on screen with the visualizer's own slider.",
     hasVideo: true,
   },
   {
@@ -181,7 +185,8 @@ export const works: Work[] = [
     ],
     stack: ["Python", "LangGraph", "FastAPI", "HTMX", "LlamaIndex", "Terraform"],
     repo: "https://github.com/KR0N11/sentinel",
-    recording: "Live run · triage of incident inc-001 in offline replay mode, then a scroll back through the real output. `--yes` approves the change; the LLM is a deterministic stub, so the call and cost line is the stub's count",
+    recording: "Live run · triage of incident inc-001 in offline replay mode, then a scroll back through the output",
+    note: "`--yes` approves the change at the prompt. The LLM is a deterministic stub here, so the call and cost line is the stub's own count.",
     hasVideo: true,
   },
   {
@@ -209,7 +214,8 @@ export const works: Work[] = [
     ],
     stack: ["Python", "LangGraph", "Pydantic", "DuckDB", "Streamlit", "FastAPI"],
     repo: "https://github.com/KR0N11/loom",
-    recording: "Semantic retrieval through Loom's HybridSearch (from a short demo script), then a hand-written SQL query run directly in DuckDB; the earlier ingest shows when it scrolls back · no LLM step",
+    recording: "Semantic retrieval with Loom's HybridSearch, then a DuckDB query · no LLM step",
+    note: "Retrieval runs from a short demo script, and the SQL is written by hand and run directly in DuckDB. The ingest shows when the terminal scrolls back.",
     hasVideo: true,
   },
   {

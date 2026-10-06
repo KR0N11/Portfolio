@@ -234,8 +234,8 @@
 /* ---------- Pastimes: photo first, a short label beside it ---------- */
 .item {
   display: grid;
-  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-  align-items: end;
+  grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+  align-items: center;
   gap: clamp(28px, 5vw, 64px);
   padding: 44px 0;
   border-bottom: 1px solid rgba(200, 190, 160, 0.12);
@@ -244,7 +244,7 @@
   border-bottom: 0;
 }
 .itemText {
-  padding-bottom: 4px;
+  padding: 4px 0;
 }
 .line {
   margin: 10px 0 0;
@@ -272,9 +272,10 @@
 .photos video {
   filter: saturate(0.85) contrast(1.05) brightness(0.9);
 }
-/* Every row the same: the photo fills the wide column, the caption sits at its foot. */
+/* Every row the same: photo on the left, its caption beside it, centred on the photo. */
 .photos[data-count="1"] .frame {
   width: 100%;
+  max-width: 460px;
 }
 .photos .frame[data-video="true"] {
   aspect-ratio: 16 / 9;

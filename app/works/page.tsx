@@ -123,11 +123,12 @@ export default function Works() {
             </a>
           </div>
           <div className={s.kind}>{w.kind}</div>
+          <p className={s.lede}>{w.what[0]}</p>
 
           <div
             className={s.frame}
             data-bright={!!w.bright}
-            style={{ aspectRatio: w.aspect ?? 16 / 10, width: `min(100%, calc(60vh * ${w.aspect ?? 16 / 10}))` }}
+            style={{ aspectRatio: w.aspect ?? 16 / 10, width: `min(100%, calc(52vh * ${w.aspect ?? 16 / 10}))` }}
           >
             {w.hasVideo ? (
               <video
@@ -148,8 +149,7 @@ export default function Works() {
             )}
           </div>
           <div className={s.caption}>
-            {/* `backticks` in a caption mark a command-line flag or name. */}
-            {w.recording.split("`").map((part, n) => (n % 2 ? <code key={n}>{part}</code> : part))}
+            {w.recording}
           </div>
 
           <div className={s.info}>
@@ -158,10 +158,17 @@ export default function Works() {
               {w.stack.join(" · ")}
             </p>
             <ul className={s.what}>
-              {w.what.map((line) => (
+              {w.what.slice(1).map((line) => (
                 <li key={line}>{line}</li>
               ))}
             </ul>
+            {w.note && (
+              <p className={s.note}>
+                <span>About the recording</span>
+                {/* `backticks` mark a command-line flag. */}
+                {w.note.split("`").map((part, n) => (n % 2 ? <code key={n}>{part}</code> : part))}
+              </p>
+            )}
           </div>
         </section>
 
