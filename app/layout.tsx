@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, EB_Garamond } from "next/font/google";
 import SiteBar from "@/components/SiteBar";
 import Veil from "@/components/Veil";
+import { person } from "@/lib/content";
 import "./globals.css";
 
 /* Cormorant Garamond is the closest free match to the game's Agmena-style
@@ -37,6 +38,31 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: "Ping Chun Lui", description, images: ["/og.jpg"] },
 };
 
+/* Tells search engines the site's name (so results read "Ping Chun Lui",
+   not the domain) and ties it to the same person's GitHub and LinkedIn. */
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://pingchunlui.ca/#website",
+      url: "https://pingchunlui.ca/",
+      name: person.name,
+      alternateName: "pingchunlui",
+    },
+    {
+      "@type": "Person",
+      "@id": "https://pingchunlui.ca/#person",
+      name: person.name,
+      url: "https://pingchunlui.ca/",
+      jobTitle: person.role,
+      alumniOf: { "@type": "CollegeOrUniversity", name: "Concordia University" },
+      address: { "@type": "PostalAddress", addressLocality: "Montréal", addressCountry: "CA" },
+      sameAs: [person.github, person.linkedin],
+    },
+  ],
+};
+
 export const viewport: Viewport = {
   themeColor: "#05090c",
 };
@@ -45,6 +71,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className={`${cormorant.variable} ${garamond.variable}`}>
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         {children}
         <SiteBar />
         <Veil />
