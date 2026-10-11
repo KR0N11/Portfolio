@@ -10,16 +10,17 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import LivingImage, { REDRAW, type Live } from "@/components/LivingImage";
 import Motes from "@/components/Motes";
+import Sprite, { SPRITES } from "@/components/Sprite";
 import { arrived, passThrough } from "@/components/Veil";
 import { startAudio } from "@/lib/audio";
 import { person } from "@/lib/content";
 import s from "./gate.module.css";
 
-const IMG_H = 1240;
-/** how far the sword can be worked loose by hand, in image pixels */
-const MAX_LIFT = 26 / IMG_H;
+const ART: [number, number] = [697, 225];
+/** how far the sword can be worked loose by hand, in art pixels */
+const MAX_LIFT = 5 / ART[1];
 /** how far it travels once it comes free */
-const FREE_LIFT = 36 / IMG_H;
+const FREE_LIFT = 7 / ART[1];
 /** drag distance (share of screen height) needed to free it */
 const PULL_SPAN = 0.2;
 
@@ -112,15 +113,8 @@ export default function Gate() {
     <main className={s.gate} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}>
       <h1 className="sr-only">{person.name}, portfolio</h1>
       <div className={`${s.push} ${shake ? s.shake : ""}`}>
-        <LivingImage
-          src="/art/gate.jpg"
-          mask="/art/gate-mask.png"
-          aspect={3840 / 1240}
-          scene="gate"
-          focus={[0.5, 0.62]}
-          live={live}
-        >
-          <Motes source={[0.4, 0.62, 0.74, 0.95]} count={18} intensity={embers} drift={0.01} rise={0.4} />
+        <LivingImage src="/art/gate.png" mask="/art/gate-mask.png" art={ART} scene="gate" focus={[0.5, 0.62]} live={live}>
+          <Motes source={[0.4, 0.62, 0.74, 0.95]} count={18} intensity={embers} drift={0.01} rise={0.4} grid={ART} />
           <button type="button" className={s.sword} aria-label="Draw the sword" onKeyDown={onKey} />
         </LivingImage>
       </div>
@@ -132,12 +126,14 @@ export default function Gate() {
         <span className={s.pitch}>{person.pitch}</span>
       </header>
 
-      <p className={s.hint} data-hidden={touched} aria-hidden="true">
+      <p className={`${s.hint} win`} data-hidden={touched} aria-hidden="true">
+        <Sprite rows={[...SPRITES.up]} className={s.blink} />
         Drag the sword upward
       </p>
 
       <Link href="/road" className={s.skip} onPointerDown={(e) => e.stopPropagation()}>
         Skip
+        <Sprite rows={[...SPRITES.play]} />
       </Link>
     </main>
   );

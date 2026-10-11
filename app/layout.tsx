@@ -1,24 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, EB_Garamond } from "next/font/google";
+import { Jersey_15 } from "next/font/google";
 import SiteBar from "@/components/SiteBar";
 import Veil from "@/components/Veil";
 import { person } from "@/lib/content";
 import "./globals.css";
 
-/* Cormorant Garamond is the closest free match to the game's Agmena-style
-   type: mixed case for menus and titles, capitals only for the name. */
-const cormorant = Cormorant_Garamond({
-  variable: "--font-title",
+/* One pixel face for everything, like a game's bitmap font. Mixed case only:
+   its capital S reads as a B when a whole word is set in capitals. */
+const pixel = Jersey_15({
+  variable: "--font-pixel",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
-});
-
-const garamond = EB_Garamond({
-  variable: "--font-garamond",
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  style: ["normal", "italic"],
+  weight: "400",
 });
 
 const description = "Ping Chun Lui, Computer Science at Concordia, Montréal. Eight software projects, each shown running.";
@@ -64,12 +56,12 @@ const structuredData = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#05090c",
+  themeColor: "#04090d",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${garamond.variable}`}>
+    <html lang="en" className={pixel.variable}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         {children}

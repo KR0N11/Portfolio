@@ -3,13 +3,14 @@
 /*
   Who I am, where I've worked, what I do off the clock. Work comes first and
   stays compact; pastimes follow, each with my own photos. Sections are ruled
-  rows under a gold-hairline header, like the game's Status and Equipment
-  screens.
+  rows under a pixel rule, like a game's status screen; the quote is said in a
+  dialogue box, and photos sit in pixel frames but stay sharp.
 */
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
+import Sprite, { SPRITES } from "@/components/Sprite";
 import { arrived } from "@/components/Veil";
 import { person, profile } from "@/lib/content";
 import s from "./profile.module.css";
@@ -91,7 +92,7 @@ function Photos({
   return (
     <div className={s.photos} data-count={Math.min(list.length, 3)}>
       {list.slice(0, 3).map((src, i) => (
-        <figure key={src} className={s.frame} data-video={src.endsWith(".mp4")}>
+        <figure key={src} className={`${s.frame} frame-px`} data-video={src.endsWith(".mp4")}>
           <Media src={src} alt={alts[i] ?? `${alt}, ${i + 1}`} />
         </figure>
       ))}
@@ -104,13 +105,13 @@ function SkillCards() {
   return (
     <div className={s.skills}>
       {profile.skills.map((g) => (
-        <div key={g.group} className={s.skillCard} data-reveal>
+        <div key={g.group} className={`${s.skillCard} win`} data-reveal>
           <h3 className={s.label}>{g.group}</h3>
           <ul>
             {g.items.map(([name, icon]) => (
               <li key={name}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/skills/${icon}.svg`} alt="" loading="lazy" />
+                <img src={`/skills/${icon}-px.png`} alt="" loading="lazy" />
                 {name}
               </li>
             ))}
@@ -139,7 +140,10 @@ export default function ProfileView({ gallery, portrait }: Props) {
   return (
     <main className={s.page} ref={ref}>
       <nav className="crumbs" aria-label="Breadcrumb">
-        <Link href="/road/">&larr; The road</Link>
+        <Link href="/road/">
+          <Sprite rows={[...SPRITES.back]} />
+          The road
+        </Link>
         <span className="sep">/</span>
         <span className="here">Profile</span>
       </nav>
@@ -150,12 +154,13 @@ export default function ProfileView({ gallery, portrait }: Props) {
             <h1 className={`${s.name} title-card`}>{person.name}</h1>
             <p className={s.role}>{person.pitch}</p>
             <p className={s.intro}>{profile.intro}</p>
-            <blockquote className={`${s.quote} ${s.heroQuote}`}>
-              &ldquo;{profile.quote}&rdquo;
-            </blockquote>
+            <figure className={`${s.say} win`}>
+              <figcaption className={s.tag}>Ping</figcaption>
+              <blockquote>{profile.quote}</blockquote>
+            </figure>
           </div>
           {portrait && (
-            <figure className={`${s.frame} ${s.portrait}`}>
+            <figure className={`${s.frame} ${s.portrait} frame-px`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={portrait} alt={person.name} />
             </figure>
@@ -268,6 +273,7 @@ export default function ProfileView({ gallery, portrait }: Props) {
           tribute. Hachiware &copy; Nagano.
         </p>
       </footer>
+      <div className="horizon" aria-hidden="true" />
     </main>
   );
 }

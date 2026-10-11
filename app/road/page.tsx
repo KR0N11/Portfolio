@@ -1,9 +1,9 @@
 "use client";
 
 /*
-  The Road. The Tarnished sits at a Site of Grace at night (a 4K frame from the
-  official Elden Ring Gameplay Preview, given depth so it moves with the
-  pointer). Resting at grace in the game opens a menu, so that is the UI here:
+  The Road. The Tarnished sits at a Site of Grace at night (a frame from the
+  official Elden Ring Gameplay Preview, redrawn as pixel art and given depth so
+  it moves with the pointer). Resting at grace in the game opens a menu, so that is the UI here:
   a grace menu on the left, the scene left alone. Arrow keys choose, Enter
   selects, Esc leaves.
 */
@@ -12,12 +12,15 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import DepthScene from "@/components/DepthScene";
 import Motes from "@/components/Motes";
+import Sprite, { POINTER_COLORS, SPRITES } from "@/components/Sprite";
 import { arrived, passThrough } from "@/components/Veil";
 import { sfx } from "@/lib/audio";
 import { person } from "@/lib/content";
 import s from "./road.module.css";
 
 type Entry = { key: string; label: string; help: string; href: string };
+
+const ART: [number, number] = [400, 225];
 
 const MENU: Entry[] = [
   {
@@ -152,13 +155,13 @@ export default function Road() {
       <h1 className="sr-only">Site of Grace: choose where to go</h1>
       <div className={s.scene}>
         <DepthScene
-          src="/art/grace.jpg"
+          src="/art/grace.png"
           depth="/art/grace-depth.png"
-          aspect={16 / 9}
-          focus={narrow ? [0.5, 0.5] : [0.55, 0.45]}
+          art={ART}
+          focus={narrow ? [0.53, 0.5] : [0.5, 0.45]}
           grace={[0.394, 0.42, 0.6]}
         >
-          <Motes source={[0.3, 0.48, 0.66, 0.76]} count={18} drift={0.01} rise={0.35} />
+          <Motes source={[0.3, 0.48, 0.66, 0.76]} count={18} drift={0.01} rise={0.35} grid={ART} />
         </DepthScene>
         <div className={s.shade} aria-hidden="true" />
       </div>
@@ -169,7 +172,7 @@ export default function Road() {
         </div>
       )}
 
-      <nav className={s.menu} data-ready={ready} inert={!ready} aria-label="Site of Grace">
+      <nav className={`${s.menu} win`} data-ready={ready} inert={!ready} aria-label="Site of Grace">
         <div className={`${s.place} title-card`}>{person.name}</div>
         <ul>
           {MENU.map((e, i) => (
@@ -186,6 +189,7 @@ export default function Road() {
                 onFocus={() => pick(i)}
                 onClick={() => go(i)}
               >
+                {i === sel && <Sprite rows={[...SPRITES.pointer]} colors={POINTER_COLORS} className={s.cursor} />}
                 {e.label}
               </button>
             </li>
@@ -194,7 +198,7 @@ export default function Road() {
       </nav>
 
       {ready && (
-        <p className={s.help} key={copied ? `c${copied}` : sel}>
+        <p className={`${s.help} win`} key={copied ? `c${copied}` : sel}>
           {copied ? (
             <>
               {person.email} <span className={s.got}>Copied</span>

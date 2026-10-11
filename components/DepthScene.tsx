@@ -4,8 +4,12 @@
   A still frame you can look into. The picture is paired with a depth map
   (Depth Anything V2, computed offline), and a fragment shader shifts every
   pixel by how near it is as the pointer moves, so the grass slides past the
-  Tarnished and the sky stays far away. On top of that: wind in the near grass,
-  a slow breath in the Site of Grace, drifting cloud.
+  Tarnished and the sky stays far away. On top of that: wind in the near grass
+  and a slow breath in the Site of Grace.
+
+  The picture is pixel art at a whole-number scale, sampled one texel per art
+  pixel, so each layer slides a whole pixel at a time and the glow pulses in
+  flat steps.
 
   Children are laid out on a stage that covers the viewport in image space.
   Give a child `--d` (its depth, 0 far .. 1 near) and translate it by
@@ -13,11 +17,13 @@
 */
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { cover } from "@/components/LivingImage";
 
 type Props = {
   src: string;
   depth: string;
-  aspect: number;
+  /** the art's size in pixels */
+  art: [number, number];
   focus: [number, number];
   /** Site of Grace position in image space: x, top of the beam, bottom of the beam */
   grace: [number, number, number];
@@ -26,6 +32,9 @@ type Props = {
 
 const FOCUS_DEPTH = 0.35;
 const STRENGTH: [number, number] = [0.022, 0.014];
+/** No extra zoom for the shift: the art's top row is flat sky and its bottom
+    row dark grass, so the edge pixels the shader clamps to never show. */
+const MARGIN = 0;
 
 const VERT = `
 attribute vec2 a;
@@ -46,6 +55,9 @@ uniform vec2 uOff;
 uniform float uTime;
 uniform vec3 uGrace;
 uniform float uAspect;
+uniform vec2 uTex;
+
+float steps(float a, float n) { return floor(a * n + 0.5) / n; }
 
 float hash(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
@@ -67,8 +79,8 @@ float fbm(vec2 p) {
 void main() {
   vec2 css = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y) / uRes * uView;
   vec2 uv = (css - uRect.xy) / uRect.zw;
-  // Pull in a little so shifted edges never show.
-  uv = 0.5 + (uv - 0.5) * 0.955;
+  // One sample per art pixel.
+  uv = (floor(uv * uTex) + 0.5) / uTex;
   float t = uTime;
 
   // Find the source pixel whose depth-shifted position lands here.
@@ -83,12 +95,7 @@ void main() {
   float near = smoothstep(0.55, 0.85, d) * smoothstep(0.45, 0.7, uv.y);
   float gust = 0.5 + 0.5 * sin(uv.x * 3.0 - t * 0.8 + fbm(uv * 2.0 + t * 0.1) * 3.0);
   float sway = (fbm(vec2(uv.x * 18.0 - t * 1.1, uv.y * 3.0)) - 0.5) * (0.35 + 0.65 * gust);
-  p.x += sway * 0.006 * near;
-
-  // Cloud drifts slowly where the sky is.
-  float sky = (1.0 - smoothstep(0.08, 0.16, d)) * (1.0 - smoothstep(0.3, 0.5, uv.y));
-  vec2 flow = vec2(fbm(uv * vec2(3.0, 5.0) + vec2(t * 0.02, 0.0)), fbm(uv * 4.0 + vec2(3.1, t * 0.015))) - 0.5;
-  p += flow * 0.01 * sky;
+  p.x += sway * (2.5 / uTex.x) * near;
 
   vec3 col = texture2D(uImg, p).rgb;
 
@@ -98,23 +105,12 @@ void main() {
   float beam = exp(-pow(g.x / 0.012, 2.0)) * smoothstep(uGrace.y - 0.02, uGrace.y + 0.03, p.y) * (1.0 - smoothstep(uGrace.z - 0.04, uGrace.z, p.y));
   vec2 orb = vec2((p.x - uGrace.x) * uAspect, p.y - uGrace.y);
   float halo = exp(-dot(orb, orb) / 0.004);
-  col += vec3(1.0, 0.72, 0.38) * (beam * 0.22 + halo * 0.2) * breath;
+  col += vec3(1.0, 0.72, 0.38) * steps((beam * 0.22 + halo * 0.2) * breath, 12.0);
 
   gl_FragColor = vec4(col, 1.0);
 }`;
 
 type Rect = { left: number; top: number; width: number; height: number };
-
-function cover(w: number, h: number, aspect: number, [fx, fy]: [number, number]): Rect {
-  if (w / h > aspect) {
-    const height = w / aspect;
-    const top = Math.min(0, Math.max(h - height, h / 2 - fy * height));
-    return { left: 0, top, width: w, height };
-  }
-  const width = h * aspect;
-  const left = Math.min(0, Math.max(w - width, w / 2 - fx * width));
-  return { left, top: 0, width, height: h };
-}
 
 function load(src: string) {
   return new Promise<HTMLImageElement>((res, rej) => {
@@ -126,7 +122,7 @@ function load(src: string) {
   });
 }
 
-export default function DepthScene({ src, depth, aspect, focus, grace, children }: Props) {
+export default function DepthScene({ src, depth, art, focus, grace, children }: Props) {
   const frameRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -136,12 +132,14 @@ export default function DepthScene({ src, depth, aspect, focus, grace, children 
   const fx = focus[0];
   const fy = focus[1];
   const [gx, gy0, gy1] = grace;
+  const [aw, ah] = art;
+  const aspect = aw / ah;
 
   useLayoutEffect(() => {
     const el = frameRef.current;
     if (!el) return;
     const measure = () => {
-      const r = cover(el.clientWidth, el.clientHeight, aspect, [fx, fy]);
+      const r = cover(el.clientWidth, el.clientHeight, [aw, ah], [fx, fy], MARGIN);
       rectRef.current = r;
       setRect(r);
     };
@@ -149,7 +147,7 @@ export default function DepthScene({ src, depth, aspect, focus, grace, children 
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [aspect, fx, fy]);
+  }, [aw, ah, fx, fy]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -188,6 +186,7 @@ export default function DepthScene({ src, depth, aspect, focus, grace, children 
     gl.uniform1i(u("uDepth"), 1);
     gl.uniform3f(u("uGrace"), gx, gy0, gy1);
     gl.uniform1f(u("uAspect"), aspect);
+    gl.uniform2f(u("uTex"), aw, ah);
 
     const textures: WebGLTexture[] = [];
     const upload = (unit: number, img: HTMLImageElement) => {
@@ -197,8 +196,8 @@ export default function DepthScene({ src, depth, aspect, focus, grace, children 
       gl.bindTexture(gl.TEXTURE_2D, tex);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
     };
 
@@ -270,9 +269,9 @@ export default function DepthScene({ src, depth, aspect, focus, grace, children 
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
             const st = stageRef.current;
             if (st) {
-              // inside the scaled stage, this lands exactly on the shader's shift
-              st.style.setProperty("--px", `${ox * r.width}px`);
-              st.style.setProperty("--py", `${oy * r.height}px`);
+              // whole art pixels, like the shader's shift
+              st.style.setProperty("--px", `${Math.round(ox * aw) * (r.width / aw)}px`);
+              st.style.setProperty("--py", `${Math.round(oy * ah) * (r.height / ah)}px`);
             }
           }
           // Reduced motion draws once, then only again on resize.
@@ -307,20 +306,11 @@ export default function DepthScene({ src, depth, aspect, focus, grace, children 
       gl.deleteShader(vs);
       gl.deleteShader(fs);
     };
-  }, [src, depth, aspect, gx, gy0, gy1]);
+  }, [src, depth, aspect, aw, ah, gx, gy0, gy1]);
 
-  // The stage maps image space onto the (slightly zoomed) rendered frame.
+  // The stage maps image space onto the rendered frame.
   const stage: React.CSSProperties = rect
-    ? {
-        position: "absolute",
-        left: rect.left,
-        top: rect.top,
-        width: rect.width,
-        height: rect.height,
-        // matches the shader's 0.955 pull-in, so image-space children line up
-        transform: "scale(1.0471)",
-        transformOrigin: "50% 50%",
-      }
+    ? { position: "absolute", left: rect.left, top: rect.top, width: rect.width, height: rect.height }
     : { position: "absolute", inset: 0 };
 
   return (
@@ -330,13 +320,21 @@ export default function DepthScene({ src, depth, aspect, focus, grace, children 
         <img
           src={src}
           alt=""
-          style={{ ...stage, objectFit: "cover", opacity: ready ? 0 : 1, transition: "opacity 600ms" }}
+          style={{ ...stage, imageRendering: "pixelated", opacity: ready ? 0 : 1, transition: "opacity 600ms" }}
         />
       )}
       <canvas
         ref={canvasRef}
         aria-hidden="true"
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: ready ? 1 : 0, transition: "opacity 600ms" }}
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          imageRendering: "pixelated",
+          opacity: ready ? 1 : 0,
+          transition: "opacity 600ms",
+        }}
       />
       <div ref={stageRef} style={{ ...stage, ["--focus" as string]: FOCUS_DEPTH }}>
         {children}
