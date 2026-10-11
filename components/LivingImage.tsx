@@ -4,13 +4,12 @@
   A still frame that breathes. The picture never changes; a fragment shader
   moves only what would move in the world and leaves the rest alone. Which
   pixels may move comes from a hand-made mask image per scene:
-    R = the body (gate: the knight's upper body, fists on the hilt included,
-        rises with the sword as one piece and unfolds through the hips; the
-        knee stays planted)
-    G = gate: the fists, which stay in front of the sword's grip
-    B = the foreground figure and ground, which drifting fog passes behind
-  An optional fog layer (RGBA, tiling sideways) drifts across the scene, and an
-  optional sword sprite is drawn on top and slides up out of the rock.
+    R = the scene's "actor" weight (grass on the road)
+    G = cloud that may drift
+    B = the foreground rock and ground, which drifting fog passes behind
+  An optional fog layer (RGBA, tiling sideways) drifts across the scene, and a
+  page can flash a burst of light from a point (the gate: the sword's rock).
+  Figures that really move (the gate's knight) are sprites laid on the stage.
 
   The picture is pixel art. The stage that covers the viewport is scaled by a
   whole number, so every art pixel is the same number of screen pixels, and
@@ -25,19 +24,16 @@ export type Scene = "gate" | "road";
 /** Fired by a page to ask for one frame when reduced motion has stopped the loop. */
 export const REDRAW = "living-image:redraw";
 
-/**
- * Values a page can change every frame. `pull` is the sword lift in image heights,
- * `shake` a sideways tremble of the straining figure in image widths.
- */
-export type Live = { pull: number; flash: number; shake?: number };
+/** Values a page can change every frame: `flash` lights the burst, 0..1. */
+export type Live = { flash: number };
 
 type Props = {
   src: string;
   mask: string;
   /** optional drifting fog layer, same size as the art */
   fog?: string;
-  /** optional sword sprite and where its top-left sits in the art, in art pixels */
-  sword?: { src: string; at: [number, number]; size: [number, number]; ground: number };
+  /** where a flash of light bursts from, in art pixels */
+  burst?: [number, number];
   /** the art's size in pixels */
   art: [number, number];
   scene: Scene;
@@ -62,16 +58,12 @@ uniform sampler2D uImg;
 uniform sampler2D uMask;
 uniform sampler2D uFog;
 uniform float uHasFog;
-uniform float uShake;
-uniform sampler2D uSword;
-uniform vec4 uSwordRect;   // x, y, w, h in art pixels
-uniform float uGround;     // the rock's surface at the blade, in art pixels
+uniform vec2 uBurst;       // where light bursts from, in art pixels
 uniform vec2 uRes;    // canvas size in device pixels
 uniform vec2 uView;   // frame size in css pixels
 uniform vec4 uRect;   // stage left, top, width, height in css pixels
 uniform float uTime;
 uniform float uScene;
-uniform float uPull;
 uniform float uFlash;
 uniform vec2 uTex;    // art size in pixels
 
@@ -109,59 +101,19 @@ float rings(float a, float n) { return floor(clamp(a, 0.0, 1.0) * n) / n; }
 
 vec3 gate(vec2 uv, float t) {
   vec4 mk = texture2D(uMask, uv);
-  float px = uPull * uTex.y;                 // how far the sword has come up, in art pixels
+  vec3 col = texture2D(uImg, uv).rgb;
 
-  // The upper body, fists and sword rise together as one piece, so nothing in
-  // it tears; the hips unfold under it. Solve o = lift(uv + o) so pixels land right.
-  // Seed the search with the full lift, or pixels the body rises into (sky
-  // above it) would never find it.
-  float full = px / uTex.y;
-  float o = full * max(texture2D(uMask, uv).r, texture2D(uMask, uv + vec2(0.0, full)).r);
-  for (int i = 0; i < 4; i++) {
-    o = floor(texture2D(uMask, uv + vec2(0.0, o)).r * px + 0.5) / uTex.y;
-  }
-  // Straining, he leans back a little and trembles.
-  vec4 at = texture2D(uMask, uv + vec2(0.0, o));
-  float lean = floor(at.r * min(px, 8.0) * 0.25 + 0.5) / uTex.x;
-  vec2 s = uv + vec2(lean + uShake * at.r, o);
-  vec3 col = texture2D(uImg, s).rgb;
-  float front = texture2D(uMask, s).b;
-  float hands = texture2D(uMask, s).g;
-
-  // The sword slides up out of the rock; the rock hides what is still buried,
-  // and the hands stay in front of the grip.
-  vec2 p = uv * uTex;
-  // the sword moves with the fists: up by the pull, back by the lean
-  vec2 shift = vec2(floor(min(px, 8.0) * 0.25 + 0.5), floor(px + 0.5));
-  vec2 q = (p - uSwordRect.xy + shift) / uSwordRect.zw;
-  if (uSwordRect.z > 0.0 && q.x >= 0.0 && q.x < 1.0 && q.y >= 0.0 && q.y < 1.0 && p.y < uGround) {
-    vec4 sw = texture2D(uSword, q);
-    if (sw.a > 0.5 && !(hands > 0.6 && front > 0.5)) { col = sw.rgb; front = 1.0; }
-  }
-
-  // A fog bank drifts across, a pixel at a time, behind the knight and the near ground.
+  // A fog bank drifts across, a pixel at a time, behind the rock and the near ground.
   if (uHasFog > 0.5) {
     float drift = floor(t * 1.5) / uTex.x;
     vec4 f = texture2D(uFog, vec2(fract(uv.x + drift), uv.y));
-    col = mix(col, f.rgb, f.a * (1.0 - step(0.5, front)));
+    col = mix(col, f.rgb, f.a * (1.0 - step(0.5, mk.b)));
   }
 
-  // When the blade tears free, light bursts from the rock behind him: a ragged
-  // flare in a few steps. The knight stays solid, lit only along his edges.
-  vec2 base = vec2(uSwordRect.x + 6.0, uGround);
-  vec2 dv = (p - base) * vec2(1.0, 1.4);
+  // When the sword tears free, light bursts from the rock: a ragged flare in a few steps.
+  vec2 dv = (uv * uTex - uBurst) * vec2(1.0, 1.4);
   float ray = 0.75 + 0.35 * abs(sin(atan(dv.y, dv.x) * 5.0 + 0.6));
-  float glow = rings(1.0 - length(dv) / (42.0 * ray), 4.0) * uFlash;
-  float knight = step(0.05, at.r);
-  if (knight < 0.5) {
-    col += glow * vec3(1.0, 0.86, 0.6) * 0.95;
-  } else {
-    float edge = 0.0;
-    edge = max(edge, 1.0 - step(0.05, texture2D(uMask, s + vec2(1.0, 0.0) / uTex).r));
-    edge = max(edge, 1.0 - step(0.05, texture2D(uMask, s + vec2(-1.0, 0.0) / uTex).r));
-    edge = max(edge, 1.0 - step(0.05, texture2D(uMask, s + vec2(0.0, -1.0) / uTex).r));
-    col += glow * edge * vec3(1.0, 0.86, 0.6) * 0.8;
-  }
+  col += uFlash * rings(1.0 - length(dv) / (42.0 * ray), 4.0) * vec3(1.0, 0.86, 0.6) * 0.95;
 
   return flicker(col, uv, t);
 }
@@ -228,7 +180,7 @@ function loadImage(src: string) {
   });
 }
 
-export default function LivingImage({ src, mask, fog, sword, art, scene, focus, live, stageStyle, children }: Props) {
+export default function LivingImage({ src, mask, fog, burst, art, scene, focus, live, stageStyle, children }: Props) {
   const frameRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rectRef = useRef<Rect | null>(null);
@@ -292,18 +244,14 @@ export default function LivingImage({ src, mask, fog, sword, art, scene, focus, 
     const uView = u("uView");
     const uRect = u("uRect");
     const uTime = u("uTime");
-    const uPull = u("uPull");
     const uFlash = u("uFlash");
     gl.uniform1f(u("uScene"), scene === "gate" ? 0 : 1);
     gl.uniform1i(u("uImg"), 0);
     gl.uniform1i(u("uMask"), 1);
     gl.uniform1i(u("uFog"), 2);
-    gl.uniform1i(u("uSword"), 3);
-    gl.uniform4f(u("uSwordRect"), sword?.at[0] ?? 0, sword?.at[1] ?? 0, sword?.size[0] ?? 0, sword?.size[1] ?? 0);
-    gl.uniform1f(u("uGround"), sword?.ground ?? 0);
+    gl.uniform2f(u("uBurst"), burst?.[0] ?? 0, burst?.[1] ?? 0);
     gl.uniform1f(u("uHasFog"), fog ? 1 : 0);
     gl.uniform2f(u("uTex"), aw, ah);
-    const uShake = u("uShake");
 
     const upload = (unit: number, img: HTMLImageElement, format: number = gl.RGB) => {
       const tex = gl.createTexture()!;
@@ -322,15 +270,14 @@ export default function LivingImage({ src, mask, fog, sword, art, scene, focus, 
     let alive = true;
     let draw: ((now: number) => void) | null = null;
 
-    Promise.all([loadImage(src), loadImage(mask), fog ? loadImage(fog) : null, sword ? loadImage(sword.src) : null])
-      .then(([img, mk, fg, sw]) => {
+    Promise.all([loadImage(src), loadImage(mask), fog ? loadImage(fog) : null])
+      .then(([img, mk, fg]) => {
         if (!alive) return;
         // Phones with small texture limits keep the plain image underneath.
         if (img.naturalWidth > gl.getParameter(gl.MAX_TEXTURE_SIZE)) return;
         upload(0, img);
         upload(1, mk);
         if (fg) upload(2, fg, gl.RGBA);
-        if (sw) upload(3, sw, gl.RGBA);
 
         let lastKey = "";
         draw = (now: number) => {
@@ -347,15 +294,13 @@ export default function LivingImage({ src, mask, fog, sword, art, scene, focus, 
             gl.viewport(0, 0, w, h);
           }
           const L = live?.current;
-          const key = `${w}x${h}:${r?.left},${r?.top}:${L?.pull}:${L?.flash}:${L?.shake}`;
+          const key = `${w}x${h}:${r?.left},${r?.top}:${L?.flash}`;
           if (r && (!reduce || key !== lastKey)) {
             gl.uniform2f(uRes, w, h);
             gl.uniform2f(uView, vw, vh);
             gl.uniform4f(uRect, r.left, r.top, r.width, r.height);
             gl.uniform1f(uTime, reduce ? 20 : (now / 1000) % 1800);
-            gl.uniform1f(uPull, L?.pull ?? 0);
             gl.uniform1f(uFlash, L?.flash ?? 0);
-            gl.uniform1f(uShake, L?.shake ?? 0);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
             lastKey = key;
           }
@@ -395,7 +340,7 @@ export default function LivingImage({ src, mask, fog, sword, art, scene, focus, 
       gl.deleteShader(vs);
       gl.deleteShader(fs);
     };
-  }, [src, mask, fog, sword, scene, live, aw, ah]);
+  }, [src, mask, fog, burst, scene, live, aw, ah]);
 
   const stage: React.CSSProperties = {
     position: "absolute",
