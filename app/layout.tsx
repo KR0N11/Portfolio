@@ -13,7 +13,7 @@ const pixel = Jersey_15({
   weight: "400",
 });
 
-const description = "Ping Chun Lui, Computer Science at Concordia, Montréal. Eight software projects, each shown running.";
+const description = "Ping Chun Lui, software developer. Eight software projects, each shown running.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://pingchunlui.ca"),

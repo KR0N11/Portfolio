@@ -6,7 +6,7 @@
 export const person = {
   name: "Ping Chun Lui",
   role: "Software developer",
-  pitch: "Computer Science at Concordia · Montréal",
+  pitch: "Software developer",
   home: "Montréal",
   email: "kevinlui415@gmail.com",
   github: "https://github.com/KR0N11",
