@@ -2,7 +2,9 @@
 
 /*
   Embers of grace drifting upward. Positions are fractions of the parent box,
-  so the same field works on the stage of any scene.
+  so the same field works on the stage of any scene. Each ember is a single
+  art pixel (two for the big ones), snapped to the art's grid, and fades in
+  steps rather than smoothly.
 */
 
 import { useEffect, useRef } from "react";
@@ -17,13 +19,16 @@ type Props = {
   drift?: number;
   /** how far each ember travels, as a fraction of height */
   rise?: number;
+  /** the art's size in pixels, so embers land on its grid */
+  grid: [number, number];
 };
 
 type Mote = { x: number; y: number; age: number; life: number; size: number; wob: number };
 
-export default function Motes({ source, count = 28, intensity, drift = 0.02, rise = 0.32 }: Props) {
+export default function Motes({ source, count = 28, intensity, drift = 0.02, rise = 0.32, grid }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
   const [x0, x1, y0, y1] = source;
+  const [gw, gh] = grid;
 
   useEffect(() => {
     const canvas = ref.current;
@@ -63,36 +68,39 @@ export default function Motes({ source, count = 28, intensity, drift = 0.02, ris
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
       const k = intensity?.current ?? 0.6;
-      ctx.globalCompositeOperation = "lighter";
+      const cw = w / gw;
+      const ch = h / gh;
       for (const m of motes) {
         m.age += dt * (0.7 + k * 0.6);
         if (m.age >= m.life) spawn(m);
         const p = m.age / m.life;
         const fade = Math.min(1, p * 6) * (1 - p);
-        const px = (m.x + drift * p + Math.sin(m.wob + m.age * 0.9) * 0.004) * w;
-        const py = (m.y - rise * p) * h;
-        const r = m.size * (0.8 + k * 0.6);
-        const a = fade * (0.35 + 0.65 * k);
-        const g = ctx.createRadialGradient(px, py, 0, px, py, r * 5);
-        g.addColorStop(0, `rgba(255,236,180,${a})`);
-        g.addColorStop(0.25, `rgba(201,178,124,${a * 0.6})`);
-        g.addColorStop(1, "rgba(201,178,124,0)");
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(px, py, r * 5, 0, Math.PI * 2);
-        ctx.fill();
+        // whole art pixels only
+        const gx = Math.floor((m.x + drift * p + Math.sin(m.wob + m.age * 0.9) * 0.004) * gw);
+        const gy = Math.floor((m.y - rise * p) * gh);
+        const a = Math.round(fade * (0.4 + 0.6 * k) * 3) / 3;
+        if (a <= 0) continue;
+        const big = m.size * (0.8 + k * 0.6) > 1.9;
+        ctx.globalAlpha = a;
+        ctx.fillStyle = big ? "#ffd56b" : "#fff6c8";
+        ctx.fillRect(gx * cw, gy * ch, cw * (big ? 2 : 1), ch * (big ? 2 : 1));
+        if (big) {
+          ctx.fillStyle = "#fff6c8";
+          ctx.fillRect(gx * cw, gy * ch, cw, ch);
+        }
       }
+      ctx.globalAlpha = 1;
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [x0, x1, y0, y1, count, intensity, drift, rise]);
+  }, [x0, x1, y0, y1, count, intensity, drift, rise, gw, gh]);
 
   return (
     <canvas
       ref={ref}
       aria-hidden="true"
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", imageRendering: "pixelated" }}
     />
   );
 }

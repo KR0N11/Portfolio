@@ -8,231 +8,197 @@
 .scene {
   position: absolute;
   inset: 0;
-  transition:
-    transform 1200ms cubic-bezier(0.3, 0, 0.2, 1),
-    filter 1200ms ease;
+  transition: filter 900ms steps(4);
 }
+/* Leaving: the scene dims in a few hard steps; no zoom, which would smear the pixels. */
 .road[data-leaving="true"] .scene {
-  transform: scale(1.12);
-  filter: brightness(0.6);
+  filter: brightness(0.5);
 }
 
+/* The prompts carry their own pixel shadow and panels, so the art is left undimmed. */
 .shade {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at 60% 50%, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.5) 100%),
-    linear-gradient(to bottom, rgba(5, 9, 12, 0) 75%, rgba(5, 9, 12, 0.6) 100%);
+  display: none;
 }
 
-/* The grace menu: a dark column on the left, like resting in the game. */
+/* The grace menu: a dialogue panel on the left, like resting in the game. */
 .menu {
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: min(500px, 100%);
-  padding: clamp(70px, 14vh, 140px) 0 0 var(--gutter);
-  background: linear-gradient(90deg, rgba(3, 5, 7, 0.9) 0%, rgba(3, 5, 7, 0.78) 60%, rgba(3, 5, 7, 0) 100%);
+  left: var(--gutter);
+  top: clamp(90px, 14vh, 128px);
+  width: min(440px, calc(100% - 2 * var(--gutter)));
   opacity: 0;
   pointer-events: none;
-  transition: opacity 700ms ease, transform 700ms var(--ease-out);
-  transform: translateX(-24px);
+  transition: opacity 400ms steps(4);
 }
 .menu[data-ready="true"] {
   opacity: 1;
   pointer-events: auto;
-  transform: none;
 }
 
-/* "LOST GRACE DISCOVERED": a gold title on a smoky black band. */
+/* "Lost Grace Discovered": gold pixel title on a dark band. */
 .found {
   position: absolute;
   left: 0;
   right: 0;
   top: 50%;
-  height: 130px;
+  height: 128px;
   transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.78) 30%, rgba(0, 0, 0, 0.78) 70%, transparent);
+  background: rgba(4, 9, 13, 0.82);
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 rgba(170, 214, 204, 0.5),
+    0 var(--px) 0 rgba(170, 214, 204, 0.5);
   pointer-events: none;
-  animation: found 2300ms ease forwards;
+  animation: found 2300ms steps(1) forwards;
 }
 .found span {
   padding: 0 var(--gutter);
   text-align: center;
-  font-family: var(--title);
-  font-weight: 500;
-  font-size: clamp(24px, 3.4vw, 46px);
-  filter: drop-shadow(0 0 18px rgba(240, 210, 150, 0.35));
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  background: linear-gradient(#fbecc4, #d2b276);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  font-size: clamp(40px, 5vw, 64px);
+  line-height: 1;
+  color: var(--acc);
+  text-shadow: var(--outline);
 }
 @keyframes found {
   0% {
     opacity: 0;
   }
-  22% {
+  8% {
+    opacity: 0.5;
+  }
+  16%,
+  80% {
     opacity: 1;
   }
-  72% {
-    opacity: 1;
+  90% {
+    opacity: 0.5;
   }
   100% {
     opacity: 0;
   }
 }
-@keyframes menuIn {
-  from {
-    opacity: 0;
-    transform: translateX(-24px);
-  }
-}
 .place {
-  padding: 0 0 18px 22px;
-  margin-right: 40px;
-  border-bottom: 1px solid rgba(201, 178, 124, 0.35);
-  font-size: clamp(26px, 2.3vw, 36px);
+  font-size: 40px;
   white-space: nowrap;
-  color: #f1e6c8;
-  text-shadow: 0 0 24px rgba(0, 0, 0, 0.8);
 }
 .menu ul {
   list-style: none;
-  margin: 18px 0 0;
+  margin: 24px 0 0;
   padding: 0;
 }
 .menu li[data-gap="true"] {
-  margin-top: 26px;
+  margin-top: 24px;
 }
 .item {
   position: relative;
   width: 100%;
-  padding: 11px 0 11px 22px;
+  padding: 10px 0 10px 48px;
   background: none;
   border: 0;
   cursor: pointer;
   text-align: left;
-  font-family: var(--display);
-  font-size: clamp(19px, 1.7vw, 23px);
-  letter-spacing: 0.04em;
-  color: rgba(226, 218, 198, 0.82);
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
-  transition: color 200ms;
-}
-/* Selected: a lit bar that fades to the right, hairlines above and below. */
-.item::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(232, 200, 140, 0.22), rgba(232, 200, 140, 0.08) 55%, rgba(232, 200, 140, 0));
-  border-top: 1px solid rgba(230, 220, 192, 0.35);
-  border-bottom: 1px solid rgba(230, 220, 192, 0.35);
-  /* Soft at both ends, as the game draws its selection bar. */
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 60%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 60%, transparent);
-  opacity: 0;
-  transition: opacity 200ms;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--fg);
 }
 .item[data-on="true"] {
-  color: #fbf0d4;
+  color: var(--acc);
 }
-.item[data-on="true"]::before {
-  opacity: 1;
+.item:focus-visible {
+  outline: none;
+}
+.cursor {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  margin-top: -22px;
+  animation: nudge 0.8s steps(1) infinite;
 }
 
 /* The game shows the selected entry's description along the bottom. */
 .help {
   position: absolute;
   left: 50%;
-  bottom: clamp(48px, 8vh, 76px);
+  bottom: clamp(72px, 10vh, 88px);
   transform: translateX(-50%);
-  width: min(720px, calc(100% - 2 * var(--gutter)));
+  width: max-content;
+  max-width: min(720px, calc(100% - 2 * var(--gutter)));
+  text-wrap: balance;
   margin: 0;
-  padding: 12px 24px;
+  padding: 8px 20px;
   text-align: center;
-  font-family: var(--serif);
-  font-size: 17px;
-  letter-spacing: 0.03em;
-  color: #d6d0c2;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.62) 20%, rgba(0, 0, 0, 0.62) 80%, rgba(0, 0, 0, 0));
-  animation: show 400ms ease;
-}
-@keyframes show {
-  from {
-    opacity: 0;
-  }
+  font-size: 20px;
+  line-height: 28px;
 }
 
 /* After Contact: the address and a gold "Copied", like an item pickup. */
 .got {
   margin-left: 10px;
-  font-family: var(--caps);
-  font-size: 14px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--grace);
+  color: var(--acc);
 }
 
-/* Button prompts along the bottom left, like the game's footer. */
+/* Button prompts along the bottom right, like the game's footer. */
 .keys {
   position: absolute;
   right: var(--gutter);
   bottom: clamp(16px, 3vh, 28px);
   display: flex;
-  gap: 22px;
-  font-family: var(--caps);
-  font-size: 16px;
-  letter-spacing: 0.03em;
-  color: var(--label);
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+  gap: 20px;
+  font-size: 20px;
+  color: var(--fg);
+  text-shadow: var(--drop);
   pointer-events: none;
 }
 .keys span {
   display: flex;
   align-items: center;
-  gap: 6px;
-}
-.keys kbd {
-  min-width: 22px;
-  padding: 2px 6px;
-  border: 1px solid rgba(201, 178, 124, 0.5);
-  border-radius: 3px;
-  background: rgba(5, 9, 12, 0.55);
-  font-family: var(--serif);
-  font-size: 16px;
-  text-align: center;
-  color: var(--pale);
+  gap: 8px;
 }
 
 @media (max-width: 720px) {
+  .scene {
+    bottom: auto;
+    height: 80%;
+  }
   .menu {
     top: auto;
-    width: 100%;
-    padding: 28px var(--gutter) 90px;
-    background: linear-gradient(to top, rgba(3, 5, 7, 0.92) 55%, rgba(3, 5, 7, 0));
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    padding-bottom: 72px;
   }
-  /* The description sits right under the list, inside the menu's dark band. */
+  .place {
+    font-size: 32px;
+  }
+  .item {
+    font-size: 32px;
+    padding: 8px 0 8px 44px;
+  }
+  .menu ul {
+    margin-top: 12px;
+  }
+  .menu li[data-gap="true"] {
+    margin-top: 12px;
+  }
+  /* The description sits inside the menu panel, under the list. */
   .help {
-    bottom: 22px;
-    background: none;
+    bottom: 48px;
+    width: calc(100% - 96px);
     padding: 0;
-    font-size: 16px;
-    color: var(--muted);
+    border: 0;
+    border-image: none;
+    font-size: 18px;
+    line-height: 24px;
+    color: var(--dim);
   }
   .keys {
     display: none;
   }
   .found span {
     white-space: nowrap;
-    font-size: clamp(17px, 5.2vw, 30px);
-    letter-spacing: 0.1em;
+    font-size: clamp(26px, 8vw, 40px);
   }
 }

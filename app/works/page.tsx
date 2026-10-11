@@ -10,6 +10,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import Sprite, { POINTER_COLORS, SPRITES } from "@/components/Sprite";
 import { arrived } from "@/components/Veil";
 import { sfx } from "@/lib/audio";
 import { works } from "@/lib/content";
@@ -79,7 +80,10 @@ export default function Works() {
   return (
     <main className={s.page}>
       <nav className="crumbs" aria-label="Breadcrumb">
-        <Link href="/road/">&larr; The road</Link>
+        <Link href="/road/">
+          <Sprite rows={[...SPRITES.back]} />
+          The road
+        </Link>
         <span className="sep">/</span>
         <span className="here">Projects</span>
       </nav>
@@ -103,14 +107,15 @@ export default function Works() {
               {w.name}
             </h2>
             <a className={s.code} href={w.repo} target="_blank" rel="noreferrer">
-              View code &#8599;
+              View code
+              <Sprite rows={[...SPRITES.out]} />
             </a>
           </div>
           <div className={s.kind}>{w.kind}</div>
           <p className={s.lede}>{w.what[0]}</p>
 
           <div
-            className={s.frame}
+            className={`${s.frame} frame-px`}
             data-bright={!!w.bright}
             style={{ aspectRatio: w.aspect ?? 16 / 10, width: `min(100%, calc(52vh * ${w.aspect ?? 16 / 10}))` }}
           >
@@ -170,6 +175,7 @@ export default function Works() {
                   data-on={n === i}
                   onClick={() => pick(n)}
                 >
+                  {n === i && <Sprite rows={[...SPRITES.pointer]} colors={POINTER_COLORS} className={s.cursor} />}
                   {x.name}
                   <span className="sr-only">, </span>
                   <span>{x.kind.split(" · ")[0]}</span>
@@ -188,7 +194,7 @@ export default function Works() {
           </div>
         </div>
       </div>
-
+      <div className="horizon" aria-hidden="true" />
     </main>
   );
 }

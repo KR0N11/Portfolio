@@ -8,9 +8,10 @@
     R = the scene's "actor" weight (grass on the road, the sword on the gate)
     G = sky that may drift
 
-  The canvas covers the viewport at the screen's real resolution. The image is
-  laid out on a "stage" sized to cover the viewport, so children can be
-  positioned in image space with plain percentages.
+  The picture is pixel art. The stage that covers the viewport is scaled by a
+  whole number, so every art pixel is the same number of screen pixels, and
+  the shader samples one texel per art pixel: whatever moves, moves in whole
+  pixels. Children are positioned in image space with plain percentages.
 */
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
@@ -26,8 +27,8 @@ export type Live = { pull: number; flash: number };
 type Props = {
   src: string;
   mask: string;
-  /** width / height of the source image */
-  aspect: number;
+  /** the art's size in pixels */
+  art: [number, number];
   scene: Scene;
   /** image-space point to keep in view when the screen is narrower or taller than the image */
   focus: [number, number];
@@ -55,6 +56,10 @@ uniform float uTime;
 uniform float uScene;
 uniform float uPull;
 uniform float uFlash;
+uniform vec2 uTex;    // art size in pixels
+
+// Overlays come in a few flat steps, as a pixel artist would shade them.
+float steps(float a, float n) { return floor(a * n + 0.5) / n; }
 
 float hash(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
@@ -92,20 +97,22 @@ vec3 gate(vec2 uv, float t) {
   float o = uPull * max(mk.r, texture2D(uMask, uv + vec2(0.0, uPull)).r);
   o = uPull * texture2D(uMask, uv + vec2(0.0, o)).r;
   o = uPull * texture2D(uMask, uv + vec2(0.0, o)).r;
+  // ...a whole art pixel at a time.
+  o = floor(o * uTex.y + 0.5) / uTex.y;
 
-  // Clouds churn; the ring and everything below the horizon hold still.
+  // Clouds churn by a pixel or two; the ring and everything below the horizon hold still.
   vec2 flow = vec2(fbm(uv * vec2(4.0, 3.0) + vec2(t * 0.03, 0.0)),
                    fbm(uv * vec2(4.0, 3.0) + vec2(3.7, t * 0.025))) - 0.5;
-  vec2 s = uv + vec2(0.0, o) + flow * vec2(0.006, 0.012) * mk.g;
+  vec2 s = uv + vec2(0.0, o) + flow * (vec2(3.0, 2.0) / uTex) * mk.g;
   vec3 col = texture2D(uImg, s).rgb;
 
   float cl = fbm(vec2(uv.x * 5.0 - t * 0.02, uv.y * 4.0 + t * 0.004));
-  col = mix(col, vec3(0.17, 0.25, 0.26), smoothstep(0.52, 0.88, cl) * mk.g * 0.3);
+  col = mix(col, vec3(0.17, 0.25, 0.26), steps(smoothstep(0.52, 0.88, cl), 3.0) * mk.g * 0.3);
 
   // Low mist rolling over the ground.
   float band = smoothstep(0.72, 0.82, uv.y) * (1.0 - smoothstep(0.94, 1.0, uv.y));
   float m = fbm(vec2(uv.x * 6.0 + t * 0.03, uv.y * 9.0 - t * 0.01));
-  col = mix(col, vec3(0.55, 0.63, 0.6), band * smoothstep(0.5, 0.92, m) * 0.22);
+  col = mix(col, vec3(0.55, 0.63, 0.6), steps(band * smoothstep(0.5, 0.92, m), 3.0) * 0.22);
 
   return flicker(col, uv, t);
 }
@@ -138,6 +145,8 @@ vec3 road(vec2 uv, float t) {
 void main() {
   vec2 css = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y) / uRes * uView;
   vec2 uv = (css - uRect.xy) / uRect.zw;
+  // One sample per art pixel: snap to the texel centre.
+  uv = (floor(uv * uTex) + 0.5) / uTex;
   vec3 col = uScene < 0.5 ? gate(uv, uTime) : road(uv, uTime);
   col += uFlash * vec3(1.0, 0.96, 0.88);
   gl_FragColor = vec4(col, 1.0);
@@ -145,15 +154,19 @@ void main() {
 
 type Rect = { left: number; top: number; width: number; height: number };
 
-function cover(w: number, h: number, aspect: number, [fx, fy]: [number, number]): Rect {
-  if (w / h > aspect) {
-    const height = w / aspect;
-    const top = Math.min(0, Math.max(h - height, h / 2 - fy * height));
-    return { left: 0, top, width: w, height };
-  }
-  const width = h * aspect;
-  const left = Math.min(0, Math.max(w - width, w / 2 - fx * width));
-  return { left, top: 0, width, height: h };
+/**
+ * Cover the frame with the art at a whole-number scale, keeping `focus` in view.
+ * `margin` (a share of the art) is kept hidden past every edge, for scenes that shift.
+ */
+export function cover(w: number, h: number, [aw, ah]: [number, number], [fx, fy]: [number, number], margin = 0): Rect {
+  const cell = Math.max(1, Math.ceil(Math.max(w / aw, h / ah) * (1 + margin)));
+  const width = aw * cell;
+  const height = ah * cell;
+  const mx = Math.min((width * margin) / 2, (width - w) / 2);
+  const my = Math.min((height * margin) / 2, (height - h) / 2);
+  const left = Math.round(Math.min(-mx, Math.max(w - width + mx, w / 2 - fx * width)));
+  const top = Math.round(Math.min(-my, Math.max(h - height + my, h / 2 - fy * height)));
+  return { left, top, width, height };
 }
 
 function loadImage(src: string) {
@@ -166,7 +179,7 @@ function loadImage(src: string) {
   });
 }
 
-export default function LivingImage({ src, mask, aspect, scene, focus, live, stageStyle, children }: Props) {
+export default function LivingImage({ src, mask, art, scene, focus, live, stageStyle, children }: Props) {
   const frameRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rectRef = useRef<Rect | null>(null);
@@ -174,12 +187,13 @@ export default function LivingImage({ src, mask, aspect, scene, focus, live, sta
   const [ready, setReady] = useState(false);
   const fx = focus[0];
   const fy = focus[1];
+  const [aw, ah] = art;
 
   useLayoutEffect(() => {
     const el = frameRef.current;
     if (!el) return;
     const measure = () => {
-      const r = cover(el.clientWidth, el.clientHeight, aspect, [fx, fy]);
+      const r = cover(el.clientWidth, el.clientHeight, [aw, ah], [fx, fy]);
       rectRef.current = r;
       setRect(r);
     };
@@ -187,7 +201,7 @@ export default function LivingImage({ src, mask, aspect, scene, focus, live, sta
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [aspect, fx, fy]);
+  }, [aw, ah, fx, fy]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -234,6 +248,7 @@ export default function LivingImage({ src, mask, aspect, scene, focus, live, sta
     gl.uniform1f(u("uScene"), scene === "gate" ? 0 : 1);
     gl.uniform1i(u("uImg"), 0);
     gl.uniform1i(u("uMask"), 1);
+    gl.uniform2f(u("uTex"), aw, ah);
 
     const upload = (unit: number, img: HTMLImageElement) => {
       const tex = gl.createTexture()!;
@@ -242,8 +257,8 @@ export default function LivingImage({ src, mask, aspect, scene, focus, live, sta
       gl.bindTexture(gl.TEXTURE_2D, tex);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
     };
 
@@ -322,7 +337,7 @@ export default function LivingImage({ src, mask, aspect, scene, focus, live, sta
       gl.deleteShader(vs);
       gl.deleteShader(fs);
     };
-  }, [src, mask, scene, live]);
+  }, [src, mask, scene, live, aw, ah]);
 
   const stage: React.CSSProperties = {
     position: "absolute",
@@ -336,7 +351,11 @@ export default function LivingImage({ src, mask, aspect, scene, focus, live, sta
     <div ref={frameRef} style={{ position: "absolute", inset: 0, overflow: "hidden", ...stageStyle }}>
       <div style={stage}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={src} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+        <img
+          src={src}
+          alt=""
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", imageRendering: "pixelated" }}
+        />
       </div>
       <canvas
         ref={canvasRef}
@@ -346,6 +365,7 @@ export default function LivingImage({ src, mask, aspect, scene, focus, live, sta
           inset: 0,
           width: "100%",
           height: "100%",
+          imageRendering: "pixelated",
           opacity: ready ? 1 : 0,
           transition: "opacity 600ms ease",
         }}

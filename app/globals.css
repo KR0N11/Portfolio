@@ -1,26 +1,43 @@
 /*
-  Design language (from the Claude Design boards, "Dim, then gold"):
-  almost everything is dark and still; gold only appears where something
-  can be done.
+  A pixel game at night. Everything sits on a 4px grid: one art pixel is four
+  CSS pixels. Panels are 9-slice pixel frames, text is a bitmap face with a
+  hard drop shadow, and gold only marks what can be chosen.
 */
 :root {
-  --abyss: #05090c;
-  --night: #0f1f25;
-  --mist: #8fa79d;
-  --ash: #8a8473;
-  --bone: #d6d0c2;
-  --bone-dim: #cfc6ae;
-  --label: #c7bea6;
-  --muted: #a8a294;
-  --grace: #c9b27c;
-  --pale: #e6dcc0;
-  --ember: #c9772a;
+  --px: 4px;
 
-  --serif: var(--font-garamond), "EB Garamond", Georgia, serif;
-  --caps: var(--font-title), "Cormorant Garamond", Georgia, serif;
-  --display: var(--font-title), "Cormorant Garamond", Georgia, serif;
-  --title: var(--font-title), "Cormorant Garamond", Georgia, serif;
-  --fell: var(--font-garamond), "EB Garamond", Georgia, serif;
+  --abyss: #04090d;
+  --ink: #071016;
+  --panel: #12262e;
+  --rim: #aad6cc;
+  --fg: #f2ead6;
+  --dim: #9fb8b2;
+  --acc: #ffd56b;
+  --acc-hi: #fff6c8;
+
+  /* older names, kept so every page reads from the same palette */
+  --night: var(--panel);
+  --bone: var(--fg);
+  --bone-dim: #ddd5c1;
+  --label: var(--fg);
+  --muted: var(--dim);
+  --grace: var(--acc);
+  --pale: var(--acc-hi);
+
+  --pixel: var(--font-pixel), "Jersey 15", monospace;
+  --serif: var(--pixel);
+  --caps: var(--pixel);
+  --display: var(--pixel);
+  --title: var(--pixel);
+  --fell: var(--pixel);
+
+  /* hard pixel shadows: a drop for body text, a full outline for titles */
+  --drop: 0 var(--px) 0 var(--ink);
+  --outline: 4px 0 0 var(--ink), -4px 0 0 var(--ink), 0 4px 0 var(--ink), 0 -4px 0 var(--ink),
+    4px 4px 0 var(--ink), 0 8px 0 var(--ink), 4px 8px 0 var(--ink);
+  /* the same for small text on phones, where a 4px outline swallows the letters */
+  --outline-sm: 2px 0 0 var(--ink), -2px 0 0 var(--ink), 0 2px 0 var(--ink), 0 -2px 0 var(--ink),
+    2px 2px 0 var(--ink), 0 4px 0 var(--ink);
 
   --gutter: clamp(16px, 4vw, 56px);
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -33,11 +50,22 @@
 html,
 body {
   margin: 0;
-  background: var(--abyss);
-  color: var(--bone);
-  font-family: var(--serif);
-  font-size: 20px;
-  -webkit-font-smoothing: antialiased;
+  color: var(--fg);
+  font-family: var(--pixel);
+  font-size: 24px;
+  font-variant-ligatures: none;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* The plain pages stand under a banded night sky (the scenes cover it). */
+body {
+  background: var(--abyss) url(/pixel/sky.png) 50% 0 / 2560px 1600px no-repeat fixed;
+  image-rendering: pixelated;
+}
+img,
+video {
+  image-rendering: auto;
 }
 
 button {
@@ -46,30 +74,20 @@ button {
 }
 
 a {
-  color: var(--grace);
+  color: var(--acc);
 }
 a:hover {
-  color: var(--pale);
+  color: var(--acc-hi);
 }
 
 ::selection {
-  background: rgba(201, 178, 124, 0.35);
-  color: var(--pale);
+  background: var(--acc);
+  color: var(--ink);
 }
 
 :focus-visible {
-  outline: 1px solid var(--pale);
-  outline-offset: 4px;
-}
-
-.caps {
-  font-family: var(--caps);
-  letter-spacing: 0.03em;
-}
-
-.fell {
-  font-family: var(--fell);
-  font-style: italic;
+  outline: var(--px) solid var(--acc);
+  outline-offset: var(--px);
 }
 
 .sr-only {
@@ -81,43 +99,87 @@ a:hover {
   white-space: nowrap;
 }
 
-/* The name, set like the ELDEN RING title card. */
+/* The name, in gold with a pixel outline, like a game's title card. */
 .title-card {
-  font-family: var(--title);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
+  font-family: var(--pixel);
+  font-weight: 400;
   line-height: 1;
+  color: var(--acc);
+  text-shadow: var(--outline);
 }
 
-/* The diamond marker: rest, chosen, empty. */
-.diamond {
-  position: relative;
+/* A dialogue panel: dark teal fill, light rim, dark outline, rounded pixel corners. */
+.win {
+  border-style: solid;
+  border-width: calc(6 * var(--px));
+  border-image: url(/pixel/win.png) 6 fill / calc(6 * var(--px)) / 0 stretch;
+  image-rendering: pixelated;
+  padding: calc(4 * var(--px)) calc(5 * var(--px));
+  color: var(--fg);
+  text-shadow: none;
+}
+/* The same rim with no fill, around photos and recordings. */
+.frame-px {
+  border-style: solid;
+  border-width: calc(6 * var(--px));
+  border-image: url(/pixel/frame.png) 6 / calc(6 * var(--px)) / 0 stretch;
+  image-rendering: pixelated;
+}
+
+/* Key prompts: a small chipped tile. */
+kbd {
   display: inline-block;
-  width: 10px;
-  height: 10px;
-  flex: none;
-  transform: rotate(45deg);
-  border: 1px solid var(--grace);
+  min-width: calc(7 * var(--px));
+  padding: var(--px) calc(2 * var(--px)) calc(2 * var(--px));
+  font-family: var(--pixel);
+  font-size: 20px;
+  line-height: 1;
+  text-align: center;
+  color: var(--fg);
+  text-shadow: none;
+  background: var(--panel);
+  box-shadow: inset 0 calc(-1 * var(--px)) 0 rgba(0, 0, 0, 0.35);
+  clip-path: polygon(
+    var(--px) 0,
+    calc(100% - var(--px)) 0,
+    100% var(--px),
+    100% calc(100% - var(--px)),
+    calc(100% - var(--px)) 100%,
+    var(--px) 100%,
+    0 calc(100% - var(--px)),
+    0 var(--px)
+  );
 }
-.diamond[data-on="true"] {
-  background: var(--grace);
-}
-.diamond[data-pulse="true"]::after {
-  content: "";
+
+/* Ruined towers and grass: the ground at the end of a plain page. Pages
+   leave room for it, so text never sits on the art. */
+.horizon {
   position: absolute;
-  inset: -1px;
-  border: 1px solid var(--pale);
-  animation: diamond-pulse 2.2s ease-out infinite;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 288px;
+  background: url(/pixel/horizon.png) 50% 100% / 4096px 288px repeat-x;
+  image-rendering: pixelated;
+  pointer-events: none;
+  z-index: 0;
 }
-@keyframes diamond-pulse {
-  from {
-    transform: scale(1);
-    opacity: 0.8;
+@media (max-width: 640px) {
+  .horizon {
+    height: 144px;
+    background-size: 2048px 144px;
   }
-  to {
-    transform: scale(2.6);
+}
+
+/* Blinking pointer, in steps like a game cursor. */
+@keyframes blink {
+  50% {
     opacity: 0;
+  }
+}
+@keyframes nudge {
+  50% {
+    transform: translateX(var(--px));
   }
 }
 
@@ -129,26 +191,25 @@ a:hover {
   z-index: 90;
   display: flex;
   align-items: center;
-  gap: 26px;
+  gap: 28px;
   padding: 6px 12px;
   margin-right: -12px;
-  font-family: var(--display);
-  font-size: 17px;
-  letter-spacing: 0.02em;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+  font-family: var(--pixel);
+  font-size: 20px;
+  text-shadow: var(--drop);
 }
 .sitebar a,
 .sitebar .sound {
-  color: var(--label);
+  color: var(--fg);
   text-decoration: none;
   white-space: nowrap;
 }
 .sitebar a:hover,
 .sitebar .sound:hover {
-  color: var(--pale);
+  color: var(--acc-hi);
 }
 .sitebar a[aria-current="page"] {
-  color: var(--grace);
+  color: var(--acc);
   pointer-events: none;
 }
 .sitebar .sound {
@@ -164,14 +225,15 @@ a:hover {
 .sitebar .sound > span {
   display: flex;
   align-items: flex-end;
-  gap: 2px;
+  gap: var(--px);
   height: 12px;
 }
 .sitebar .sound > span > span {
-  width: 2px;
-  background: var(--grace);
-  transition: height 400ms ease;
-  animation: eq 1.4s ease-in-out infinite alternate;
+  width: var(--px);
+  background: var(--acc);
+  box-shadow: 0 var(--px) 0 var(--ink);
+  animation: eq 1.4s steps(3) infinite alternate;
+  transform-origin: bottom;
 }
 .sitebar .sound[data-muted="true"] > span {
   display: none;
@@ -181,14 +243,13 @@ a:hover {
     top: 12px;
     left: var(--gutter);
     right: var(--gutter);
-    justify-content: flex-end;
-    gap: 13px;
-    margin: 0 -12px;
-    font-size: 15px;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0;
+    padding: 6px 0;
+    font-size: 17px;
+    text-shadow: var(--outline-sm);
   }
-}
-
-@media (max-width: 640px) {
   /* Comfortable tap targets without changing the look. */
   .sitebar a,
   .sitebar .sound {
@@ -199,8 +260,7 @@ a:hover {
 }
 @media (max-width: 400px) {
   .sitebar {
-    gap: 11px;
-    font-size: 14px;
+    font-size: 16px;
   }
 }
 
@@ -211,39 +271,43 @@ a:hover {
   top: clamp(20px, 4vh, 40px);
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 10px;
   z-index: 5;
-  font-family: var(--caps);
-  font-size: 15px;
-  letter-spacing: 0.03em;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+  font-family: var(--pixel);
+  font-size: 20px;
+  color: var(--dim);
+  text-shadow: var(--drop);
 }
 .crumbs a {
-  color: var(--label);
+  display: inline-flex;
+  align-items: center;
+  gap: calc(2 * var(--px));
+  color: var(--dim);
   text-decoration: none;
 }
+.crumbs a svg {
+  filter: drop-shadow(0 var(--px) 0 var(--ink));
+}
 .crumbs a:hover {
-  color: var(--pale);
+  color: var(--acc-hi);
 }
 .crumbs .here {
-  color: var(--pale);
+  color: var(--dim);
 }
 .crumbs .sep {
-  color: var(--muted);
+  color: var(--dim);
 }
 @media (max-width: 640px) {
   .crumbs {
     top: 62px;
-    font-size: 16px;
-    letter-spacing: 0.03em;
-    gap: 10px;
+    font-size: 18px;
     white-space: nowrap;
   }
 }
 
 @keyframes eq {
   from {
-    transform: scaleY(0.4);
+    transform: scaleY(0.34);
   }
   to {
     transform: scaleY(1);
@@ -262,36 +326,44 @@ a:hover {
 
 /* 404 */
 .lost {
+  position: relative;
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 18px;
-  padding: 0 var(--gutter);
-  background: var(--abyss);
+  padding: 0 var(--gutter) 288px;
   text-align: center;
-  font-family: var(--serif);
-  font-size: 18px;
-  color: var(--muted);
+  font-size: 24px;
+  color: var(--fg);
+  text-shadow: var(--drop);
+}
+.lost > :not(.horizon) {
+  position: relative;
+  z-index: 1;
 }
 .lost p {
   margin: 0;
 }
 .lost .lost-band {
-  width: 100%;
-  padding: 26px 0;
-  font-family: var(--title);
-  font-size: clamp(24px, 3.4vw, 40px);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #e9dcb8;
-  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.8) 25%, rgba(0, 0, 0, 0.8) 75%, transparent);
+  font-size: clamp(40px, 6vw, 80px);
+  line-height: 1;
+  color: var(--acc);
+  text-shadow: var(--outline);
+}
+.lost-say {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 28px;
 }
 .lost a {
-  font-family: var(--display);
-  font-size: 19px;
-  color: var(--pale);
+  font-size: 24px;
+  color: var(--acc);
   text-decoration: none;
-  border-bottom: 1px solid rgba(201, 178, 124, 0.5);
+}
+.lost a:hover {
+  color: var(--acc-hi);
 }
