@@ -1,24 +1,36 @@
 .page {
   position: relative;
-  background: var(--abyss);
   overflow-x: hidden;
+  padding-bottom: 288px;
+  text-shadow: var(--drop);
+}
+@media (max-width: 640px) {
+  .page {
+    padding-bottom: 144px;
+  }
+}
+/* Content scrolls over the horizon, which stays put at the bottom of the screen. */
+.hero,
+.chapter,
+.footer {
+  position: relative;
+  z-index: 1;
 }
 
-/* A soft fade as blocks arrive. */
+/* Blocks step in as they arrive. */
 .page [data-reveal] {
   opacity: 0;
-  transition: opacity 800ms ease;
+  transition: opacity 480ms steps(4);
 }
 .page [data-reveal="in"] {
   opacity: 1;
 }
 
-/* Thin grey frame, like the game's item frames. No ornaments. */
+/* Photos sit inside the pixel frame but stay sharp. */
 .frame {
   margin: 0;
-  border: 1px solid rgba(200, 190, 160, 0.18);
   background: #080c0e;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+  text-shadow: none;
 }
 .frame img,
 .frame video {
@@ -37,7 +49,7 @@
   width: 100%;
   max-width: var(--col);
   margin: 0 auto;
-  padding: clamp(130px, 18vh, 170px) var(--gutter) clamp(40px, 7vh, 72px);
+  padding: clamp(130px, 18vh, 160px) var(--gutter) clamp(40px, 7vh, 72px);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: center;
@@ -48,28 +60,46 @@
 }
 .name {
   margin: 0;
-  font-size: clamp(40px, 4.6vw, 68px);
-  color: #efe6cc;
+  font-size: clamp(56px, 5.6vw, 80px);
   white-space: nowrap;
 }
 .role {
-  margin: 16px 0 0;
-  font-family: var(--display);
-  font-size: clamp(19px, 1.6vw, 22px);
-  color: var(--grace);
+  margin: 24px 0 0;
+  text-wrap: balance;
+  font-size: 24px;
+  line-height: 32px;
+  color: var(--dim);
 }
 .intro {
-  margin: 22px 0 0;
-  max-width: 32em;
-  font-size: clamp(18px, 1.45vw, 21px);
-  line-height: 1.6;
-  color: var(--bone);
+  margin: 20px 0 0;
+  max-width: 30em;
+  font-size: 24px;
+  line-height: 36px;
+  color: var(--fg);
 }
-.heroQuote {
-  margin-top: 28px;
-  font-style: italic;
-  font-size: clamp(19px, 1.5vw, 22px);
-  color: var(--bone-dim);
+/* The motto, said in a dialogue box with a name tag. */
+.say {
+  position: relative;
+  margin: 44px 0 0;
+  max-width: 30em;
+}
+.say blockquote {
+  margin: 0;
+  padding: 8px 0;
+  font-size: 24px;
+  line-height: 36px;
+}
+.tag {
+  position: absolute;
+  left: 16px;
+  /* straddles the panel's top rim */
+  top: -28px;
+  padding: 4px 12px;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--acc);
+  background: var(--panel);
+  box-shadow: 0 0 0 var(--px) var(--ink);
 }
 .portrait {
   aspect-ratio: 3 / 4;
@@ -84,82 +114,75 @@
   margin: 0 auto;
   padding: clamp(56px, 9vh, 96px) var(--gutter) 0;
 }
-/* Section titles: left-aligned over a gold hairline that fades out, the same
-   header the grace menu uses. */
+/* Section titles over a pixel rule. */
 .band {
   margin: 0 0 8px;
-  padding: 0 0 14px;
-  font-family: var(--display);
-  font-weight: 500;
-  font-size: clamp(26px, 2.4vw, 34px);
-  letter-spacing: 0.04em;
-  color: #e9dfc4;
-  border-bottom: 1px solid;
-  border-image: linear-gradient(90deg, rgba(201, 178, 124, 0.55), rgba(201, 178, 124, 0.12) 70%, rgba(201, 178, 124, 0)) 1;
+  padding: 0 0 16px;
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--fg);
+  border-bottom: var(--px) solid var(--dim);
+  box-shadow: 0 var(--px) 0 var(--ink);
 }
 
 .page h3 {
   margin: 0;
-  font-family: var(--display);
-  font-weight: 500;
-  font-size: clamp(26px, 2.4vw, 34px);
+  font-weight: 400;
+  font-size: 32px;
   line-height: 1.1;
-  color: #efe6cc;
+  color: var(--fg);
 }
 .body {
   margin: 12px 0 0;
   max-width: 36em;
-  font-size: clamp(17px, 1.35vw, 19px);
-  line-height: 1.65;
-  color: var(--bone);
+  font-size: 22px;
+  line-height: 32px;
+  color: var(--fg);
 }
 
-/* Small capitals in gold: the game's label style. */
+/* Gold labels. */
 .label,
 .page h3.label {
   margin: 0;
-  font-family: var(--caps);
-  font-size: 15px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--grace);
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--acc);
 }
 
-/* ---------- Work: ruled rows, like the equipment list ---------- */
+/* ---------- Work: ruled rows ---------- */
 .job {
   display: grid;
-  grid-template-columns: minmax(320px, 360px) minmax(0, 1fr);
+  grid-template-columns: minmax(300px, 340px) minmax(0, 1fr);
   align-items: center;
   gap: clamp(24px, 4vw, 64px);
-  padding: 34px 0;
-  border-bottom: 1px solid rgba(200, 190, 160, 0.12);
+  padding: 32px 0;
+  border-bottom: var(--px) solid rgba(159, 184, 178, 0.2);
 }
 .job .body {
   margin: 0;
   max-width: 34em;
-  font-size: clamp(18px, 1.45vw, 20px);
-  line-height: 1.6;
+  font-size: 24px;
+  line-height: 36px;
 }
 .jobHead {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  align-items: flex-start;
+  gap: 16px;
 }
-/* All logos in one tone; heights set by eye so they read the same size. */
+/* Logos as pixel art, three screen pixels to a logo pixel. */
 .logo {
-  height: 40px;
+  height: 39px;
   width: auto;
-  max-width: 220px;
-  object-fit: contain;
-  object-position: left;
-  opacity: 0.88;
-  filter: grayscale(1) brightness(1.5);
+  image-rendering: pixelated;
+  filter: drop-shadow(0 var(--px) 0 var(--ink));
 }
 .logo[alt="Genetec"] {
   height: 36px;
 }
 .logo[alt="Paul Tech"] {
-  height: 50px;
+  height: 51px;
 }
 
 .schools {
@@ -169,13 +192,13 @@
 .school {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 34px 0;
-  border-bottom: 1px solid rgba(200, 190, 160, 0.12);
+  gap: 16px;
+  padding: 32px 0;
+  border-bottom: var(--px) solid rgba(159, 184, 178, 0.2);
 }
 .school + .school {
   padding-left: clamp(24px, 4vw, 56px);
-  border-left: 1px solid rgba(200, 190, 160, 0.12);
+  border-left: var(--px) solid rgba(159, 184, 178, 0.2);
 }
 .schoolLogo {
   height: 42px;
@@ -183,7 +206,7 @@
   max-width: 100%;
   object-fit: contain;
   object-position: left;
-  opacity: 0.88;
+  opacity: 0.9;
   filter: grayscale(1) brightness(1.5);
 }
 @media (max-width: 860px) {
@@ -196,12 +219,17 @@
   }
 }
 
-/* ---------- Skills: four columns, like the Status screen ---------- */
+/* ---------- Skills: four columns, like a status screen ---------- */
+/* Each group is an inventory panel; each skill an item with a pixel icon. */
 .skills {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0 clamp(20px, 3vw, 44px);
-  padding-top: 26px;
+  gap: 20px;
+  padding-top: 28px;
+}
+.skillCard {
+  text-shadow: none;
+  padding: 12px 16px 16px;
 }
 .skillCard ul {
   list-style: none;
@@ -212,22 +240,25 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 9px 0;
-  border-bottom: 1px solid rgba(200, 190, 160, 0.09);
-  font-size: 19px;
-  color: var(--bone);
+  padding: 6px 0;
+  font-size: 22px;
+  line-height: 28px;
+  color: var(--fg);
 }
 .skillCard img {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   flex: none;
-  object-fit: contain;
-  filter: grayscale(1) sepia(0.35) brightness(1.25) opacity(0.7);
+  image-rendering: pixelated;
 }
 @media (max-width: 960px) {
   .skills {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: 32px;
+  }
+}
+@media (max-width: 480px) {
+  .skills {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -236,7 +267,7 @@
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 44px clamp(20px, 2.4vw, 32px);
-  padding-top: 30px;
+  padding-top: 32px;
 }
 .item {
   grid-column: span 2;
@@ -263,17 +294,17 @@
 }
 .item h3,
 .page .item h3 {
-  font-size: clamp(24px, 2vw, 28px);
+  font-size: 32px;
 }
 .item .body {
-  font-size: 17px;
-  line-height: 1.6;
+  font-size: 22px;
+  line-height: 30px;
 }
 .line {
   margin: 10px 0 0;
-  font-size: 19px;
-  line-height: 1.6;
-  color: var(--bone);
+  font-size: 22px;
+  line-height: 30px;
+  color: var(--fg);
 }
 .photos {
   display: grid;
@@ -286,10 +317,6 @@
 }
 .photos[data-count="3"] {
   --n: 3;
-}
-.photos .frame {
-  aspect-ratio: 4 / 5;
-  box-shadow: none;
 }
 /* One grade for every photo, so phone shots sit in the same dark page. */
 .photos img,
@@ -327,27 +354,27 @@
   align-items: baseline;
   gap: 8px;
   padding: 2px 0;
-  font-family: var(--display);
-  font-size: clamp(18px, 1.4vw, 20px);
-  color: #efe6cc;
+  font-size: 24px;
+  line-height: 32px;
+  color: var(--fg);
 }
 .ranked li::before {
   content: counter(rank) ".";
   min-width: 1.1em;
-  color: var(--grace);
+  color: var(--acc);
 }
 .also {
   margin: 8px 0 0;
-  font-size: 17px;
-  color: var(--muted);
+  font-size: 20px;
+  line-height: 28px;
+  color: var(--dim);
 }
 .quote {
   margin: 18px 0 0;
   padding-left: 16px;
-  border-left: 1px solid var(--grace);
-  font-family: var(--display);
-  font-size: 21px;
-  color: var(--pale);
+  border-left: var(--px) solid var(--acc);
+  font-size: 24px;
+  color: var(--fg);
 }
 
 .companion {
@@ -361,50 +388,47 @@
   flex: none;
   width: 72px;
   height: auto;
-  animation: bob 3.2s ease-in-out infinite;
+  animation: bob 1.6s steps(2) infinite;
 }
 @keyframes bob {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-2deg);
-  }
   50% {
-    transform: translateY(-5px) rotate(2deg);
+    transform: translateY(calc(-1 * var(--px)));
   }
 }
 .companion figcaption {
-  font-size: 16px;
-  line-height: 1.5;
-  color: var(--bone-dim);
+  font-size: 20px;
+  line-height: 28px;
+  color: var(--dim);
 }
 
 /* ---------- Footer ---------- */
 .footer {
   max-width: var(--col);
   margin: clamp(50px, 8vh, 90px) auto 0;
-  padding: 0 var(--gutter) 70px;
+  padding: 0 var(--gutter) 40px;
 }
 .footer > :first-child {
   padding-top: 40px;
-  border-top: 1px solid rgba(200, 190, 160, 0.15);
+  border-top: var(--px) solid rgba(159, 184, 178, 0.25);
 }
 .links {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 30px;
-  font-family: var(--display);
-  font-size: 19px;
+  gap: 12px 32px;
+  font-size: 24px;
 }
 .links a {
-  color: var(--pale);
+  color: var(--acc);
   text-decoration: none;
-  border-bottom: 1px solid rgba(201, 178, 124, 0.45);
-  padding-bottom: 2px;
+}
+.links a:hover {
+  color: var(--acc-hi);
 }
 .credit {
   margin: 24px 0 0;
-  font-size: 15px;
-  color: var(--muted);
+  font-size: 20px;
+  line-height: 28px;
+  color: var(--dim);
 }
 
 @media (max-width: 860px) {
@@ -416,17 +440,27 @@
   }
   .name {
     white-space: normal;
-    font-size: clamp(34px, 9vw, 48px);
-    letter-spacing: 0.08em;
+    font-size: clamp(48px, 13vw, 64px);
+  }
+  .intro,
+  .say blockquote,
+  .job .body {
+    font-size: 22px;
+    line-height: 32px;
   }
   .portrait {
-    max-width: 240px;
+    justify-self: center;
+    width: min(100%, 300px);
   }
   .job,
   /* Phones: two across, Travel's pair full width. */
   .pastimes {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 32px 14px;
+  }
+  .job {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
   }
   .item {
     grid-column: span 1;
@@ -441,14 +475,16 @@
   }
   .item .body,
   .item .line {
-    font-size: 15px;
+    font-size: 18px;
+    line-height: 26px;
   }
   .item h3,
   .page .item h3 {
-    font-size: 21px;
+    font-size: 26px;
   }
   .ranked li {
-    font-size: 17px;
+    font-size: 20px;
+    line-height: 28px;
   }
   .companion {
     gap: 10px;
@@ -458,10 +494,13 @@
     width: 44px;
   }
   .companion figcaption {
-    font-size: 13px;
+    font-size: 16px;
+    line-height: 22px;
   }
-  .job {
-    gap: 18px;
+  /* Pixel frames are heavy at phone width: a thinner frame for the small photos. */
+  .photos .frame {
+    border-width: calc(3 * var(--px));
+    border-image-width: calc(3 * var(--px));
   }
 }
 

@@ -8,8 +8,11 @@ export default function NotFound() {
   return (
     <main className="lost">
       <p className="lost-band">Nothing here</p>
-      <p>This path leads nowhere.</p>
-      <Link href="/road/">Return to the Site of Grace</Link>
+      <div className="win lost-say">
+        <p>This path leads nowhere.</p>
+        <Link href="/road/">Return to the Site of Grace</Link>
+      </div>
+      <div className="horizon" aria-hidden="true" />
     </main>
   );
 }
