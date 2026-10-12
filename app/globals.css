@@ -43,6 +43,12 @@
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+@media (max-width: 640px) {
+  :root {
+    --px: 2px;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -302,6 +308,9 @@ kbd {
     top: 62px;
     font-size: 18px;
     white-space: nowrap;
+  }
+  .crumbs a {
+    gap: 8px;
   }
 }
 
