@@ -68,15 +68,15 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 16px;
-  font-size: 40px;
+  gap: 18px;
+  font-size: 64px;
   pointer-events: none;
 }
 
 .pitch {
   text-wrap: balance;
-  font-size: 20px;
-  line-height: 28px;
+  font-size: 32px;
+  line-height: 36px;
   color: var(--fg);
   text-shadow: var(--drop);
 }
@@ -139,7 +139,13 @@
   .skip {
     bottom: 128px;
   }
+  .top {
+    font-size: 44px;
+    gap: 10px;
+  }
   .pitch {
+    font-size: 24px;
+    line-height: 28px;
     text-shadow: var(--outline-sm);
   }
 }
