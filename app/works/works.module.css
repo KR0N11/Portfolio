@@ -301,8 +301,12 @@
     margin-top: 30px;
   }
   .menu {
+    align-self: stretch;
     margin-top: 36px;
     scroll-margin-top: 16px;
+  }
+  .side {
+    align-self: stretch;
   }
   .names button {
     font-size: 22px;

@@ -175,9 +175,32 @@
     right: 16px;
     width: auto;
   }
+  /* a dark band behind the title that fades out at its edges in a pixel dither */
   .title {
-    margin-bottom: 12px;
+    position: relative;
+    margin: 0 -16px 20px;
+    padding: 6px 16px 8px;
     font-size: 48px;
+    background: rgba(4, 9, 13, 0.72);
+  }
+  .title::before,
+  .title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 16px;
+    background-size: 4px 8px;
+    background-repeat: repeat;
+    image-rendering: pixelated;
+  }
+  .title::before {
+    bottom: 100%;
+    background-image: url(/pixel/fringe-top.png);
+  }
+  .title::after {
+    top: 100%;
+    background-image: url(/pixel/fringe-bottom.png);
   }
   .menu {
     padding-bottom: 72px;

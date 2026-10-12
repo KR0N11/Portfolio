@@ -258,7 +258,15 @@
 }
 @media (max-width: 480px) {
   .skills {
-    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .skillCard {
+    padding: 8px 10px 10px;
+  }
+  .skillCard li {
+    gap: 8px;
+    font-size: 18px;
+    line-height: 22px;
   }
 }
 
@@ -475,8 +483,8 @@
   }
   .item .body,
   .item .line {
-    font-size: 18px;
-    line-height: 26px;
+    font-size: 19px;
+    line-height: 27px;
   }
   .item h3,
   .page .item h3 {
@@ -486,21 +494,39 @@
     font-size: 20px;
     line-height: 28px;
   }
+  /* the companion's note sits under its picture, at the column's full width */
   .companion {
-    gap: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
     margin-top: 14px;
   }
   .companion img {
     width: 44px;
   }
   .companion figcaption {
-    font-size: 16px;
-    line-height: 22px;
+    font-size: 17px;
+    line-height: 23px;
   }
   /* Pixel frames are heavy at phone width: a thinner frame for the small photos. */
   .photos .frame {
     border-width: calc(3 * var(--px));
     border-image-width: calc(3 * var(--px));
+  }
+}
+
+/* Small phones: one card per row, so the text has room; a single photo stays modest. */
+@media (max-width: 520px) {
+  .pastimes {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+  }
+  .item,
+  .item[data-slug="travel"] {
+    grid-column: span 1;
+  }
+  .photos[data-count="1"] {
+    max-width: 260px;
   }
 }
 
