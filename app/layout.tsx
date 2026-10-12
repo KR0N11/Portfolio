@@ -28,6 +28,8 @@ export const metadata: Metadata = {
     images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Ping Chun Lui" }],
   },
   twitter: { card: "summary_large_image", title: "Ping Chun Lui", description, images: ["/og.jpg"] },
+  // Google Search Console ownership check
+  verification: { google: "abDuj9V8E24-4UlyfIqXdLyJ5nlKLMtg7YLAc-85A0I" },
 };
 
 /* Tells search engines the site's name (so results read "Ping Chun Lui",
