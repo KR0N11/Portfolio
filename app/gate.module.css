@@ -127,6 +127,15 @@
 }
 
 @media (max-width: 640px) {
+  /* The scene sits along the bottom at three screen pixels per art pixel, so
+     the whole Ring and the knight fit; above it, the sky's top colour. */
+  .gate {
+    background: #0a1b20;
+  }
+  .push {
+    top: auto;
+    height: min(675px, 100%);
+  }
   /* Clear the link bar, which spans the top on phones. */
   .top {
     top: 62px;
@@ -146,6 +155,5 @@
   .pitch {
     font-size: 24px;
     line-height: 28px;
-    text-shadow: var(--outline-sm);
   }
 }
