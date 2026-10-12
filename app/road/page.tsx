@@ -172,8 +172,10 @@ export default function Road() {
         </div>
       )}
 
-      <nav className={`${s.menu} win`} data-ready={ready} inert={!ready} aria-label="Site of Grace">
-        <div className={`${s.place} title-card`}>{person.name}</div>
+      <div className={s.side} data-ready={ready}>
+      {/* The name stands over the menu like a game's title. */}
+      <p className={`${s.title} title-card`}>{person.name}</p>
+      <nav className={`${s.menu} win`} inert={!ready} aria-label="Site of Grace">
         <ul>
           {MENU.map((e, i) => (
             <li key={e.key} data-gap={e.key === "leave"}>
@@ -196,6 +198,7 @@ export default function Road() {
           ))}
         </ul>
       </nav>
+      </div>
 
       {ready && (
         <p className={`${s.help} win`} key={copied ? `c${copied}` : sel}>
