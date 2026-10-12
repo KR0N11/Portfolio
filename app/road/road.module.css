@@ -20,19 +20,29 @@
   display: none;
 }
 
-/* The grace menu: a dialogue panel on the left, like resting in the game. */
-.menu {
+/* The name as a title, and under it the grace menu: a dialogue panel on the
+   left, like resting in the game. */
+.side {
   position: absolute;
   left: var(--gutter);
-  top: clamp(90px, 14vh, 128px);
+  top: clamp(40px, 7vh, 72px);
   width: min(440px, calc(100% - 2 * var(--gutter)));
   opacity: 0;
   pointer-events: none;
   transition: opacity 400ms steps(4);
 }
-.menu[data-ready="true"] {
+.side[data-ready="true"] {
   opacity: 1;
   pointer-events: auto;
+}
+.title {
+  margin: 0 0 28px;
+  font-size: 72px;
+  line-height: 1;
+  white-space: nowrap;
+}
+.menu {
+  width: 100%;
 }
 
 /* "Lost Grace Discovered": gold pixel title on a dark band. */
@@ -79,13 +89,9 @@
     opacity: 0;
   }
 }
-.place {
-  font-size: 40px;
-  white-space: nowrap;
-}
 .menu ul {
   list-style: none;
-  margin: 24px 0 0;
+  margin: 0;
   padding: 0;
 }
 .menu li[data-gap="true"] {
@@ -162,16 +168,19 @@
     bottom: auto;
     height: 80%;
   }
-  .menu {
+  .side {
     top: auto;
     bottom: 16px;
     left: 16px;
     right: 16px;
     width: auto;
-    padding-bottom: 72px;
   }
-  .place {
-    font-size: 32px;
+  .title {
+    margin-bottom: 12px;
+    font-size: 48px;
+  }
+  .menu {
+    padding-bottom: 72px;
   }
   .item {
     font-size: 32px;
