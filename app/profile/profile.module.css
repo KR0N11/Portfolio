@@ -223,36 +223,28 @@
   }
 }
 
-/* ---------- Pastimes ---------- */
-/* Four equal columns, every photo the same width: Photography, Travel's pair
-   and the clip across the top, each captioned underneath; Manga & Anime gets
-   its own row, the panel in the first column and the list beside it. */
-.pastimes {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 56px clamp(20px, 2.4vw, 32px);
-  padding-top: 32px;
+/* ---------- Pastimes: a justified gallery, two to a row ---------- */
+/* Every photo keeps its own shape. An item's share of the row is the sum of
+   its photos' width/height ratios (--a), plus the gaps between them, so
+   all the photos in a row stand the same height; the caption sits under each. */
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  padding-top: 40px;
 }
-.item[data-slug="travel"] {
-  grid-column: span 2;
+.row + .row {
+  padding-top: 56px;
 }
-.item[data-slug="anime"] {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(20px, 2.4vw, 32px);
-  align-items: start;
-}
-.item[data-slug="anime"] .itemText {
-  grid-column: span 3;
-  max-width: 34em;
-  padding-top: 0;
+/* (grow factors are scaled up: a lone child whose factors sum under 1 would
+   only take that fraction of the free space) */
+.item {
+  flex: calc(var(--a, 1) * 100) 1 calc(var(--gaps, 0) * var(--photo-gap));
+  min-width: 0;
 }
 .itemText {
-  padding-top: 0;
-}
-.itemText {
-  padding-top: 16px;
+  padding-top: 20px;
+  max-width: 30em;
 }
 .item h3,
 .page .item h3 {
@@ -268,17 +260,12 @@
   line-height: 30px;
   color: var(--fg);
 }
+.page {
+  --photo-gap: 24px;
+}
 .photos {
-  display: grid;
-  grid-template-columns: repeat(var(--n, 1), minmax(0, 1fr));
-  /* Same gutter as the grid around it, so Travel's photos line up with the columns. */
-  gap: clamp(20px, 2.4vw, 32px);
-}
-.photos[data-count="2"] {
-  --n: 2;
-}
-.photos[data-count="3"] {
-  --n: 3;
+  display: flex;
+  gap: var(--photo-gap);
 }
 /* One grade for every photo, so phone shots sit in the same dark page. */
 .photos img,
@@ -286,12 +273,12 @@
   filter: saturate(0.85) contrast(1.05) brightness(0.9);
 }
 .photos .frame {
-  width: 100%;
-  aspect-ratio: 4 / 5;
-}
-/* The manga panel is square and full of lettering: show it whole, square. */
-.photos .frame:has(img[alt^="Jujutsu"]) {
-  aspect-ratio: 1;
+  flex: calc(var(--r) * 100) 1 0;
+  min-width: 0;
+  aspect-ratio: var(--r);
+  /* a lighter rim than the panels, so the photos lead */
+  border-width: calc(3 * var(--px));
+  border-image-width: calc(3 * var(--px));
 }
 .frame:has(img[alt^="Jujutsu"]) img {
   filter: none;
@@ -381,24 +368,11 @@
     grid-template-columns: minmax(0, 1fr);
     gap: 18px;
   }
-  /* Tablets: two across; Travel's pair takes a full row, and the manga's
-     panel and list split one. */
-  .pastimes {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 40px 16px;
+  .row {
+    gap: 20px;
   }
-  .item[data-slug="travel"] {
-    order: -1;
-  }
-  .item[data-slug="anime"] {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-  }
-  .item[data-slug="anime"] .itemText {
-    grid-column: auto;
-  }
-  .photos {
-    gap: 16px;
+  .page {
+    --photo-gap: 16px;
   }
   .item .body,
   .item .line,
@@ -414,31 +388,29 @@
     font-size: 21px;
     line-height: 29px;
   }
-  /* Pixel frames are heavy at phone width: a thinner frame for the small photos. */
-  .photos .frame {
-    border-width: calc(3 * var(--px));
-    border-image-width: calc(3 * var(--px));
-  }
 }
 
-/* Phones: one column, every photo the column's full width, text under it. */
+/* Phones: one item under another, its photos across the column's full width. */
 @media (max-width: 640px) {
-  .pastimes {
-    grid-template-columns: minmax(0, 1fr);
+  .row,
+  .row + .row {
+    flex-direction: column;
     gap: 44px;
+    padding-top: 32px;
   }
-  .item,
-  .item[data-slug="travel"],
-  .item[data-slug="anime"] {
-    grid-column: auto;
-    order: 0;
+  .row + .row {
+    padding-top: 44px;
   }
-  .item[data-slug="anime"] {
-    grid-template-columns: minmax(0, 1fr);
+  .item {
+    flex: none;
+    width: 100%;
   }
-  /* a lone photo is square here, so it doesn't fill the whole screen */
-  .photos[data-count="1"] .frame {
-    aspect-ratio: 1;
+  .itemText {
+    padding-top: 16px;
+  }
+  /* the tall self-portrait is cut to 4:5 here, so it doesn't fill the screen */
+  .photos[data-count="1"] .frame:has(img[alt^="Ping taking"]) {
+    aspect-ratio: 4 / 5;
   }
   .photos img[alt^="Ping taking"] {
     object-position: 50% 30%;

@@ -62,34 +62,38 @@ export const profile = {
     {
       slug: "photography",
       alts: ["Ping taking a mirror photo with a compact camera"],
+      ratios: [2 / 3],
       name: "Photography",
       body: "Small camera, always in the bag. Mostly friends, streets, and that light right before sunset.",
     },
     {
       slug: "travel",
       alts: ["Mount Fuji behind a field of blue nemophila flowers", "A hillside staircase in Japan at golden hour"],
+      ratios: [3 / 4, 3 / 4],
       name: "Travel",
       body: "Japan, mostly. Fuji over a field of blue flowers, a hillside staircase at golden hour. Every trip gets photographed and vlogged.",
     },
     {
       slug: "games",
       alts: ["Rainbow Six Siege clip, aiming down a hallway"],
+      ratios: [16 / 9],
       name: "Games",
       line: "Peak Emerald on Siege. (Rather be a Siege player than a League gooner.)",
     },
     {
       slug: "anime",
       alts: ["Jujutsu Kaisen panel: Yuji yelling about a special grade larper"],
+      ratios: [1],
       name: "Manga & Anime",
-      line: "Top three, in order:",
       list: ["Frieren: Beyond Journey's End", "KonoSuba", "Jujutsu Kaisen"],
       also: "Also: the Fate series and Rampart of Ice.",
-      body: "Frieren for the quiet, KonoSuba for the laughs, Jujutsu Kaisen for the fights (and panels like this one).",
     },
   ] as {
     slug: string;
     /** alt text for each photo, in file order */
     alts?: string[];
+    /** each photo's width / height, in file order, so it shows uncropped (4:5 if missing) */
+    ratios?: number[];
     name: string;
     line?: string;
     body?: string;
