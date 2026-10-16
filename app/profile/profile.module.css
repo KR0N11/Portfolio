@@ -77,6 +77,10 @@
   line-height: 36px;
   color: var(--fg);
 }
+.intro b {
+  font-weight: 400;
+  color: var(--acc);
+}
 /* The motto, said in a dialogue box with a name tag. */
 .say {
   position: relative;
@@ -219,86 +223,28 @@
   }
 }
 
-/* ---------- Skills: four columns, like a status screen ---------- */
-/* Each group is an inventory panel; each skill an item with a pixel icon. */
-.skills {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 20px;
-  padding-top: 28px;
-}
-.skillCard {
-  text-shadow: none;
-  padding: 12px 16px 16px;
-}
-.skillCard ul {
-  list-style: none;
-  margin: 12px 0 0;
-  padding: 0;
-}
-.skillCard li {
+/* ---------- Pastimes: a justified gallery, two to a row ---------- */
+/* Every photo keeps its own shape. An item's share of the row is the sum of
+   its photos' width/height ratios (--a), plus the gaps between them, so
+   all the photos in a row stand the same height; the caption sits under each. */
+.row {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 0;
-  font-size: 22px;
-  line-height: 28px;
-  color: var(--fg);
+  align-items: flex-start;
+  gap: 32px;
+  padding-top: 40px;
 }
-.skillCard img {
-  width: 24px;
-  height: 24px;
-  flex: none;
-  image-rendering: pixelated;
+.row + .row {
+  padding-top: 56px;
 }
-@media (max-width: 960px) {
-  .skills {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 480px) {
-  .skills {
-    gap: 10px;
-  }
-  .skillCard {
-    padding: 8px 10px 10px;
-  }
-  .skillCard li {
-    gap: 8px;
-    font-size: 18px;
-    line-height: 22px;
-  }
-}
-
-/* ---------- Pastimes: a photo grid, a short caption under each ---------- */
-.pastimes {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 44px clamp(20px, 2.4vw, 32px);
-  padding-top: 32px;
-}
+/* (grow factors are scaled up: a lone child whose factors sum under 1 would
+   only take that fraction of the free space) */
 .item {
-  grid-column: span 2;
-}
-/* Photography, Gym, Games across the top; Travel's two photos and the manga below. */
-.item[data-slug="photography"] {
-  order: 1;
-}
-.item[data-slug="gym"] {
-  order: 2;
-}
-.item[data-slug="games"] {
-  order: 3;
-}
-.item[data-slug="travel"] {
-  order: 4;
-  grid-column: span 4;
-}
-.item[data-slug="anime"] {
-  order: 5;
+  flex: calc(var(--a, 1) * 100) 1 calc(var(--gaps, 0) * var(--photo-gap));
+  min-width: 0;
 }
 .itemText {
-  padding-top: 16px;
+  padding-top: 20px;
+  max-width: 30em;
 }
 .item h3,
 .page .item h3 {
@@ -314,37 +260,25 @@
   line-height: 30px;
   color: var(--fg);
 }
+.page {
+  --photo-gap: 24px;
+}
 .photos {
-  display: grid;
-  grid-template-columns: repeat(var(--n, 1), minmax(0, 1fr));
-  /* Same gutter as the grid around it, so Travel's photos line up with the row above. */
-  gap: clamp(20px, 2.4vw, 32px);
-}
-.photos[data-count="2"] {
-  --n: 2;
-}
-.photos[data-count="3"] {
-  --n: 3;
+  display: flex;
+  gap: var(--photo-gap);
 }
 /* One grade for every photo, so phone shots sit in the same dark page. */
 .photos img,
 .photos video {
   filter: saturate(0.85) contrast(1.05) brightness(0.9);
 }
-/* Every picture the same shape, so the grid reads as one set. */
-.photos .frame,
-.photos .frame[data-video="true"] {
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  max-width: none;
-}
-/* The white wall behind the weights is the brightest thing on the page. */
-.photos img[alt^="Weight"] {
-  filter: saturate(0.85) contrast(1.05) brightness(0.78);
-}
-/* The manga panel is square and full of lettering: show it whole, square. */
-.photos .frame:has(img[alt^="Jujutsu"]) {
-  aspect-ratio: 1;
+.photos .frame {
+  flex: calc(var(--r) * 100) 1 0;
+  min-width: 0;
+  aspect-ratio: var(--r);
+  /* a lighter rim than the panels, so the photos lead */
+  border-width: calc(3 * var(--px));
+  border-image-width: calc(3 * var(--px));
 }
 .frame:has(img[alt^="Jujutsu"]) img {
   filter: none;
@@ -373,37 +307,6 @@
 }
 .also {
   margin: 8px 0 0;
-  font-size: 20px;
-  line-height: 28px;
-  color: var(--dim);
-}
-.quote {
-  margin: 18px 0 0;
-  padding-left: 16px;
-  border-left: var(--px) solid var(--acc);
-  font-size: 24px;
-  color: var(--fg);
-}
-
-.companion {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  margin: 22px 0 0;
-  max-width: 30em;
-}
-.companion img {
-  flex: none;
-  width: 72px;
-  height: auto;
-  animation: bob 1.6s steps(2) infinite;
-}
-@keyframes bob {
-  50% {
-    transform: translateY(calc(-1 * var(--px)));
-  }
-}
-.companion figcaption {
   font-size: 20px;
   line-height: 28px;
   color: var(--dim);
@@ -442,6 +345,7 @@
 @media (max-width: 860px) {
   .heroInner {
     padding-top: 110px;
+    padding-bottom: 0;
   }
   .heroInner[data-portrait="true"] {
     grid-template-columns: minmax(0, 1fr);
@@ -460,81 +364,55 @@
     justify-self: center;
     width: min(100%, 300px);
   }
-  .job,
-  /* Phones: two across, Travel's pair full width. */
-  .pastimes {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 32px 14px;
-  }
   .job {
     grid-template-columns: minmax(0, 1fr);
     gap: 18px;
   }
-  .item {
-    grid-column: span 1;
+  .row {
+    gap: 20px;
   }
-  .item[data-slug="travel"] {
-    grid-column: span 2;
-    order: 3;
-  }
-  /* Games pairs with the manga on the last row instead of sitting alone. */
-  .item[data-slug="games"] {
-    order: 4;
+  .page {
+    --photo-gap: 16px;
   }
   .item .body,
-  .item .line {
-    font-size: 19px;
-    line-height: 27px;
-  }
-  .item h3,
-  .page .item h3 {
-    font-size: 26px;
-  }
-  .ranked li {
+  .item .line,
+  .also {
     font-size: 20px;
     line-height: 28px;
   }
-  /* the companion's note sits under its picture, at the column's full width */
-  .companion {
+  .item h3,
+  .page .item h3 {
+    font-size: 28px;
+  }
+  .ranked li {
+    font-size: 21px;
+    line-height: 29px;
+  }
+}
+
+/* Phones: one item under another, its photos across the column's full width. */
+@media (max-width: 640px) {
+  .row,
+  .row + .row {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    margin-top: 14px;
+    gap: 44px;
+    padding-top: 32px;
   }
-  .companion img {
-    width: 44px;
+  .row + .row {
+    padding-top: 44px;
   }
-  .companion figcaption {
-    font-size: 17px;
-    line-height: 23px;
+  .item {
+    flex: none;
+    width: 100%;
   }
-  /* Pixel frames are heavy at phone width: a thinner frame for the small photos. */
-  .photos .frame {
-    border-width: calc(3 * var(--px));
-    border-image-width: calc(3 * var(--px));
+  .itemText {
+    padding-top: 16px;
   }
-}
-
-/* Small phones: one card per row, so the text has room; a single photo stays modest. */
-@media (max-width: 520px) {
-  .pastimes {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 36px;
+  /* the tall self-portrait is cut to 4:5 here, so it doesn't fill the screen */
+  .photos[data-count="1"] .frame:has(img[alt^="Ping taking"]) {
+    aspect-ratio: 4 / 5;
   }
-  .item,
-  .item[data-slug="travel"] {
-    grid-column: span 1;
-  }
-  .photos[data-count="1"] {
-    max-width: 260px;
-  }
-}
-
-@media (min-width: 521px) and (max-width: 860px) {
-  .item[data-slug="photography"],
-  .item[data-slug="gym"],
-  .item[data-slug="games"],
-  .item[data-slug="anime"] {
-    grid-column: span 1;
+  .photos img[alt^="Ping taking"] {
+    object-position: 50% 30%;
   }
 }

@@ -215,10 +215,16 @@
   .menu li[data-gap="true"] {
     margin-top: 12px;
   }
-  /* The description sits inside the menu panel, under the list. */
+  /* The description sits inside the menu panel, under the list, lined up
+     with the entries' text (panel edge 16 + rim 12 + padding 10 + cursor 44). */
   .help {
     bottom: 48px;
-    width: calc(100% - 96px);
+    left: 82px;
+    right: 30px;
+    width: auto;
+    transform: none;
+    text-align: left;
+    text-wrap: balance;
     padding: 0;
     border: 0;
     border-image: none;

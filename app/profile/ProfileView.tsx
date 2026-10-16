@@ -1,10 +1,10 @@
 "use client";
 
 /*
-  Who I am, where I've worked, what I do off the clock. Work comes first and
-  stays compact; pastimes follow, each with my own photos. Sections are ruled
-  rows under a pixel rule, like a game's status screen; the quote is said in a
-  dialogue box, and photos sit in pixel frames but stay sharp.
+  Who I am, where I've worked, what I do off the clock. A few plain lines up
+  top, work kept compact, then pastimes with my own photos. Sections sit under
+  a pixel rule, like a game's status screen; the quote is said in a dialogue
+  box, and photos sit in pixel frames but stay sharp.
 */
 
 import Link from "next/link";
@@ -79,44 +79,31 @@ function Media({ src, alt }: { src: string; alt: string }) {
   );
 }
 
+const ratio = (ratios: number[] | undefined, i: number) => ratios?.[i] ?? 4 / 5;
+
 function Photos({
   list,
   alt,
   alts = [],
+  ratios,
 }: {
   list: string[];
   alt: string;
   alts?: string[];
+  ratios?: number[];
 }) {
   if (!list.length) return null;
   return (
     <div className={s.photos} data-count={Math.min(list.length, 3)}>
       {list.slice(0, 3).map((src, i) => (
-        <figure key={src} className={`${s.frame} frame-px`} data-video={src.endsWith(".mp4")}>
+        <figure
+          key={src}
+          className={`${s.frame} frame-px`}
+          data-video={src.endsWith(".mp4")}
+          style={{ "--r": ratio(ratios, i) } as React.CSSProperties}
+        >
           <Media src={src} alt={alts[i] ?? `${alt}, ${i + 1}`} />
         </figure>
-      ))}
-    </div>
-  );
-}
-
-/* Skills: one column per group, a ruled list under a gold label. */
-function SkillCards() {
-  return (
-    <div className={s.skills}>
-      {profile.skills.map((g) => (
-        <div key={g.group} className={`${s.skillCard} win`} data-reveal>
-          <h3 className={s.label}>{g.group}</h3>
-          <ul>
-            {g.items.map(([name, icon]) => (
-              <li key={name}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/skills/${icon}-px.png`} alt="" loading="lazy" />
-                {name}
-              </li>
-            ))}
-          </ul>
-        </div>
       ))}
     </div>
   );
@@ -153,7 +140,11 @@ export default function ProfileView({ gallery, portrait }: Props) {
           <div>
             <h1 className={`${s.name} title-card`}>{person.name}</h1>
             <p className={s.role}>{person.pitch}</p>
-            <p className={s.intro}>{profile.intro}</p>
+            <p className={s.intro}>
+              {profile.intro.map((t, i) =>
+                typeof t === "string" ? t : <b key={i}>{t.em}</b>,
+              )}
+            </p>
             <figure className={`${s.say} win`}>
               <figcaption className={s.tag}>Ping</figcaption>
               <blockquote>{profile.quote}</blockquote>
@@ -204,56 +195,62 @@ export default function ProfileView({ gallery, portrait }: Props) {
 
       <section className={s.chapter}>
         <h2 className={s.band} data-reveal>
-          Skills
-        </h2>
-        <SkillCards />
-      </section>
-
-      <section className={s.chapter}>
-        <h2 className={s.band} data-reveal>
           Off the clock
         </h2>
-        <div className={s.pastimes}>
-          {profile.pastimes.map((p) => (
-            <article
-              key={p.slug}
-              className={s.item}
-              data-slug={p.slug}
-              data-reveal
-            >
-              <Photos list={gallery[p.slug] ?? []} alt={p.name} alts={p.alts} />
-              <div className={s.itemText}>
-                <h3>{p.name}</h3>
-                {p.line && <p className={s.line}>{p.line}</p>}
-                {p.list && (
-                  <ol className={s.ranked}>
-                    {p.list.map((t) => (
-                      <li key={t}>{t}</li>
-                    ))}
-                  </ol>
-                )}
-                {p.also && <p className={s.also}>{p.also}</p>}
-                {p.body && <p className={s.body}>{p.body}</p>}
-                {p.quote && (
-                  <blockquote className={s.quote}>
-                    &ldquo;{p.quote}&rdquo;
-                  </blockquote>
-                )}
-                {p.companion && (
-                  <figure className={s.companion}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={p.companion.src}
-                      alt={p.companion.alt}
-                      loading="lazy"
+        {/* Two to a row, laid out like a justified gallery: each item's share of
+            the row is the sum of its photos' width/height ratios, so every photo
+            in a row stands the same height, uncropped. */}
+        {profile.pastimes
+          .map((_, i) => i)
+          .filter((i) => i % 2 === 0)
+          .map((at) => (
+            <div key={at} className={s.row}>
+              {profile.pastimes.slice(at, at + 2).map((p) => {
+                const n = Math.min((gallery[p.slug] ?? []).length, 3);
+                let a = 0;
+                for (let i = 0; i < n; i++) a += ratio(p.ratios, i);
+                return (
+                  <article
+                    key={p.slug}
+                    className={s.item}
+                    data-slug={p.slug}
+                    data-reveal
+                    style={
+                      {
+                        "--a": a || 1,
+                        "--gaps": Math.max(0, n - 1),
+                      } as React.CSSProperties
+                    }
+                  >
+                    <Photos
+                      list={gallery[p.slug] ?? []}
+                      alt={p.name}
+                      alts={p.alts}
+                      ratios={p.ratios}
                     />
-                    <figcaption>{p.companion.caption}</figcaption>
-                  </figure>
-                )}
-              </div>
-            </article>
+                    <div className={s.itemText}>
+                      <h3>{p.name}</h3>
+                      {p.line && <p className={s.line}>{p.line}</p>}
+                      {p.list && (
+                        <ol className={s.ranked}>
+                          {p.list.map((t) => (
+                            <li key={t}>{t}</li>
+                          ))}
+                        </ol>
+                      )}
+                      {p.also && <p className={s.also}>{p.also}</p>}
+                      {p.body && <p className={s.body}>{p.body}</p>}
+                      {p.quote && (
+                        <blockquote className={s.quote}>
+                          &ldquo;{p.quote}&rdquo;
+                        </blockquote>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
           ))}
-        </div>
       </section>
 
       <footer className={s.footer}>
@@ -270,7 +267,7 @@ export default function ProfileView({ gallery, portrait }: Props) {
         <p className={s.credit}>
           Music: &ldquo;Elden Ring&rdquo; by Tsukasa Saitoh. Elden Ring art,
           footage and music &copy; FromSoftware / Bandai Namco, used as a fan
-          tribute. Hachiware &copy; Nagano.
+          tribute.
         </p>
       </footer>
       <div className="horizon" aria-hidden="true" />

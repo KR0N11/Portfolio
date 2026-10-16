@@ -64,10 +64,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* The plain pages stand under a banded night sky (the scenes cover it). */
+/* The plain pages stand under a dithered night sky (the scenes cover it). */
 body {
   background: var(--abyss) url(/pixel/sky.png) 50% 0 / 2560px 1600px no-repeat fixed;
   image-rendering: pixelated;
+}
+/* Stars stay out of the centred text column; phones are all column, so none. */
+@media (max-width: 640px) {
+  body {
+    background-image: url(/pixel/sky-plain.png);
+  }
 }
 img,
 video {
