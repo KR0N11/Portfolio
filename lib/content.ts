@@ -17,11 +17,19 @@ export const person = {
   Profile photos are picked up from folders at build time, no code changes:
     public/profile/portrait.webp       (optional, shown in the opening frame)
     public/profile/<company slug>/*    (genetec, vffice, paultech)
-    public/profile/<pastime slug>/*    (photography, gym, travel, games)
+    public/profile/<pastime slug>/*    (photography, travel, games, anime)
 */
 export const profile = {
-  intro:
-    "Hi, I'm Ping! I want to build things that make people's day a little easier, and I'm just getting started.",
+  /* Said plainly, a few lines; the companies are picked out in gold. */
+  intro: [
+    "Hey, I'm Ping, based in Montréal. Right now I'm interning at ",
+    { em: "Genetec" },
+    ", after ",
+    { em: "Vffice" },
+    " and ",
+    { em: "Paul Tech" },
+    ". I want to build things that make people's day a little easier, and I'm just getting started.",
+  ] as (string | { em: string })[],
   quote: "A fool in motion will go further than a genius sitting still.",
   served: [
     {
@@ -50,30 +58,12 @@ export const profile = {
     { name: "Concordia University", field: "Computer Science", logo: "/profile/logos/concordia-white.svg" },
     { name: "LaSalle College", field: "Computer Science", logo: "/profile/logos/lasalle-white.svg" },
   ],
-  /* Skills by group: [name, icon file in public/skills]. */
-  skills: [
-    { group: "Languages", items: [["Python", "python"], ["JavaScript", "javascript"], ["Java", "java"], ["C#", "csharp"], ["TypeScript", "typescript"], ["Swift", "swift"]] },
-    { group: "Frontend", items: [["React", "react"], ["HTML", "html5"], ["CSS", "css3"], ["Next.js", "nextjs"]] },
-    { group: "Backend & Cloud", items: [["Azure", "azure"], [".NET", "dotnetcore"], ["Node.js", "nodejs"], ["PostgreSQL", "postgresql"], ["AWS", "amazonwebservices"], ["Docker", "docker"]] },
-    { group: "Other", items: [["Git", "git"], ["GitHub", "github"], ["Azure DevOps", "azuredevops"], ["PyTorch", "pytorch"]] },
-  ] as { group: string; items: [string, string][] }[],
   pastimes: [
     {
       slug: "photography",
       alts: ["Ping taking a mirror photo with a compact camera"],
       name: "Photography",
       body: "Small camera, always in the bag. Mostly friends, streets, and that light right before sunset.",
-      companion: {
-        src: "/profile/hachiware-camera.png",
-        alt: "Hachiware from Chiikawa holding a camera",
-        caption: "Hachiware worked part-time jobs to save up for his camera, then photographed everything his friends did. Relatable.",
-      },
-    },
-    {
-      slug: "gym",
-      alts: ["Weight plates and dumbbells at home"],
-      name: "Gym",
-      body: "The bar doesn't care how my week went. The weight either went up or it didn't (some months it didn't). Hachiware is the mood: fail, yell “make it work!”, go again.",
     },
     {
       slug: "travel",
@@ -85,7 +75,7 @@ export const profile = {
       slug: "games",
       alts: ["Rainbow Six Siege clip, aiming down a hallway"],
       name: "Games",
-      line: "Emerald in R6. Destiny. The occasional Roblox. Never League.",
+      line: "Peak Emerald on Siege. (Rather be a Siege player than a League gooner.)",
     },
     {
       slug: "anime",
@@ -106,7 +96,6 @@ export const profile = {
     list?: string[];
     also?: string;
     quote?: string;
-    companion?: { src: string; alt: string; caption: string };
   }[],
 };
 
