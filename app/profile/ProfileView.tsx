@@ -1,10 +1,10 @@
 "use client";
 
 /*
-  Who I am, where I've worked, what I do off the clock. Work comes first and
-  stays compact; pastimes follow, each with my own photos. Sections are ruled
-  rows under a pixel rule, like a game's status screen; the quote is said in a
-  dialogue box, and photos sit in pixel frames but stay sharp.
+  Who I am, where I've worked, what I do off the clock. A few plain lines up
+  top, work kept compact, then pastimes with my own photos. Sections sit under
+  a pixel rule, like a game's status screen; the quote is said in a dialogue
+  box, and photos sit in pixel frames but stay sharp.
 */
 
 import Link from "next/link";
@@ -100,28 +100,6 @@ function Photos({
   );
 }
 
-/* Skills: one column per group, a ruled list under a gold label. */
-function SkillCards() {
-  return (
-    <div className={s.skills}>
-      {profile.skills.map((g) => (
-        <div key={g.group} className={`${s.skillCard} win`} data-reveal>
-          <h3 className={s.label}>{g.group}</h3>
-          <ul>
-            {g.items.map(([name, icon]) => (
-              <li key={name}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/skills/${icon}-px.png`} alt="" loading="lazy" />
-                {name}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export default function ProfileView({ gallery, portrait }: Props) {
   const ref = useReveal();
 
@@ -153,7 +131,11 @@ export default function ProfileView({ gallery, portrait }: Props) {
           <div>
             <h1 className={`${s.name} title-card`}>{person.name}</h1>
             <p className={s.role}>{person.pitch}</p>
-            <p className={s.intro}>{profile.intro}</p>
+            <p className={s.intro}>
+              {profile.intro.map((t, i) =>
+                typeof t === "string" ? t : <b key={i}>{t.em}</b>,
+              )}
+            </p>
             <figure className={`${s.say} win`}>
               <figcaption className={s.tag}>Ping</figcaption>
               <blockquote>{profile.quote}</blockquote>
@@ -204,13 +186,6 @@ export default function ProfileView({ gallery, portrait }: Props) {
 
       <section className={s.chapter}>
         <h2 className={s.band} data-reveal>
-          Skills
-        </h2>
-        <SkillCards />
-      </section>
-
-      <section className={s.chapter}>
-        <h2 className={s.band} data-reveal>
           Off the clock
         </h2>
         <div className={s.pastimes}>
@@ -239,17 +214,6 @@ export default function ProfileView({ gallery, portrait }: Props) {
                     &ldquo;{p.quote}&rdquo;
                   </blockquote>
                 )}
-                {p.companion && (
-                  <figure className={s.companion}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={p.companion.src}
-                      alt={p.companion.alt}
-                      loading="lazy"
-                    />
-                    <figcaption>{p.companion.caption}</figcaption>
-                  </figure>
-                )}
               </div>
             </article>
           ))}
@@ -270,7 +234,7 @@ export default function ProfileView({ gallery, portrait }: Props) {
         <p className={s.credit}>
           Music: &ldquo;Elden Ring&rdquo; by Tsukasa Saitoh. Elden Ring art,
           footage and music &copy; FromSoftware / Bandai Namco, used as a fan
-          tribute. Hachiware &copy; Nagano.
+          tribute.
         </p>
       </footer>
       <div className="horizon" aria-hidden="true" />

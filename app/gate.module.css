@@ -85,7 +85,7 @@
 .hint {
   position: absolute;
   left: 50%;
-  bottom: clamp(20px, 5vh, 48px);
+  bottom: clamp(12px, 2vh, 20px);
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -142,8 +142,13 @@
   }
   /* The knight fills the bottom of a phone screen: the prompt sits under him,
      Skip on the fog to the right. */
+  /* One compact line in the dark ground under the rock, clear of the stone. */
   .hint {
-    bottom: 12px;
+    bottom: 8px;
+    gap: 10px;
+    padding: 2px 14px;
+    font-size: 18px;
+    line-height: 24px;
   }
   .skip {
     bottom: 128px;
@@ -155,5 +160,21 @@
   .pitch {
     font-size: 24px;
     line-height: 28px;
+  }
+}
+
+/* Short phones: two screen pixels per art pixel, so the Ring stays clear of the
+   name; the scene stands a little up off the bottom so the prompt clears the
+   stone, on a strip of the ground's own darkest colour. */
+@media (max-width: 640px) and (max-height: 800px) {
+  .gate {
+    background: linear-gradient(to top, #060b0d 16px, #0a1b20 16px);
+  }
+  .push {
+    bottom: 16px;
+    height: 450px;
+  }
+  .skip {
+    bottom: 92px;
   }
 }
