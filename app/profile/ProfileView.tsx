@@ -79,20 +79,29 @@ function Media({ src, alt }: { src: string; alt: string }) {
   );
 }
 
+const ratio = (ratios: number[] | undefined, i: number) => ratios?.[i] ?? 4 / 5;
+
 function Photos({
   list,
   alt,
   alts = [],
+  ratios,
 }: {
   list: string[];
   alt: string;
   alts?: string[];
+  ratios?: number[];
 }) {
   if (!list.length) return null;
   return (
     <div className={s.photos} data-count={Math.min(list.length, 3)}>
       {list.slice(0, 3).map((src, i) => (
-        <figure key={src} className={`${s.frame} frame-px`} data-video={src.endsWith(".mp4")}>
+        <figure
+          key={src}
+          className={`${s.frame} frame-px`}
+          data-video={src.endsWith(".mp4")}
+          style={{ "--r": ratio(ratios, i) } as React.CSSProperties}
+        >
           <Media src={src} alt={alts[i] ?? `${alt}, ${i + 1}`} />
         </figure>
       ))}
@@ -188,36 +197,60 @@ export default function ProfileView({ gallery, portrait }: Props) {
         <h2 className={s.band} data-reveal>
           Off the clock
         </h2>
-        <div className={s.pastimes}>
-          {profile.pastimes.map((p) => (
-            <article
-              key={p.slug}
-              className={s.item}
-              data-slug={p.slug}
-              data-reveal
-            >
-              <Photos list={gallery[p.slug] ?? []} alt={p.name} alts={p.alts} />
-              <div className={s.itemText}>
-                <h3>{p.name}</h3>
-                {p.line && <p className={s.line}>{p.line}</p>}
-                {p.list && (
-                  <ol className={s.ranked}>
-                    {p.list.map((t) => (
-                      <li key={t}>{t}</li>
-                    ))}
-                  </ol>
-                )}
-                {p.also && <p className={s.also}>{p.also}</p>}
-                {p.body && <p className={s.body}>{p.body}</p>}
-                {p.quote && (
-                  <blockquote className={s.quote}>
-                    &ldquo;{p.quote}&rdquo;
-                  </blockquote>
-                )}
-              </div>
-            </article>
+        {/* Two to a row, laid out like a justified gallery: each item's share of
+            the row is the sum of its photos' width/height ratios, so every photo
+            in a row stands the same height, uncropped. */}
+        {profile.pastimes
+          .map((_, i) => i)
+          .filter((i) => i % 2 === 0)
+          .map((at) => (
+            <div key={at} className={s.row}>
+              {profile.pastimes.slice(at, at + 2).map((p) => {
+                const n = Math.min((gallery[p.slug] ?? []).length, 3);
+                let a = 0;
+                for (let i = 0; i < n; i++) a += ratio(p.ratios, i);
+                return (
+                  <article
+                    key={p.slug}
+                    className={s.item}
+                    data-slug={p.slug}
+                    data-reveal
+                    style={
+                      {
+                        "--a": a || 1,
+                        "--gaps": Math.max(0, n - 1),
+                      } as React.CSSProperties
+                    }
+                  >
+                    <Photos
+                      list={gallery[p.slug] ?? []}
+                      alt={p.name}
+                      alts={p.alts}
+                      ratios={p.ratios}
+                    />
+                    <div className={s.itemText}>
+                      <h3>{p.name}</h3>
+                      {p.line && <p className={s.line}>{p.line}</p>}
+                      {p.list && (
+                        <ol className={s.ranked}>
+                          {p.list.map((t) => (
+                            <li key={t}>{t}</li>
+                          ))}
+                        </ol>
+                      )}
+                      {p.also && <p className={s.also}>{p.also}</p>}
+                      {p.body && <p className={s.body}>{p.body}</p>}
+                      {p.quote && (
+                        <blockquote className={s.quote}>
+                          &ldquo;{p.quote}&rdquo;
+                        </blockquote>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
           ))}
-        </div>
       </section>
 
       <footer className={s.footer}>
