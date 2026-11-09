@@ -25,6 +25,7 @@
   --pale: var(--acc-hi);
 
   --pixel: var(--font-pixel), "Jersey 15", monospace;
+  --read: var(--font-read), system-ui, sans-serif;
   --serif: var(--pixel);
   --caps: var(--pixel);
   --display: var(--pixel);
@@ -43,7 +44,7 @@
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 640px), (orientation: landscape) and (max-height: 500px) {
   :root {
     --px: 2px;
   }
@@ -66,12 +67,25 @@ body {
 
 /* The plain pages stand under a dithered night sky (the scenes cover it). */
 body {
-  background: var(--abyss) url(/pixel/sky.png) 50% 0 / 2560px 1600px no-repeat fixed;
+  background: var(--abyss);
   image-rendering: pixelated;
+}
+/* On its own fixed layer: iPhone Safari ignores background-attachment: fixed,
+   which left a hard edge where the picture ended partway down the page. */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100lvh;
+  z-index: -1;
+  background: url(/pixel/sky.png) 50% 0 / 2560px 1600px no-repeat;
+  pointer-events: none;
 }
 /* Stars stay out of the centred text column; phones are all column, so none. */
 @media (max-width: 640px) {
-  body {
+  body::before {
     background-image: url(/pixel/sky-plain.png);
   }
 }
@@ -258,16 +272,40 @@ kbd {
     justify-content: space-between;
     gap: 8px;
     margin: 0;
-    padding: 6px 0;
+    padding: 0;
     font-size: 17px;
     text-shadow: var(--outline-sm);
   }
-  /* Comfortable tap targets without changing the look. */
+}
+/* Phones on their side: the links stay in the corner, clear of the art. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .sitebar {
+    top: 4px;
+    gap: 14px;
+    padding: 0;
+    margin: 0;
+    font-size: 18px;
+    text-shadow: var(--outline-sm);
+  }
+}
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 740px) {
+  .sitebar {
+    gap: 6px;
+    font-size: 16px;
+  }
+}
+/* Full-size tap targets without changing the look. */
+@media (max-width: 640px), (pointer: coarse) {
   .sitebar a,
   .sitebar .sound {
     display: inline-flex;
     align-items: center;
-    min-height: 32px;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .crumbs a {
+    min-height: 44px;
   }
 }
 @media (max-width: 400px) {
@@ -311,7 +349,7 @@ kbd {
 }
 @media (max-width: 640px) {
   .crumbs {
-    top: 62px;
+    top: 54px;
     font-size: 18px;
     white-space: nowrap;
   }
