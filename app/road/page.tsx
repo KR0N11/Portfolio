@@ -21,6 +21,9 @@ import s from "./road.module.css";
 type Entry = { key: string; label: string; help: string; href: string };
 
 const ART: [number, number] = [400, 225];
+/** Upright phones: screen pixels per art pixel, and the art column at the screen's left edge. */
+const PHONE_CELL = 2;
+const PHONE_LEFT = 146;
 
 const MENU: Entry[] = [
   {
@@ -53,7 +56,8 @@ export default function Road() {
   const [sel, setSel] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const [found, setFound] = useState<"hidden" | "show" | "done">("hidden");
-  const [narrow, setNarrow] = useState(false);
+  // Phones frame the art by hand so the grace and the knight both stay in view.
+  const [phoneFocus, setPhoneFocus] = useState<number | null>(null);
   const [copied, setCopied] = useState(0);
   const btns = useRef<(HTMLButtonElement | null)[]>([]);
   const router = useRouter();
@@ -61,17 +65,34 @@ export default function Road() {
 
   useEffect(() => {
     arrived();
-    const mq = window.matchMedia("(max-width: 720px)");
-    setNarrow(mq.matches);
+    const mq = window.matchMedia("(max-width: 720px) and (orientation: portrait)");
+    const side = window.matchMedia("(orientation: landscape) and (max-height: 500px)");
+    const frame = () =>
+      setPhoneFocus(
+        mq.matches
+          ? (window.innerWidth / 2 + PHONE_LEFT * PHONE_CELL) / (ART[0] * PHONE_CELL)
+          : side.matches
+            ? 0.4 // moves the grace out from behind the menu
+            : null,
+      );
+    frame();
+    mq.addEventListener("change", frame);
+    side.addEventListener("change", frame);
+    window.addEventListener("resize", frame);
     // "Lost Grace Discovered", once per visit, the way the game does it.
     let seen = false;
     try {
       seen = sessionStorage.getItem("pcl-grace") === "1";
       sessionStorage.setItem("pcl-grace", "1");
     } catch {}
+    const unframe = () => {
+      mq.removeEventListener("change", frame);
+      side.removeEventListener("change", frame);
+      window.removeEventListener("resize", frame);
+    };
     if (seen) {
       setFound("done");
-      return;
+      return unframe;
     }
     const a = window.setTimeout(() => {
       setFound("show");
@@ -83,6 +104,7 @@ export default function Road() {
     window.addEventListener("pointerdown", skip);
     window.addEventListener("keydown", skip);
     return () => {
+      unframe();
       window.clearTimeout(a);
       window.clearTimeout(b);
       window.removeEventListener("pointerdown", skip);
@@ -158,7 +180,7 @@ export default function Road() {
           src="/art/grace.png"
           depth="/art/grace-depth.png"
           art={ART}
-          focus={narrow ? [0.53, 0.5] : [0.5, 0.45]}
+          focus={phoneFocus !== null ? [phoneFocus, 0.43] : [0.5, 0.45]}
           grace={[0.394, 0.42, 0.6]}
         >
           <Motes source={[0.3, 0.48, 0.66, 0.76]} count={18} drift={0.01} rise={0.35} grid={ART} />

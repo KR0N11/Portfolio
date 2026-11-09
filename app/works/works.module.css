@@ -143,18 +143,28 @@
   filter: brightness(0.8) contrast(0.95);
 }
 /* The project in one sentence, between its name and its recording. */
+/* Sentences are set to be read: no pixel face, no pixel shadow. */
+.lede,
+.note,
+.caption,
+.stack,
+.what li {
+  font-family: var(--read);
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+}
 .lede {
   margin: 16px 0 0;
   max-width: 62ch;
-  font-size: 24px;
-  line-height: 36px;
+  font-size: 20px;
+  line-height: 32px;
   color: var(--fg);
 }
 .note {
   margin: 20px 0 0;
   max-width: 68ch;
-  font-size: 20px;
-  line-height: 28px;
+  font-size: 16px;
+  line-height: 25px;
   color: var(--dim);
 }
 .note span {
@@ -170,8 +180,8 @@
 .caption {
   margin-top: 12px;
   max-width: 68ch;
-  font-size: 20px;
-  line-height: 28px;
+  font-size: 15px;
+  line-height: 24px;
   color: var(--dim);
 }
 
@@ -196,6 +206,7 @@
 .code {
   display: inline-flex;
   align-items: center;
+  min-height: 44px;
   gap: 8px;
   font-size: 20px;
   color: var(--acc);
@@ -218,8 +229,8 @@
   padding: 12px 0;
   border-top: var(--px) solid rgba(159, 184, 178, 0.35);
   border-bottom: var(--px) solid rgba(159, 184, 178, 0.35);
-  font-size: 20px;
-  line-height: 28px;
+  font-size: 16px;
+  line-height: 26px;
   color: var(--fg);
 }
 .stack span {
@@ -235,15 +246,15 @@
   position: relative;
   max-width: 68ch;
   padding: 6px 0 6px 24px;
-  font-size: 22px;
-  line-height: 32px;
+  font-size: 18px;
+  line-height: 29px;
   color: var(--fg);
 }
 .what li::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 18px;
+  top: 16px;
   width: 8px;
   height: 8px;
   background: var(--acc);
@@ -319,8 +330,8 @@
   }
   .lede,
   .what li {
-    font-size: 20px;
-    line-height: 30px;
+    font-size: 17px;
+    line-height: 27px;
   }
   /* The bullets carry the depth; on a phone they come before the stack line. */
   .info {

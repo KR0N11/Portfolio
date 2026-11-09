@@ -163,68 +163,48 @@
   gap: 8px;
 }
 
-@media (max-width: 720px) {
-  .scene {
-    bottom: auto;
-    height: 80%;
+/* No keyboard, no key prompts. */
+@media (max-width: 720px), (hover: none), (pointer: coarse) {
+  .keys {
+    display: none;
   }
-  .side {
-    top: auto;
-    bottom: 16px;
-    left: 16px;
-    right: 16px;
-    width: auto;
-  }
-  /* a dark band behind the title that fades out at its edges in a pixel dither */
-  .title {
-    position: relative;
-    margin: 0 -16px 20px;
-    padding: 6px 16px 8px;
-    font-size: 48px;
-    background: rgba(4, 9, 13, 0.72);
-  }
-  .title::before,
-  .title::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 16px;
-    background-size: 4px 8px;
-    background-repeat: repeat;
-    image-rendering: pixelated;
-  }
-  .title::before {
-    bottom: 100%;
-    background-image: url(/pixel/fringe-top.png);
-  }
-  .title::after {
-    top: 100%;
-    background-image: url(/pixel/fringe-bottom.png);
-  }
+}
+
+/* Phones, upright or on their side: a compact two-by-two menu with the
+   description inside the panel, so nothing can land on top of an entry. */
+@media (max-width: 720px), (orientation: landscape) and (max-height: 500px) {
   .menu {
-    padding-bottom: 72px;
-  }
-  .item {
-    font-size: 32px;
-    padding: 8px 0 8px 44px;
+    padding-bottom: 68px;
   }
   .menu ul {
-    margin-top: 12px;
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+    column-gap: 12px;
   }
   .menu li[data-gap="true"] {
-    margin-top: 12px;
+    margin-top: 0;
   }
-  /* The description sits inside the menu panel, under the list, lined up
-     with the entries' text (panel edge 16 + rim 12 + padding 10 + cursor 44). */
+  .item {
+    min-height: 44px;
+    padding: 8px 8px 8px 32px;
+    font-size: 28px;
+    white-space: nowrap;
+  }
+  .cursor {
+    transform: scale(0.75);
+    transform-origin: left center;
+    animation: none;
+  }
+  /* (panel edge + rim + padding, so it lines up with the entries) */
   .help {
-    bottom: 48px;
-    left: 82px;
-    right: 30px;
+    bottom: 34px;
+    left: 38px;
+    right: 38px;
     width: auto;
+    max-width: none;
     transform: none;
     text-align: left;
-    text-wrap: balance;
     padding: 0;
     border: 0;
     border-image: none;
@@ -232,11 +212,99 @@
     line-height: 24px;
     color: var(--dim);
   }
-  .keys {
-    display: none;
-  }
   .found span {
     white-space: nowrap;
     font-size: clamp(26px, 8vw, 40px);
+  }
+}
+
+/* Upright phones: the art at two screen pixels per art pixel, so the knight and
+   the grace are both whole, standing just above the menu. The name goes in the
+   open sky, and the sky's top colour fills any height left over. */
+@media (max-width: 720px) and (orientation: portrait) {
+  .road {
+    background: #000e1d;
+  }
+  .scene {
+    top: max(0px, calc(100% - 600px));
+    bottom: auto;
+    height: 450px;
+  }
+  .side {
+    inset: 0;
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 60px 0 0;
+    /* tall phones: the name stays just above the scene instead of far up the sky */
+    padding-top: max(60px, calc(100dvh - 584px));
+  }
+  .title {
+    margin: 0 16px;
+    font-size: 44px;
+  }
+  /* A panel across the bottom of the screen, its side and bottom rims off the
+     edges, so the art's lower edge is always behind it. */
+  .menu {
+    width: calc(100% + 24px);
+    margin: 0 -12px -12px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 48px;
+  }
+  .help {
+    left: 16px;
+    right: 16px;
+    bottom: 14px;
+  }
+}
+
+/* Phones on their side: the panel in the bottom-left corner. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .side {
+    top: auto;
+    bottom: 12px;
+    left: 16px;
+    width: 340px;
+  }
+  .title {
+    margin: 0 0 8px;
+    font-size: 44px;
+  }
+  .help {
+    right: auto;
+    bottom: 30px;
+    left: 38px;
+    width: 280px;
+  }
+}
+
+/* The narrowest phones: the description can take two lines. */
+@media (max-width: 360px) {
+  .item {
+    font-size: 26px;
+  }
+  .menu {
+    padding-bottom: 68px;
+  }
+}
+
+/* Small phones on their side: a narrower panel, so the grace stays in view. */
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 740px) {
+  .side {
+    width: 276px;
+  }
+  .menu ul {
+    column-gap: 6px;
+  }
+  .item {
+    padding-right: 0;
+    font-size: 26px;
+  }
+  .help {
+    width: 216px;
+    font-size: 16px;
+    line-height: 22px;
   }
 }

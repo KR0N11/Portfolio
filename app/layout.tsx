@@ -1,16 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Jersey_15 } from "next/font/google";
+import { IBM_Plex_Sans, Jersey_15 } from "next/font/google";
 import SiteBar from "@/components/SiteBar";
 import Veil from "@/components/Veil";
 import { person } from "@/lib/content";
 import "./globals.css";
 
-/* One pixel face for everything, like a game's bitmap font. Mixed case only:
-   its capital S reads as a B when a whole word is set in capitals. */
+/* The pixel face is for titles and menus, like a game's bitmap font. Mixed case
+   only: its capital S reads as a B when a whole word is set in capitals. */
 const pixel = Jersey_15({
   variable: "--font-pixel",
   subsets: ["latin"],
   weight: "400",
+});
+
+/* Anything meant to be read as a sentence. */
+const read = IBM_Plex_Sans({
+  variable: "--font-read",
+  subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 const description = "Ping Chun Lui, software developer. Eight software projects, each shown running.";
@@ -63,7 +70,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={pixel.variable}>
+    <html lang="en" className={`${pixel.variable} ${read.variable}`}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         {children}
