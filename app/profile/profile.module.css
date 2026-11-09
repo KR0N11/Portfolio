@@ -70,15 +70,25 @@
   line-height: 32px;
   color: var(--dim);
 }
+/* Sentences are set to be read: no pixel face, no pixel shadow. */
+.intro,
+.body,
+.line,
+.also,
+.credit {
+  font-family: var(--read);
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+}
 .intro {
   margin: 20px 0 0;
-  max-width: 30em;
-  font-size: 24px;
-  line-height: 36px;
+  max-width: 34em;
+  font-size: 20px;
+  line-height: 32px;
   color: var(--fg);
 }
 .intro b {
-  font-weight: 400;
+  font-weight: 500;
   color: var(--acc);
 }
 /* The motto, said in a dialogue box with a name tag. */
@@ -139,9 +149,9 @@
 }
 .body {
   margin: 12px 0 0;
-  max-width: 36em;
-  font-size: 22px;
-  line-height: 32px;
+  max-width: 38em;
+  font-size: 19px;
+  line-height: 30px;
   color: var(--fg);
 }
 
@@ -165,9 +175,9 @@
 }
 .job .body {
   margin: 0;
-  max-width: 34em;
-  font-size: 24px;
-  line-height: 36px;
+  max-width: 36em;
+  font-size: 19px;
+  line-height: 30px;
 }
 .jobHead {
   display: flex;
@@ -175,18 +185,18 @@
   align-items: flex-start;
   gap: 16px;
 }
-/* Logos as pixel art, three screen pixels to a logo pixel. */
+/* Each company's real logo, sized so they read at about the same weight. */
 .logo {
-  height: 39px;
+  height: 34px;
   width: auto;
-  image-rendering: pixelated;
-  filter: drop-shadow(0 var(--px) 0 var(--ink));
+  max-width: 100%;
+  image-rendering: auto;
 }
 .logo[alt="Genetec"] {
-  height: 36px;
+  height: 30px;
 }
 .logo[alt="Paul Tech"] {
-  height: 51px;
+  height: 54px;
 }
 
 .schools {
@@ -251,13 +261,13 @@
   font-size: 32px;
 }
 .item .body {
-  font-size: 22px;
-  line-height: 30px;
+  font-size: 18px;
+  line-height: 28px;
 }
 .line {
   margin: 10px 0 0;
-  font-size: 22px;
-  line-height: 30px;
+  font-size: 18px;
+  line-height: 28px;
   color: var(--fg);
 }
 .page {
@@ -307,8 +317,8 @@
 }
 .also {
   margin: 8px 0 0;
-  font-size: 20px;
-  line-height: 28px;
+  font-size: 16px;
+  line-height: 26px;
   color: var(--dim);
 }
 
@@ -325,10 +335,13 @@
 .links {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 32px;
+  gap: 0 32px;
   font-size: 24px;
 }
 .links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--acc);
   text-decoration: none;
 }
@@ -336,9 +349,9 @@
   color: var(--acc-hi);
 }
 .credit {
-  margin: 24px 0 0;
-  font-size: 20px;
-  line-height: 28px;
+  margin: 16px 0 0;
+  font-size: 15px;
+  line-height: 24px;
   color: var(--dim);
 }
 
@@ -354,11 +367,14 @@
     white-space: normal;
     font-size: clamp(48px, 13vw, 64px);
   }
-  .intro,
-  .say blockquote,
-  .job .body {
+  .say blockquote {
     font-size: 22px;
     line-height: 32px;
+  }
+  .intro,
+  .job .body {
+    font-size: 17px;
+    line-height: 27px;
   }
   .portrait {
     justify-self: center;
@@ -377,8 +393,8 @@
   .item .body,
   .item .line,
   .also {
-    font-size: 20px;
-    line-height: 28px;
+    font-size: 16px;
+    line-height: 26px;
   }
   .item h3,
   .page .item h3 {
