@@ -23,7 +23,7 @@ import s from "./gate.module.css";
 
 const ART: [number, number] = [697, 225];
 /** the knight's sprite sheet: frames side by side, and where a frame sits in the art */
-const KNIGHT = { sheet: "/art/gate-knight.png", frames: 17, box: [266, 84, 124, 118] as [number, number, number, number] };
+const KNIGHT = { sheet: "/art/gate-knight-yank.png", frames: 17, box: [266, 84, 124, 118] as [number, number, number, number] };
 /** frames 0..STRAIN-1 follow the drag; the rest play once the sword comes free */
 const STRAIN = 7;
 /** the frame where the blade leaves the rock */
