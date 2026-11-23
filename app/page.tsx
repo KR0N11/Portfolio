@@ -2,10 +2,11 @@
 
 /*
   The Gate. A knight kneels before a sword in the rock, the Ring overhead.
-  Drag upward and he hauls on it, frame by frame: braces, leans back, hauls,
+  Drag upward and he hauls on it, frame by frame: sinks into a brace, hauls,
   trembling as it fights him, grit spitting from the rock. Let go early and he
-  settles back. Pull far enough and it gives: light bursts from the stone, he
-  rises with the blade and lifts it overhead, and the way opens.
+  settles back. Pull far enough and it gives: he drops for a beat, then yanks
+  it straight up with his whole body, light bursts from the stone, and he holds
+  the blade before him, both hands on the grip, and the way opens.
 */
 
 import Link from "next/link";
@@ -22,12 +23,13 @@ import s from "./gate.module.css";
 
 const ART: [number, number] = [697, 225];
 /** the knight's sprite sheet: frames side by side, and where a frame sits in the art */
-const KNIGHT = { sheet: "/art/gate-knight.png", frames: 17, box: [266, 84, 124, 118] as [number, number, number, number] };
+const KNIGHT = { sheet: "/art/gate-knight-yank.png", frames: 17, box: [266, 84, 124, 118] as [number, number, number, number] };
 /** frames 0..STRAIN-1 follow the drag; the rest play once the sword comes free */
 const STRAIN = 7;
 /** the frame where the blade leaves the rock */
-const CLEAR = STRAIN + 1;
-const FRAME_MS = 90;
+const CLEAR = STRAIN + 2;
+/** how long each release frame stays up (frames STRAIN..end): a beat as it gives, a fast tear, then the swing slows into the hold */
+const RELEASE_MS = [170, 45, 45, 70, 90, 0, 0, 0, 0, 0];
 /** where the sword stands in the rock, in art pixels */
 const ROCK: [number, number] = [358, 186];
 /** drag distance (share of screen height) needed to free it */
@@ -100,7 +102,8 @@ export default function Gate() {
       window.setTimeout(() => passThrough("/road", "dark"), 400);
       return;
     }
-    // He tears it free, rises, and lifts it overhead, a frame at a time.
+    // He drops, then yanks it straight up and out; nothing on him turns, every pixel moves straight.
+    let at = 0;
     for (let f = STRAIN; f < KNIGHT.frames; f++) {
       window.setTimeout(() => {
         knight.current?.frame(f);
@@ -109,11 +112,12 @@ export default function Gate() {
           dust.current?.(90, 1);
           setShake(true);
         }
-      }, (f - STRAIN) * FRAME_MS);
+      }, at);
+      at += RELEASE_MS[f - STRAIN];
     }
     embers.current = 1;
     // Hold on the raised sword for a beat before leaving.
-    window.setTimeout(() => passThrough("/road", "dark"), (KNIGHT.frames - STRAIN) * FRAME_MS + 650);
+    window.setTimeout(() => passThrough("/road", "dark"), at + 750);
   };
 
   const onDown = (e: React.PointerEvent) => {
